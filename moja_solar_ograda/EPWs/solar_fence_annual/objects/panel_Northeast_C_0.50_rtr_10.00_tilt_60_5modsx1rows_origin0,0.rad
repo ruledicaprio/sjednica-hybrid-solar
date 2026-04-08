@@ -1,0 +1,1 @@
+!xform -rx 60 -t 0 0 1.452 -a 5 -t 1.144 0 0 -a 1 -t 0 10.0 0 -i 1 -t -2.288 -0.0 0 -rz 135 -t 0 0 0 "objects\panel_Northeast.rad"
