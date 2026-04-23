@@ -1,17 +1,15 @@
-```
+```python
 # Compiled Python files
 *.pyc
 __pycache__/
 
-# Virtual environments
-venv/
+# Dependencies
 .venv/
-env/
+venv/
+node_modules/
 
-# Logs
+# Logs and temporary files
 *.log
-
-# Temporary files
 *.tmp
 *.swp
 
@@ -20,24 +18,16 @@ env/
 .env.local
 *.env.*
 
+# Editors
+.vscode/
+.idea/
+
 # Coverage reports
 .coverage
 coverage/
 htmlcov/
 
-# IDE files
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj.user
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Build outputs
-dist/
-build/
-*.egg-info/
+# Python cache
+.mypy_cache/
+.pytest_cache/
 ```
