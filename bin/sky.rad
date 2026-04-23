@@ -1,0 +1,9 @@
+void light sky_mat
+0
+0
+3 1 1 1
+
+sky_mat source sky
+0
+0
+4 0 0 1 180
