@@ -1,5 +1,5 @@
 site "Bileca" 42.9448 18.3236 1 1050
-ground 0.2 0.2
+ground 0.20
 date time DNI DHI
 1 1 0.5 0.0 0.0
 1 1 1.5 0.0 0.0
