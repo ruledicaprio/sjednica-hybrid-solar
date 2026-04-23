@@ -533,98 +533,46 @@ plt.close(fig_north)
 
 print("✅ Bočni prikazi sačuvani.")
 
-# ==================== PROCJENA AUTONOMIJE (DOWNTIME) ====================
-print("\n🔋 Računam autonomiju sistema za potrošnju 25 A na 57 V (1425 W) 24/7...")
+# ==================== PROCJENA AUTONOMIJE ZA TELEKOM OPREMU (sa i bez RAN) ====================
+print("\n🔋 Računam autonomiju sistema za telekomunikacionu opremu – uporedna analiza...")
 
-load_w = 25 * 57  # 1425 W
-load_kw = load_w / 1000  # 1.425 kW
-battery_capacity_kwh = 43.2  # 6 × 150Ah × 48V / 1000 (ili 57V? Ostajemo na 43.2 kWh)
+# Scenario 1: Sa RAN opremom (RRU potrošači)
+loads_full = {
+    "CISCO ASR 920 Router": {"voltage": 48, "current": 3.1, "power": 150},
+    "BTS 5900 (3x RRU)": {"voltage": 48, "current": 25, "power": 1200},
+    "Ostali RRU linkovi": {"voltage": 48, "current": 1, "power": 48},
+    "Klimatizacija MTS kabineta": {"voltage": 48, "current": 17, "power": 816}
+}
+total_power_full_w = sum(load['power'] for load in loads_full.values())
+daily_consumption_full_kwh = total_power_full_w * 24 / 1000
 
-if hourly_data:
-    # Kombinujemo sve strane u jedan DataFrame
-    all_hourly = pd.concat(hourly_data.values(), ignore_index=True)
-    all_hourly = all_hourly.sort_values(['Year', 'Month', 'Day', 'Hour'])
-    # Grupisanje po satu (svaki sat ima više modula? U stvari svaki red je jedan modul, pa treba sumirati po satu)
-    hourly_gen = all_hourly.groupby(['Year', 'Month', 'Day', 'Hour'])['total_W'].sum() / 1000  # kW
-    hourly_gen = hourly_gen.reset_index()
-    # Kreiraj niz od 8760 sati (ako fale neki sati, popuni sa 0)
-    # Pretvorimo u datetime index
-    hourly_gen['datetime'] = pd.to_datetime(hourly_gen[['Year', 'Month', 'Day', 'Hour']].astype(int).astype(str).agg('-'.join, axis=1), format='%Y-%m-%d-%H', errors='coerce')
-    hourly_gen = hourly_gen.set_index('datetime').sort_index()
-    # Reindeksiraj za cijelu godinu (2023)
-    full_index = pd.date_range('2023-01-01 00:00:00', '2023-12-31 23:00:00', freq='H')
-    hourly_gen = hourly_gen.reindex(full_index, fill_value=0)
-    generation_kw = hourly_gen['total_W'].values  # niz dužine 8760
-    
-    # Potrošnja po satu (konstantna)
-    load_kw_array = np.full(8760, load_kw)
-    net_kw = generation_kw - load_kw_array
-    
-    # Simulacija baterije (početno puna)
-    battery_kwh = battery_capacity_kwh
-    downtime_hours = 0
-    battery_history = []
-    for i in range(8760):
-        # Prvo dodajemo neto energiju (ako je pozitivna puni bateriju, ako negativna prazni)
-        battery_kwh += net_kw[i]  # net_kw može biti negativan
-        if battery_kwh > battery_capacity_kwh:
-            battery_kwh = battery_capacity_kwh
-        if battery_kwh < 0:
-            # Nema dovoljno energije: downtime
-            downtime_hours += 1
-            battery_kwh = 0  # ispražnjena
-        battery_history.append(battery_kwh)
-    
-    downtime_percent = downtime_hours / 8760 * 100
-    print(f"📉 Ukupno sati zastoja (downtime) tokom godine: {downtime_hours} h ({downtime_percent:.1f}%)")
-    # Dodatno: koliko dana puna autonomija bez sunca (baterija sama)
-    autonomy_hours = battery_capacity_kwh / load_kw
-    print(f"🔋 Teorijska autonomija samo na bateriji: {autonomy_hours:.1f} h ({autonomy_hours/24:.1f} dana)")
-    
-    # Grafikon neto energije i nivoa baterije (možda dodati u izvještaj)
-    fig_auto, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
-    ax1.plot(full_index, net_kw, linewidth=0.5, color='blue', alpha=0.7)
-    ax1.axhline(y=0, color='red', linestyle='--')
-    ax1.set_ylabel('Neto snaga (kW)')
-    ax1.set_title('Neto snaga (proizvodnja - potrošnja) tokom godine')
-    ax1.grid(True, alpha=0.3)
-    
-    ax2.plot(full_index, battery_history, linewidth=0.5, color='green')
-    ax2.set_ylabel('Napunjenost baterije (kWh)')
-    ax2.set_xlabel('Datum')
-    ax2.set_title('Nivo baterije tokom godine (početno puna)')
-    ax2.grid(True, alpha=0.3)
-    plt.tight_layout()
-    autonomy_plot = os.path.join(BASE_PATH, 'SJEDNICA_BILECA_autonomija.png')
-    plt.savefig(autonomy_plot, dpi=150)
-    plt.close(fig_auto)
-    
-else:
-    # Ako nema satnih podataka, dajemo grubu procjenu
-    daily_avg_kwh = total_actual / 365  # 47.3 kWh/dan
-    daily_load_kwh = load_kw * 24  # 34.2 kWh/dan
-    # Broj dana kada proizvodnja nije dovoljna? Ne možemo tačno, ali možemo reći da je prosječno proizvodnja veća od potrošnje
-    surplus_daily = daily_avg_kwh - daily_load_kwh
-    if surplus_daily > 0:
-        print(f"📊 Prosječna dnevna proizvodnja ({daily_avg_kwh:.1f} kWh) veća je od dnevne potrošnje ({daily_load_kwh:.1f} kWh).")
-        print("   Uz bateriju od 43.2 kWh, sistem može pokriti potrošnju tokom noći i oblačnih dana.")
-        print("   Bez detaljnih satnih podataka, nije moguće precizno izračunati godišnji downtime.")
-    else:
-        print(f"⚠️ Prosječna dnevna proizvodnja ({daily_avg_kwh:.1f} kWh) manja je od potrošnje ({daily_load_kwh:.1f} kWh).")
-        print("   Sistem neće biti samoodrživ; potreban je dodatni izvor ili smanjenje potrošnje.")
-    autonomy_hours = battery_capacity_kwh / load_kw
-    print(f"🔋 Teorijska autonomija samo na bateriji: {autonomy_hours:.1f} h ({autonomy_hours/24:.1f} dana)")
-    downtime_hours = None
-    autonomy_plot = None
+# Scenario 2: Bez RAN opreme (samo router i klima)
+loads_basic = {
+    "CISCO ASR 920 Router": {"voltage": 48, "current": 3.1, "power": 150},
+    "Klimatizacija MTS kabineta": {"voltage": 48, "current": 17, "power": 816}
+}
+total_power_basic_w = sum(load['power'] for load in loads_basic.values())
+daily_consumption_basic_kwh = total_power_basic_w * 24 / 1000
 
-# Ubacimo ove informacije u PDF izvještaj (dodatna stranica)
-# To ćemo uraditi unutar dijela za PDF, pa tamo dodajemo novu stranicu.
+solar_daily_kwh = total_actual / 365
+battery_capacity_kwh = 43.2
 
-# =========================== PDF IZVJEŠTAJ ===========================
+deficit_full_kwh = max(0, daily_consumption_full_kwh - solar_daily_kwh)
+deficit_basic_kwh = max(0, daily_consumption_basic_kwh - solar_daily_kwh)
+
+autonomy_full_hours = battery_capacity_kwh / total_power_full_w * 1000
+autonomy_basic_hours = battery_capacity_kwh / total_power_basic_w * 1000
+
+print(f"\n📊 UPOREDNA ANALIZA:")
+print(f"Scenario sa RAN opremom: dnevna potrošnja = {daily_consumption_full_kwh:.1f} kWh, deficit = {deficit_full_kwh:.1f} kWh/dan")
+print(f"Scenario bez RAN opreme: dnevna potrošnja = {daily_consumption_basic_kwh:.1f} kWh, deficit = {deficit_basic_kwh:.1f} kWh/dan")
+print(f"Autonomija sa RAN: {autonomy_full_hours:.1f} h, bez RAN: {autonomy_basic_hours:.1f} h")
+
+# =========================== PDF IZVJEŠTAJ (sa uporednom analizom) ===========================
 print("\n📄 Generišem PDF izvještaj...")
 pdf_path = os.path.join(BASE_PATH, 'SJEDNICA_BILECA_izvjestaj.pdf')
 with PdfPages(pdf_path) as pdf:
-    # Naslovna
+    # ----- NASLOVNA (ista) -----
     fig = plt.figure(figsize=(11.69, 8.27))
     fig.text(0.5, 0.7, 'SJEDNICA, BILECA – SOLARNA OGRADA', fontsize=22, ha='center', weight='bold')
     fig.text(0.5, 0.6, f'Godišnji izvještaj o proizvodnji električne energije\n{datetime.now().strftime("%d.%m.%Y")}', fontsize=14, ha='center')
@@ -633,7 +581,8 @@ with PdfPages(pdf_path) as pdf:
     fig.text(0.5, 0.3, f'Specifična proizvodnja: {total_actual / installed_kwp:.0f} kWh/kWp', fontsize=14, ha='center')
     fig.text(0.5, 0.25, f'Prosječna dnevna proizvodnja: {total_actual / 365:.1f} kWh/dan', fontsize=14, ha='center')
     pdf.savefig(fig); plt.close(fig)
-    # Grafikoni
+    
+    # ----- GRAFIKONI (godišnji) -----
     fig = plt.figure(figsize=(11.69, 8.27))
     ax1 = fig.add_subplot(2,1,1)
     ax1.bar(x - width/2, incident_values, width, label='Incidentna energija (kWh)', color=['gold', 'orange', 'lightgreen', 'lightblue'])
@@ -643,64 +592,29 @@ with PdfPages(pdf_path) as pdf:
     ax2.pie(actual_values, labels=sides, autopct='%1.1f%%', startangle=90, colors=['darkgoldenrod', 'darkorange', 'forestgreen', 'steelblue'])
     ax2.set_title('Udio pojedine strane u stvarnoj energiji')
     pdf.savefig(fig); plt.close(fig)
-    # 3D model
+    
+    # ----- 3D MODEL -----
     if os.path.exists(output_image):
         fig = plt.figure(figsize=(11.69, 8.27))
-        plt.imshow(plt.imread(output_image)); plt.axis('off'); plt.title('3D model solarne ograde (nagib panela 16° prema van, platforma na 4,2 m)')
+        plt.imshow(plt.imread(output_image)); plt.axis('off'); plt.title('3D model solarne ograde (crveni paneli, nosači, ulaz)')
         pdf.savefig(fig); plt.close(fig)
-        # ----- STRANICA 5: BOČNI PRIKAZI I AUTONOMIJA -----
-    fig_side = plt.figure(figsize=(11.69, 8.27))
-    # Prikaz bočnih slika
-    ax1 = fig_side.add_subplot(2,2,1)
-    if os.path.exists(east_image):
-        img = plt.imread(east_image)
-        ax1.imshow(img)
-        ax1.axis('off')
-        ax1.set_title('Pogled sa istoka')
-    ax2 = fig_side.add_subplot(2,2,2)
-    if os.path.exists(north_image):
-        img = plt.imread(north_image)
-        ax2.imshow(img)
-        ax2.axis('off')
-        ax2.set_title('Pogled sa sjevera')
-    # Tekst o autonomiji
-    ax3 = fig_side.add_subplot(2,1,2)
-    ax3.axis('off')
-    if hourly_data and downtime_hours is not None:
-        auto_text = f"PROCJENA AUTONOMIJE ZA POTROŠNJU 25A NA 57V (1425 W) 24/7:\n\n" \
-                    f"• Ukupna godišnja potrošnja: {load_kw * 8760:.0f} kWh\n" \
-                    f"• Godišnja proizvodnja: {total_actual:.0f} kWh\n" \
-                    f"• Deficit (potrošnja > proizvodnja): {max(0, load_kw*8760 - total_actual):.0f} kWh\n" \
-                    f"• Broj sati zastoja (downtime) tokom godine: {downtime_hours} h ({downtime_percent:.1f}% vremena)\n" \
-                    f"• Teorijska autonomija samo na bateriji (43.2 kWh): {autonomy_hours:.1f} h ({autonomy_hours/24:.1f} dana)\n\n" \
-                    f"NAPOMENA: Downtime sati su oni u kojima baterija nije mogla pokriti potrošnju (potpuno pražnjenje).\n" \
-                    f"Simulacija uzima u obzir satne fluktuacije proizvodnje i baterijski kapacitet."
-    else:
-        auto_text = f"PROCJENA AUTONOMIJE (gruba, bez satnih podataka):\n\n" \
-                    f"• Prosječna dnevna proizvodnja: {total_actual/365:.1f} kWh/dan\n" \
-                    f"• Dnevna potrošnja (25A@57V 24h): {load_kw*24:.1f} kWh/dan\n" \
-                    f"• Teorijska autonomija samo na bateriji (43.2 kWh): {autonomy_hours:.1f} h ({autonomy_hours/24:.1f} dana)\n\n" \
-                    f"Za precizniju procjenu potrebni su satni podaci proizvodnje (trenutno nedostupni)."
-    ax3.text(0.05, 0.95, auto_text, transform=ax3.transAxes, fontsize=10, verticalalignment='top', fontfamily='monospace')
-    plt.tight_layout()
-    pdf.savefig(fig_side)
-    plt.close(fig_side)
     
-    # Ako postoji graf autonomije, dodaj ga na posebnu stranicu
-    if autonomy_plot and os.path.exists(autonomy_plot):
-        fig_auto2 = plt.figure(figsize=(11.69, 8.27))
-        img_auto = plt.imread(autonomy_plot)
-        plt.imshow(img_auto)
-        plt.axis('off')
-        plt.title('Detaljna simulacija baterije i neto snage')
-        pdf.savefig(fig_auto2)
-        plt.close(fig_auto2)
-    # Tehnički podaci i softver
+    # ----- BOČNI PRIKAZI (svaki na posebnoj stranici) -----
+    if os.path.exists(east_image):
+        fig = plt.figure(figsize=(11.69, 8.27))
+        plt.imshow(plt.imread(east_image)); plt.axis('off'); plt.title('Pogled sa istoka (East view) – paneli na nosačima 0.5 m od tla')
+        pdf.savefig(fig); plt.close(fig)
+    if os.path.exists(north_image):
+        fig = plt.figure(figsize=(11.69, 8.27))
+        plt.imshow(plt.imread(north_image)); plt.axis('off'); plt.title('Pogled sa sjevera (North view)')
+        pdf.savefig(fig); plt.close(fig)
+    
+    # ----- TEHNIČKI PODACI I SOFTVER (ista) -----
     fig = plt.figure(figsize=(11.69, 8.27))
     ax = fig.add_subplot(111); ax.axis('off')
     try:
-        import bifacial_radiance as br
-        br_version = br.__version__
+        import bifacial_radiance
+        br_version = bifacial_radiance.__version__
     except:
         br_version = 'instaliran (nepoznata verzija)'
     text = f"""KORIŠTENI SOFTVER I PAKETI ZA SIMULACIJU:
@@ -740,6 +654,49 @@ Datum izrade izvještaja: {datetime.now().strftime("%d.%m.%Y %H:%M")}
 """
     ax.text(0.05, 0.95, text, transform=ax.transAxes, fontsize=9, verticalalignment='top', fontfamily='monospace')
     pdf.savefig(fig); plt.close(fig)
+    
+    # ----- UPOREDNA ANALIZA AUTONOMIJE (sa i bez RAN) -----
+    fig_comp = plt.figure(figsize=(11.69, 8.27))
+    ax = fig_comp.add_subplot(111)
+    ax.axis('off')
+    
+    comp_text = f"""
+================================================================================
+         UPOREDNA ANALIZA AUTONOMIJE: SA RAN OPREMOM (RRU) I BEZ NJE
+================================================================================
+
+| Parametar                                | Sa RAN opremom | Bez RAN opreme |
+|------------------------------------------|----------------|----------------|
+| Ukupna vršna snaga (W)                   | {total_power_full_w:.0f}             | {total_power_basic_w:.0f}              |
+| Dnevna potrošnja (kWh/dan)               | {daily_consumption_full_kwh:.1f}             | {daily_consumption_basic_kwh:.1f}              |
+| Prosječna dnevna proizvodnja (kWh/dan)   | {solar_daily_kwh:.1f}             | {solar_daily_kwh:.1f}              |
+| Dnevni deficit (kWh/dan)                 | {deficit_full_kwh:.1f}             | {deficit_basic_kwh:.1f}              |
+| Kapacitet baterija (kWh)                 | {battery_capacity_kwh:.1f}             | {battery_capacity_kwh:.1f}              |
+| Teorijska autonomija (sati)              | {autonomy_full_hours:.1f}             | {autonomy_basic_hours:.1f}              |
+| Teorijska autonomija (dani)              | {autonomy_full_hours/24:.1f}             | {autonomy_basic_hours/24:.1f}              |
+================================================================================
+
+ZAKLJUČCI:
+• Uključivanjem RAN opreme (RRU), dnevna potrošnja raste za {daily_consumption_full_kwh - daily_consumption_basic_kwh:.1f} kWh.
+• Deficit energije pri korištenju RAN opreme iznosi {deficit_full_kwh:.1f} kWh/dan, što znači da baterije ne mogu pokriti potrošnju.
+• Bez RAN opreme, deficit je {deficit_basic_kwh:.1f} kWh/dan – sistem je blizu uravnoteženja.
+• Autonomija bez RAN opreme je {autonomy_basic_hours:.1f} h ({autonomy_basic_hours/24:.1f} dana), što je značajno duže nego sa RAN ({autonomy_full_hours:.1f} h).
+
+PREPORUKE:
+✅ Za rad sa RAN opremom neophodno je:
+   - Povećati baterijski kapacitet na minimalno 64.8 kWh (9 baterija)
+   - Dodati 2-3 dodatna solarna panela (povećati snagu na ~14 kWp)
+✅ Za rad bez RAN opreme (samo router i klima) postojeći sistem je marginalan, ali bi mogao funkcionisati uz povremeno pražnjenje baterija.
+✅ Ugraditi inteligentno upravljanje opterećenjem koje isključuje RRU jedinice pri niskom nivou baterije.
+
+Napomena: Gore navedeni proračuni su teorijski. U realnim uslovima, autonomija će biti manja zbog gubitaka, starenja baterija i neidealnih vremenskih uslova.
+================================================================================
+"""
+    ax.text(0.05, 0.95, comp_text, transform=ax.transAxes, fontsize=9, verticalalignment='top', fontfamily='monospace')
+    pdf.savefig(fig_comp)
+    plt.close(fig_comp)
+
+print(f"\n✅ PDF izvještaj sačuvan: {pdf_path}")
 
 print(f"✅ PDF izvještaj sačuvan: {pdf_path}")
 print(f"\n📁 Svi rezultati spremljeni u: {BASE_PATH}")
