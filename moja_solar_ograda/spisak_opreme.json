@@ -1,0 +1,172 @@
+{
+  "meta": {
+    "project": "RuralStar Hybrid - Sjednica Bileca",
+    "version": "2.0-DC-Only",
+    "date": "2024-05-23",
+    "notes": "AC-coupled inverter removed. Focus on DC-coupled ICC/PowerCube efficiency."
+  },
+  "solar_panels": {
+    "Huawei_IPV540-M1A": {
+      "model": "IPV540-M1A",
+      "manufacturer": "Huawei",
+      "power_wp": 540,
+      "voc_v": 41.75,
+      "isc_a": 13.86,
+      "vmpp_v": 34.8,
+      "impp_a": 12.94,
+      "efficiency": 0.209,
+      "bifaciality_factor": 0.80,
+      "temp_coeff_pmax": -0.0035,
+      "dimensions_mm": [2279, 1134, 35],
+      "weight_kg": 28.5
+    }
+  },
+  "batteries": {
+    "Huawei_ESM-48150B1": {
+      "model": "ESM-48150B1",
+      "manufacturer": "Huawei",
+      "nominal_voltage_v": 51.2,
+      "capacity_ah": 150,
+      "energy_kwh": 7.68,
+      "chemistry": "LFP",
+      "max_charge_c_rate": 0.5,
+      "max_discharge_c_rate": 1.0,
+      "soc_min_operational": 0.10,
+      "soc_max_operational": 0.95,
+      "round_trip_efficiency": 0.96,
+      "calendar_life_years": 10,
+      "cycle_life": 6000,
+      "dimensions_mm": [442, 560, 133],
+      "weight_kg": 75
+    }
+  },
+  "power_systems": {
+    "ICC330-D1": {
+      "model": "ICC330-D1",
+      "manufacturer": "Huawei",
+      "type": "Integrated Controller & Converter",
+      "max_pv_input_kw": 8.0,
+      "scc_slots": 4,
+      "scc_module_model": "S4875G2",
+      "scc_power_per_module_w": 4000,
+      "controller_consumption_w": 15,
+      "cooling_type": "Direct Ventilation (Fans)",
+      "fan_power_w_avg": 30,
+      "dimensions_mm": [650, 650, 1600]
+    },
+    "MTS9302-HD": {
+      "model": "MTS9302-HD",
+      "manufacturer": "Huawei",
+      "type": "Outdoor Telecom Cabinet",
+      "cooling_capacity_w": 4000,
+      "cooling_power_consumption_w_avg": 280,
+      "heater_power_w": 500,
+      "internal_fans_w": 60,
+      "dimensions_mm": [1600, 900, 900],
+      "notes": "Replaces MTS9300A. No African variants used."
+    },
+    "Rectifier_R48G75": {
+      "model": "R48G75",
+      "manufacturer": "Huawei",
+      "power_w": 3000,
+      "efficiency_at_50_load": 0.96,
+      "efficiency_at_75_load": 0.97,
+      "standby_consumption_w": 3.0,
+      "boost_charge_consumption_w": 50.0
+    }
+  },
+  "ran_equipment": {
+    "BBU5900C": {
+      "model": "BBU5900C",
+      "manufacturer": "Huawei",
+      "consumption_typical_w": 110,
+      "consumption_max_w": 150
+    },
+    "RRU5512t": {
+      "model": "RRU5512t",
+      "manufacturer": "Huawei",
+      "bands": ["700", "800", "900"],
+      "consumption_typical_w": 670,
+      "consumption_max_w": 850,
+      "tech": ["GSM", "UMTS", "LTE", "NR"]
+    },
+    "MW_Link": {
+      "model": "RTN_900_Series",
+      "manufacturer": "Huawei",
+      "consumption_typical_w": 100,
+      "consumption_max_w": 140
+    }
+  },
+  "mpls_equipment": {
+    "ASR920": {
+      "model": "ASR920",
+      "manufacturer": "Cisco",
+      "type": "Aggregation Services Router",
+      "consumption_typical_w": 120,
+      "consumption_max_w": 160
+    },
+    "NCS540": {
+      "model": "NCS540",
+      "manufacturer": "Cisco",
+      "type": "Programmable Edge Router",
+      "consumption_typical_w": 140,
+      "consumption_max_w": 190
+    },
+    "ATN950D": {
+      "model": "ATN950D",
+      "manufacturer": "Huawei",
+      "type": "Access Router",
+      "consumption_typical_w": 90,
+      "consumption_max_w": 130
+    }
+  },
+  "generators": {
+    "FG_Wilson_P13.5-6": {
+      "model": "P13.5-6",
+      "manufacturer": "FG Wilson",
+      "standby_power_kva": 13.5,
+      "standby_power_kw": 12.0,
+      "fuel_consumption_l_kwh_50_load": 0.35,
+      "fuel_consumption_l_kwh_75_load": 0.30,
+      "fuel_consumption_l_kwh_100_load": 0.28,
+      "start_delay_min": 2,
+      "min_run_time_min": 15,
+      "engine_heater_w": 150,
+      "engine_heater_duty_cycle": 0.2,
+      "trickle_charger_w": 2
+    },
+    "FG_Wilson_P18-6": {
+      "model": "P18-6",
+      "manufacturer": "FG Wilson",
+      "standby_power_kva": 18.0,
+      "standby_power_kw": 16.0,
+      "fuel_consumption_l_kwh_50_load": 0.32,
+      "fuel_consumption_l_kwh_75_load": 0.28,
+      "fuel_consumption_l_kwh_100_load": 0.26,
+      "start_delay_min": 2,
+      "min_run_time_min": 15,
+      "engine_heater_w": 200,
+      "engine_heater_duty_cycle": 0.2,
+      "trickle_charger_w": 2
+    }
+  },
+  "auxiliary_loads": {
+    "site_lighting_led": {
+      "description": "LED Security Lighting",
+      "power_w": 50,
+      "usage_pattern": "Rare (Maintenance only)",
+      "hours_per_year": 50
+    },
+    "aviation_beacon": {
+      "description": "Aviation Warning Light",
+      "power_w": 20,
+      "usage_pattern": "Night/Dusk-Dawn",
+      "hours_per_day_avg": 12
+    },
+    "battery_charger_logic": {
+      "float_mode_w": 3.0,
+      "boost_mode_after_gen_w": 50.0,
+      "boost_duration_hours": 2
+    }
+  }
+}
