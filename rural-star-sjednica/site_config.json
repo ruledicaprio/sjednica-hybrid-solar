@@ -1,0 +1,16 @@
+{
+  "site_config": {
+    "latitude": 42.9448,
+    "longitude": 18.3236,
+    "altitude": 107,
+    "timezone": "Europe/Sarajevo"
+  },
+  "scenario_A_PowerCube": {
+    "description": "PowerCube Hybrid (12 Panela, 6 Baterija)",
+    "n_panels": 12,
+    "n_battery_modules": 6,
+    "battery_config": "Single String",
+    "generator_model": "FG_Wilson_P13.5-6",
+    "loads_active": ["RAN_Unit", "Monitoring_Lights", "ICC_Control", "Cooling_Fan"]
+  }
+}

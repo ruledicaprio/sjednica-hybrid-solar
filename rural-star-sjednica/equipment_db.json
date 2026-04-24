@@ -1,0 +1,82 @@
+{
+  "system_parameters": {
+    "site_name": "Sjednica_Bileca",
+    "latitude": 42.9448,
+    "longitude": 18.3236,
+    "altitude": 107,
+    "albedo": 0.40,
+    "bifaciality_factor": 0.80,
+    "module_clearance_height": 0.5,
+    "tilt_angle": 45.0,
+    "azimuth_angle": 180.0,
+    "temperature_coefficient": -0.0035
+  },
+  "panels": {
+    "Huawei_IPV540-M1A": {
+      "model": "IPV540-M1A",
+      "manufacturer": "Huawei",
+      "power_wp": 540,
+      "area_m2": 2.58,
+      "efficiency": 0.21,
+      "dimensions_mm": [2279, 1134, 35],
+      "bifaciality": 0.80,
+      "voc": 41.75,
+      "imp": 12.94
+    }
+  },
+  "inverters": {
+    "Huawei_SUN2000-15KTL": {
+      "model": "SUN2000-15KTL",
+      "manufacturer": "Huawei",
+      "power_ac_w": 15000,
+      "efficiency": 0.98,
+      "mppt_voltage_range": [200, 1000]
+    }
+  },
+  "batteries": {
+    "ESM-48150B1": {
+      "model": "ESM-48150B1",
+      "manufacturer": "Huawei",
+      "voltage_nominal": 51.2,
+      "capacity_ah": 150,
+      "energy_kwh": 7.68,
+      "chemistry": "LFP",
+      "max_c_rate": 1.0,
+      "min_soc": 0.15,
+      "max_soc": 0.95
+    }
+  },
+  "loads": {
+    "RAN_Unit": {
+      "description": "RRU5512t + BBU5900C",
+      "power_w_typical": 670,
+      "power_w_max": 820
+    },
+    "Monitoring_Lights": {
+      "description": "iDMU + LED + Beacon",
+      "power_w_typical": 70,
+      "duty_cycle": 0.1
+    },
+    "ICC_Control": {
+      "description": "ICC330 Controller & BMS",
+      "power_w_typical": 50,
+      "power_w_max": 80
+    },
+    "Cooling_Fan": {
+      "description": "Active cooling for PowerCube",
+      "power_w_typical": 100,
+      "temp_threshold_c": 25
+    }
+  },
+  "generators": {
+    "FG_Wilson_P13.5-6": {
+      "model": "P13.5-6",
+      "manufacturer": "FG Wilson",
+      "prime_power_kw": 12.0,
+      "fuel_consumption_l_kwh_50_load": 0.35,
+      "fuel_consumption_l_kwh_75_load": 0.30,
+      "start_delay_min": 2,
+      "min_run_time_min": 15
+    }
+  }
+}
