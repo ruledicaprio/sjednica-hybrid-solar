@@ -2,7 +2,9 @@ import os
 import numpy as np
 import pandas as pd
 import bifacial_radiance as br
-from logger import log_info, log_error, log_warning
+import pvlib
+# POPRAVKA 4: Dodan log_success u import
+from logger import log_info, log_error, log_warning, log_success
 
 class RadianceEngine:
     def __init__(self, config, equipment_db):
@@ -17,30 +19,36 @@ class RadianceEngine:
         os.makedirs(self.rad_path, exist_ok=True)
 
     def run_simulation(self, weather_df):
-        log_info("Pokrećem bifacial Radiance simulaciju...")
+        log_info("Pokrećem bifacial Radiance simulaciju (Optimized)...")
         
         try:
-            demo = br.RadianceObj(name='ruralstar_site', path=self.rad_path)
+            demo = br.RadianceObj(name='ruralstar_opt', path=self.rad_path)
             
-            # POPRAVKA: setGround prima albedo kao float ili groundDict
-            demo.setGround(albedo=self.albedo)
+            # POPRAVKA 1: setGround koristi groundDict ili samo albedo float (ovisno o verziji)
+            # Najsigurniji način za novije verzije je groundDict
+            try:
+                demo.setGround(groundDict={'material': 'groundplane', 'albedo': self.albedo})
+            except TypeError:
+                # Fallback za starije verzije koje primaju samo float
+                demo.setGround(self.albedo)
             
-            epw_file = self._create_temp_epw(weather_df)
+            epw_file = self._create_temp_epw_fast(weather_df)
             demo.readWeatherFile(weatherFile=epw_file)
             
             panel_specs = self.equipment['panels']['Huawei_IPV540-M1A']
             width = float(panel_specs['dimensions_mm'][1]) / 1000.0
             height = float(panel_specs['dimensions_mm'][0]) / 1000.0
             
-            # POPRAVKA: Eksplicitno float za bifi
+            # Bifaciality factor kao integer (0-100) za makeModule
+            bifi_val = int(self.bifaciality * 100)
+            
             module = demo.makeModule(
-                name='Huawei_540W_Bifacial',
+                name='Huawei_540W_Bi',
                 x=width,
                 y=height,
-                bifi=int(self.bifaciality * 100), # Bifacial radiance često očekuje 0-100 ili float, probaj float prvo
+                bifi=bifi_val,
                 numpanels=1
             )
-            # Ako gornji faila, probaj: bifi=self.bifaciality (float)
             
             tilt = float(self.sys_params.get('tilt_angle', 45.0))
             azimuth = float(self.sys_params.get('azimuth_angle', 180.0))
@@ -52,7 +60,7 @@ class RadianceEngine:
                 'azimuth': azimuth,
                 'clearance_height': clearance,
                 'pitch': pitch,
-                'nMods': 12, # 12 panela
+                'nMods': 12,
                 'nRows': 1
             }
             
@@ -62,6 +70,8 @@ class RadianceEngine:
             
             analysis = br.AnalysisObj(oct_file, demo.basename)
             frontscan, backscan = analysis.moduleAnalysis(scene)
+            
+            # POPRAVKA 3: Uklonjen parametar 'parallel' koji ne postoji u ovoj verziji
             results = analysis.analysis(oct_file, demo.basename, frontscan, backscan)
             
             results_dir = os.path.join(self.rad_path, 'results')
@@ -82,54 +92,54 @@ class RadianceEngine:
             final_df = pd.DataFrame(index=weather_df.index)
             len_data = min(len(df_res), len(final_df))
             
-            # POPRAVKA: Direktan pristup bez .iloc na numpy array ako je već array
-            vals_front = df_res[col_front].values[:len_data]
-            vals_back = df_res[col_back].values[:len_data]
+            poa_front_array = np.asarray(df_res[col_front])
+            poa_back_array = np.asarray(df_res[col_back])
             
-            final_df['poa_front'] = vals_front
-            final_df['poa_back'] = vals_back
+            final_df['poa_front'] = pd.Series(poa_front_array[:len_data], index=final_df.index[:len_data])
+            final_df['poa_back'] = pd.Series(poa_back_array[:len_data], index=final_df.index[:len_data])
             
             if len_data < len(final_df):
                 final_df['poa_front'] = final_df['poa_front'].fillna(0)
                 final_df['poa_back'] = final_df['poa_back'].fillna(0)
             
-            log_info(f"Radiance simulacija uspješna. Front: {final_df['poa_front'].mean():.1f} W/m2")
+            log_success(f"Radiance uspjedan! Prosijek Front: {final_df['poa_front'].mean():.1f} W/m2")
             return final_df
             
         except Exception as e:
-            log_error(f"Greška u Radiance simulaciji: {e}")
+            log_error(f"Greška u Radiance: {e}")
             return self._fallback_pvlib(weather_df)
 
-    def _create_temp_epw(self, df):
-        epw_path = os.path.join(self.rad_path, 'temp_weather.epw')
+    def _create_temp_epw_fast(self, df):
+        """Vektorizovana verzija kreiranja EPW-a."""
+        epw_path = os.path.join(self.rad_path, 'temp_weather_fast.epw')
         lat = 42.94483338639821
         lon = 18.323625614573174
-        tz = 1
-        alt = 1076 # POPRAVKA: 1076m
         
         header = (
-            f"LOCATION,Bileca,,BIH,TMY,{lat:.4f},{lon:.4f},{tz},{alt}\n"
+            f"LOCATION,Bileca,,BIH,TMY,{lat:.4f},{lon:.4f},1,1076\n"
             "DESIGN CONDITIONS,0\nTYPICAL/EXTREME PERIODS,0\nGROUND TEMPERATURES,0\n"
-            "HOLIDAYS/DAYLIGHT SAVING,No,0,0,0\nCOMMENTS 1,RuralStar Sim\nCOMMENTS 2,\n"
+            "HOLIDAYS/DAYLIGHT SAVING,No,0,0,0\nCOMMENTS 1,RuralStar Fast Sim\nCOMMENTS 2,\n"
             "DATA PERIODS,1,1,Data,Sunday, 1/ 1,12/31\n"
         )
         
-        lines = [header]
-        for ts, row in df.iterrows():
-            # POPRAVKA: Direktan pristup atributima Timestampa
-            dni = max(0, float(row.get('dni', 0) or 0))
-            dhi = max(0, float(row.get('dhi', 0) or 0))
-            ghi = max(0, float(row.get('ghi', 0) or 0))
-            hour = ts.hour + 1
-            
-            line = (f"{ts.year},{ts.month},{ts.day},{hour},60,1,"
-                    "9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,"
-                    "9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,"
-                    f"{dni:.0f},{dhi:.0f},{ghi:.0f}\n")
-            lines.append(line)
-            
+        # Vektorizacija za brzinu
+        years = df.index.year.astype(str)
+        months = df.index.month.astype(str).str.zfill(2)
+        days = df.index.day.astype(str).str.zfill(2)
+        hours = (df.index.hour + 1).astype(str).str.zfill(2)
+        
+        dni = np.maximum(0, df['dni'].fillna(0)).astype(int).astype(str)
+        dhi = np.maximum(0, df['dhi'].fillna(0)).astype(int).astype(str)
+        ghi = np.maximum(0, df['ghi'].fillna(0)).astype(int).astype(str)
+        
+        static_part = ",60,1,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,"
+        
+        lines = years + "," + months + "," + days + "," + hours + static_part + dni + "," + dhi + "," + ghi
+        lines_str = "\n".join(lines)
+        
         with open(epw_path, 'w', encoding='utf-8') as f:
-            f.writelines(lines)
+            f.write(header + lines_str)
+            
         return epw_path
 
     def _fallback_pvlib(self, df):
@@ -140,6 +150,8 @@ class RadianceEngine:
         tilt = float(self.config.get('tilt_angle', 45.0))
         azimuth = float(self.config.get('azimuth_angle', 180.0))
         
+        # POPRAVKA 2: Funkcija calculate_poa_irradiance_simple sada interno rješava deltat
+        # Ovdje samo iteriramo
         for index, row in df.iterrows():
             poa = calculate_poa_irradiance_simple(row, tilt, azimuth)
             poa_front.append(poa)
