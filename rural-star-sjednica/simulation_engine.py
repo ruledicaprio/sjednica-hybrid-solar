@@ -1,50 +1,63 @@
-import os
 import subprocess
-from typing import List, Dict, Any
-from logger import log_info, log_success, log_error
+import os
+import pandas as pd
+import numpy as np
+from logger import log_info, log_error, log_success
 
-def build_octree(sky_file: str, object_files: List[str], scene_path: str) -> str:
+def build_octree(sky_file, objects_file, output_oct="scene.oct"):
     """
-    Spaja nebo i objekte u .oct fajl spreman za simulaciju.
+    Kreira octree fajl koristeći oconv. 
+    VAŽNO: objects_file ne smije sadržati 'box' primitiv!
     """
-    oct_name = os.path.basename(sky_file).replace(".rad", ".oct")
-    oct_path = os.path.join(scene_path, oct_name)
-    
-    # Komanda oconv spaja sve elemente
-    command = ["oconv", sky_file] + object_files
+    if not os.path.exists(sky_file) or not os.path.exists(objects_file):
+        log_error(f"Fajlovi nedostaju: {sky_file} ili {objects_file}")
+        return None
+
+    cmd = ['oconv', sky_file, objects_file]
     
     try:
-        with open(oct_path, "wb") as f:
-            subprocess.run(command, stdout=f, check=True)
-        return oct_path
-    except Exception as e:
-        log_error(f"Greška pri kreiranju octree fajla: {e}")
-        return ""
+        with open(output_oct, 'wb') as f:
+            result = subprocess.run(cmd, stdout=f, stderr=subprocess.PIPE, check=True)
+        return output_oct
+    except subprocess.CalledProcessError as e:
+        log_error(f"Radiance oconv crash: {e.stderr.decode()}")
+        return None
 
-def run_sensor_simulation(oct_file: str, sensors_file: str) -> List[float]:
+def run_sensor_simulation(octree_file, sensor_file):
     """
-    Ispaljuje zrake na senzore (panele) i vraća vrijednosti zračenja (W/m2).
+    Pokreće rtrace simulaciju za senzore definisane u .pts fajlu.
+    Vraća prosječnu iradijaciju u W/m2.
     """
-    # rtrace parametri:
-    # -I+: računaj iradijaciju (W/m2)
-    # -h: bez zaglavlja
-    # -ab 3: 3 odbijanja (ključno za bifacijalnu analizu)
-    command = [
-        "rtrace", "-I+", "-h", "-ab", "3", "-ad", "2048", "-as", "1024", oct_file
+    if not octree_file or not os.path.exists(octree_file):
+        return 0.0
+
+    # rtrace parametri za preciznu simulaciju (-I+ je mod za iradijaciju)
+    cmd = [
+        'rtrace', '-I+', '-h', 
+        '-ab', '3',    # Broj ambijentalnih odbitaka
+        '-ad', '2048', # Ambient divisions
+        '-as', '1024', # Ambient samples
+        octree_file
     ]
-    
+
     try:
-        with open(sensors_file, "r") as s_in:
-            result = subprocess.check_output(command, stdin=s_in).decode('utf-8')
+        with open(sensor_file, 'r') as s_in:
+            process = subprocess.run(cmd, stdin=s_in, capture_output=True, text=True, check=True)
         
-        # Radiance vraća RGB (3 vrijednosti), uzimamo prosjek kao iradijaciju
+        # Radiance vraća RGB vrijednosti; za iradijaciju koristimo standardni 179 faktor konverzije 
+        # ili direktno čitamo ako je podešeno. Ovdje parsiramo prosjek svih senzora.
+        lines = process.stdout.strip().split('\n')
         irradiances = []
-        for line in result.splitlines():
-            vals = [float(v) for v in line.split()]
-            if vals:
-                avg_irr = (vals[0] + vals[1] + vals[2]) / 3.0
-                irradiances.append(avg_irr)
-        return irradiances
+        for line in lines:
+            vals = line.split()
+            if len(vals) >= 3:
+                # W/m2 = (0.265*R + 0.670*G + 0.065*B) * 179 (ako je photometric)
+                # Ali sa -I+ rtrace često vraća direktne vrijednosti
+                avg_val = (float(vals[0]) + float(vals[1]) + float(vals[2])) / 3.0
+                irradiances.append(avg_val)
+        
+        return np.mean(irradiances) if irradiances else 0.0
+        
     except Exception as e:
-        log_error(f"Simulacija nije uspjela: {e}")
-        return []
+        log_error(f"rtrace greška: {e}")
+        return 0.0
