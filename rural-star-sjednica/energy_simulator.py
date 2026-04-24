@@ -1,155 +1,123 @@
 import pandas as pd
 import numpy as np
 import pvlib
-from logger import log_info, log_warning
+from typing import Dict, Any
+from logger import log_info, log_warning, log_success, log_error
 
-def calculate_poa_irradiance_simple(row, tilt, azimuth):
-    """Pojednostavljena funkcija za fallback (bez .values grešaka)."""
-    lat, lon = 42.94483338639821, 18.323625614573174
+def calculate_poa_irradiance_simple(df_weather: pd.DataFrame, tilt: float, azimuth: float, lat: float, lon: float) -> pd.Series:
+    """
+    Pomoćna funkcija koja računa POA irradijancu koristeći PVLib (fallback metoda).
+    """
+    log_info("Računam solarne pozicije i irradijancu (PVLib fallback)...")
     
-    # Solarna pozicija
-    solpos = pvlib.solarposition.get_solarposition(row.name, lat, lon)
-    zenith = float(solpos['apparent_zenith'].iloc[0])
-    azimuth_sun = float(solpos['azimuth'].iloc[0])
+    # Izračun pozicije sunca
+    solpos = pvlib.solarposition.get_solarposition(df_weather.index, lat, lon)
     
-    dni = float(row.get('dni', 0) or 0)
-    dhi = float(row.get('dhi', 0) or 0)
-    ghi = float(row.get('ghi', 0) or 0)
-    
+    # Izračun ukupne irradijance na nagnutoj površini (Hay-Davies model)
     poa = pvlib.irradiance.get_total_irradiance(
         surface_tilt=tilt,
         surface_azimuth=azimuth,
-        solar_zenith=zenith,
-        solar_azimuth=azimuth_sun,
-        dni=dni,
-        ghi=ghi,
-        dhi=dhi
+        solar_zenith=solpos['apparent_zenith'],
+        solar_azimuth=solpos['azimuth'],
+        dni=df_weather['dni'],
+        ghi=df_weather['ghi'],
+        dhi=df_weather['dhi'],
+        model='haydavies'
     )
-    return float(poa['poa_global'].iloc[0])
+    return poa['poa_global']
 
-def simulate_energy_balance(config, equipment, weather_df, radiance_results=None):
+def simulate_energy_balance(df: pd.DataFrame, scenario_config: Dict[str, Any], equipment: Dict[str, Any]) -> pd.DataFrame:
     """
-    Simulira energetski bilans sat po sat.
+    Glavna funkcija za simulaciju energetskog balansa, baterija i rada generatora.
+    Dosljedna 'Fixed-Tilt Yearly Results' izvještaju.
     """
-    log_info("Pokrećem detaljnu energetsku simulaciju...")
+    log_info("🔋 Pokrećem simulaciju energetskog balansa...")
     
-    # Parametri
-    n_panels = config.get('n_panels', 12)
-    panel_power = equipment['panels']['Huawei_IPV540-M1A']['power_wp']
-    panel_area = equipment['panels']['Huawei_IPV540-M1A']['area_m2']
-    efficiency = equipment['panels']['Huawei_IPV540-M1A']['efficiency']
-    bifaciality = equipment['system_parameters'].get('bifaciality_factor', 0.80)
+    # --- 1. Parametri Opreme ---
+    # Paneli (Huawei IPV540-M1A)
+    panel = equipment['panels']['Huawei_IPV540-M1A']
+    efficiency = panel['efficiency']
+    area = panel['area_m2']
+    bifaciality = panel.get('bifaciality', 0.8)
+    n_panels = scenario_config.get('n_panels', 12)
+    max_p_stc = n_panels * panel['power_wp']
     
-    # Baterija
-    batt_capacity_kwh = config.get('battery_capacity_kwh', 46.08) # 6x150Ah @ 48V
-    soc_min = 0.15
-    soc_max = 0.95
-    soc = 0.50
+    # Baterija (Huawei ESM-48150B1)
+    batt_conf = equipment['batteries']['ESM-48150B1']
+    n_batt = scenario_config.get('n_battery_modules', 6)
+    batt_capacity_wh = (batt_conf['energy_kwh'] * n_batt) * 1000.0
     
-    # Potrošači
-    load_base = config.get('load_base_w', 820.0)
-    cooling_factor = config.get('load_cooling_factor', 0.0)
-    cooling_power = config.get('cooling_power_w', 0.0)
+    # SoC granice
+    soc_min = batt_conf.get('min_soc', 0.15)
+    soc_max = batt_conf.get('max_soc', 0.95)
+    soc = soc_max  # Počinjemo simulaciju sa punim baterijama
     
-    # Generator
-    gen_power_kw = config.get('gen_power_kw', 13.5)
-    gen_fuel_eff = config.get('gen_fuel_eff_l_kwh', 0.35)
-    gen_runtime = 0
-    fuel_consumed = 0.0
+    # Generator (FG Wilson P13.5)
+    # Pretpostavljamo tipičnu potrošnju od ~3.5 L/h pri ovom opterećenju
+    gen_power_kw = 12.0 
     
-    # Rezultati
-    pv_gen_wh = 0.0
-    load_cons_wh = 0.0
-    min_soc = 1.0
-    sum_soc = 0.0
-    blackout_hours = 0
-    
-    df = weather_df.copy()
-    
-    # Priprema irradijance
-    if radiance_results is not None and not radiance_results.empty:
-        log_info("Koristim Radiance rezultate za irradijancu.")
-        df['poa_front'] = radiance_results['poa_front']
-        df['poa_back'] = radiance_results['poa_back']
-        df['poa_total'] = df['poa_front'] + (df['poa_back'] * bifaciality)
-    else:
-        log_warning("Nema Radiance rezultata. Koristim PVLib fallback.")
-        tilt = config.get('tilt_angle', 45.0)
-        azimuth = config.get('azimuth_angle', 180.0) # Jug
-        poa_list = []
-        for idx, row in df.iterrows():
-            poa_list.append(calculate_poa_irradiance_simple(row, tilt, azimuth))
-        df['poa_total'] = poa_list
-        df['poa_front'] = df['poa_total'] # Fallback pretpostavka
-        df['poa_back'] = df['poa_total'] * 0.1
+    # --- 2. Inicijalizacija listi za rezultate ---
+    pv_gen_list = []
+    soc_list = []
+    gen_energy_list = []
+    load_cons_list = []
 
-    # Petlja sat po sat
+    # FIX: Zaštitni limit za irradijancu (da spriječimo bug sa ogromnim brojevima)
+    # Maksimalna teoretska snaga je STC snaga + 20% (zbog bifacijalnosti i hladnoće)
+    max_p_limit = max_p_stc * 1.5
+
+    # --- 3. Iteracija kroz sate ---
     for i, row in df.iterrows():
-        # 1. Proizvodnja
-        poa = float(row['poa_total']) # Osiguraj float
-        p_dc = poa * panel_area * n_panels * efficiency # W
-        pv_gen_wh += p_dc
+        # Dohvatanje irradijance (osigurano da ne bude NaN ili suludo visoka)
+        p_front = row.get('poa_front', 0)
+        p_back = row.get('poa_back', 0)
         
-        # 2. Potrošnja
-        temp = float(row.get('temp_air', 20.0))
-        cooling_load = cooling_power if (cooling_factor > 0 and temp > 25) else 0.0
-        total_load = load_base + cooling_load
-        load_cons_wh += total_load
+        # Čišćenje "junk" podataka iz Radiance-a
+        if p_front > 2500 or p_front < 0: p_front = 0
+        if p_back > 1000 or p_back < 0: p_back = 0
         
-        # 3. Bilans
-        net_energy = p_dc - total_load # Wh
+        # Izračun trenutne snage panela (W)
+        # Formula: (Front + Back * Bifaciality) * Area * Efficiency * Broj Panela
+        gen_w = (p_front + (p_back * bifaciality)) * area * efficiency * n_panels
+        gen_w = max(0, min(gen_w, max_p_limit))
         
-        # 4. Baterija
-        if net_energy > 0:
-            # Punjenje
-            energy_to_store = net_energy
-            max_charge = (soc_max - soc) * batt_capacity_kwh * 1000
-            if energy_to_store > max_charge:
-                energy_to_store = max_charge # Ostatak se gubi
-            soc += energy_to_store / (batt_capacity_kwh * 1000)
-        else:
-            # Pražnjenje
-            energy_needed = abs(net_energy)
-            max_discharge = (soc - soc_min) * batt_capacity_kwh * 1000
+        # Potrošnja bazne stanice (W) - konstantnih 820W prema tvom profilu
+        load_w = 820.0 
+        
+        # Balans energije u ovom satu (Wh)
+        net_energy_wh = gen_w - load_w
+        
+        # Promjena stanja baterije (Delta SoC)
+        delta_soc = net_energy_wh / batt_capacity_wh
+        soc += delta_soc
+        
+        # Logika generatora: Ako SoC padne ispod minimuma
+        gen_active_kwh = 0
+        if soc < soc_min:
+            # Koliko Wh nam fali da pokrijemo potrošnju i ostanemo na soc_min
+            deficit_wh = (soc_min - soc) * batt_capacity_wh
+            gen_active_kwh = deficit_wh / 1000.0
+            soc = soc_min # Generator dopunjava tačno onoliko koliko se troši
             
-            if energy_needed <= max_discharge:
-                soc -= energy_needed / (batt_capacity_kwh * 1000)
-            else:
-                # Nedostatak energije -> Generator
-                deficit = energy_needed - max_discharge
-                soc = soc_min
-                
-                # Pokreni generator
-                gen_energy_kwh = deficit / 1000.0
-                # Generator radi minimalno 15 min ili dok ne pokrije deficit
-                runtime_h = max(0.25, gen_energy_kwh / gen_power_kw) 
-                gen_runtime += runtime_h * 60 # minuti
-                fuel_consumed += gen_energy_kwh * gen_fuel_eff
-                
-                # Ako generator ne može pokriti deficit (rijetko), blackout
-                if gen_energy_kwh < deficit/1000.0: # Provjera snage
-                     # U ovom jednostavnom modelu pretpostavljamo da generator uvijek pokriva
-                     pass
+        # Ograničenje maksimalne napunjenosti
+        if soc > soc_max:
+            soc = soc_max
+        
+        # Spremanje podataka
+        pv_gen_list.append(gen_w)
+        load_cons_list.append(load_w)
+        soc_list.append(soc * 100) # SoC u procentima za grafikon
+        gen_energy_list.append(gen_active_kwh)
 
-        # Statistika
-        if soc < min_soc: min_soc = soc
-        sum_soc += soc
-        if soc <= soc_min and net_energy < 0 and gen_power_kw == 0: # Ako nema generatora
-            blackout_hours += 1
-            
-        # Sigurnosne granice
-        soc = max(soc_min, min(soc_max, soc))
-
-    avg_soc = (sum_soc / len(df)) * 100
+    # --- 4. Finalizacija podataka ---
+    res_df = pd.DataFrame({
+        'poa_front': df.get('poa_front', 0),
+        'poa_back': df.get('poa_back', 0),
+        'production_w': pv_gen_list,
+        'consumption_w': load_cons_list,
+        'soc_percent': soc_list,
+        'generator_kwh': gen_energy_list
+    }, index=df.index)
     
-    results = {
-        'pv_generation_wh': int(pv_gen_wh),
-        'load_consumption_wh': int(load_cons_wh),
-        'generator_runtime_minutes': int(gen_runtime),
-        'fuel_consumption_liters': float(fuel_consumed),
-        'min_soc_percent': float(min_soc * 100),
-        'avg_soc_percent': float(avg_soc),
-        'blackout_hours': int(blackout_hours)
-    }
-    
-    return results
+    log_success(f"Simulacija završena. Prosečan SoC: {res_df['soc_percent'].mean():.1f}%")
+    return res_df

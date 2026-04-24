@@ -16,10 +16,10 @@ def load_json_file(filename: str) -> Dict[str, Any]:
 
 def load_equipment_data() -> Dict[str, Any]:
     """Učitava bazu opreme."""
-    log_info("Učitavam equipment_database.json...")
-    return load_json_file('equipment_database.json')
+    log_info("Učitavam equipment_db.json...")
+    return load_json_file('equipment_db.json')
 
 def load_scenarios() -> Dict[str, Any]:
     """Učitava konfiguraciju scenarija."""
-    log_info("Učitavam scenarios_config.json...")
-    return load_json_file('scenarios_config.json')
+    log_info("Učitavam site_config.json...")
+    return load_json_file('site_config.json')
