@@ -2,8 +2,8 @@
   "site_config": {
     "latitude": 42.9448,
     "longitude": 18.3236,
-    "altitude": 107,
-    "timezone": "Europe/Sarajevo"
+    "altitude": 1076.0,
+    "timezone": "1"
   },
   "scenario_A_PowerCube": {
     "description": "PowerCube Hybrid (12 Panela, 6 Baterija)",

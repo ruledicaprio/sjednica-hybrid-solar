@@ -1,158 +1,106 @@
 import os
-from typing import Dict, Any, Optional
-from logger import log_info, log_success, log_warning
+import math
+from typing import Dict, Any, cast, List
+from logger import log_info, log_success
 
-def generate_geometry_files(config: Dict[str, Any], equipment: Dict[str, Any]) -> Optional[Dict[str, str]]:
+def generate_geometry_files(config: Dict[str, Any], equipment: Dict[str, Any]):
     """
-    Generiše Radiance .rad fajlove za scenu.
-    Konfiguracija: 12x Huawei 540W, 2x Standard Ground Mount, Južna orijentacija, 45° nagib.
+    Konačna geometrija - Huawei Standard 3.0 (2-High Portrait):
+    - Jedna kompaktna konstrukcija sa 12 panela (2 reda po 6).
+    - Paneli u redu su jedan iznad drugog (leđa uz leđa po visini).
+    - Sve je južno od stuba/kontejnera.
+    - Sjeverna (najviša) ivica cijelog sistema je tik uz temelj.
     """
-    log_info("Generišem 3D geometriju za Radiance...")
+    log_info("📐 Konstruisanje: Huawei Standard 3.0 (2-High Portrait, 2x6 panela)...")
     
     base_path = os.path.dirname(os.path.abspath(__file__))
-    rad_dir = os.path.join(base_path, 'radiance_objects')
-    os.makedirs(rad_dir, exist_ok=True)
+    scene_path = os.path.join(base_path, 'radiance_scene')
+    os.makedirs(scene_path, exist_ok=True)
+
+    # Dimenzije Huawei 540W panela
+    panel_dims = equipment['panels']['Huawei_IPV540-M1A']['dimensions_mm']
+    pw = float(panel_dims[1]) / 1000.0  # Širina (~1.134m)
+    ph = float(panel_dims[0]) / 1000.0  # Visina (~2.279m)
     
-    try:
-        # Parametri iz konfiguracije
-        sys_params = equipment.get('system_parameters', {})
-        tilt = sys_params.get('tilt_angle', 45.0)
-        azimuth = sys_params.get('azimuth_angle', 180.0) # Jug
-        altitude = sys_params.get('altitude', 107)
-        
-        panel_specs = equipment['panels']['Huawei_IPV540-M1A']
-        p_width = panel_specs['dimensions_mm'][1] / 1000.0 # 1.134m
-        p_height = panel_specs['dimensions_mm'][0] / 1000.0 # 2.279m
-        clearance = sys_params.get('module_clearance_height', 0.5)
-        
-        # Scenarij A: 12 panela raspoređenih u 2 reda po 6 (2 nosača)
-        n_panels_total = 12
-        rows = 2
-        cols_per_row = 6
-        row_spacing = 3.0 # Razmak između redova da se izbjegne sjena
-        
-        # Kreiranje materijala
-        mat_content = f"""# Materijali za Sjednicu (Altitude: {altitude}m)
-void plastic ground_mat
-0
-0
-5 0.40 0.40 0.30 0 0
-
-void plastic steel_mount
-0
-0
-5 0.60 0.60 0.60 0 0
-
-void glass pv_module_glass
-0
-0
-3 0.90 0.90 0.90
-"""
-        with open(os.path.join(rad_dir, 'materials.mat'), 'w') as f:
-            f.write(mat_content)
-            
-        # Kreiranje tla
-        ground_content = """# Tlo (Ground Plane)
-ground_mat polygon ground_plane
-0
-0
-12
--20 -20 0
-20 -20 0
-20 20 0
--20 20 0
-"""
-        with open(os.path.join(rad_dir, 'ground.rad'), 'w') as f:
-            f.write(ground_content)
-            
-        # Kreiranje panela i nosača
-        panels_content = f"# Paneli i Nosači (Tilt: {tilt}°, Azimuth: {azimuth}°)\n"
-        
-        import math
-        rad_tilt = math.radians(tilt)
-        rad_az = math.radians(azimuth)
-        
-        # Sinus i kosinus za rotaciju
-        sin_t = math.sin(rad_tilt)
-        cos_t = math.cos(rad_tilt)
-        sin_a = math.sin(rad_az)
-        cos_a = math.cos(rad_az)
-        
-        panel_id = 0
-        for r in range(rows):
-            for c in range(cols_per_row):
-                panel_id += 1
-                
-                # Pozicija centra panela u lokalnom sistemu (prije rotacije)
-                # X ide duž nosača (širina panela), Y ide uz nagib (visina panela)
-                # Centriranje niza
-                x_offset = (c - (cols_per_row - 1) / 2.0) * p_width
-                y_offset = (r - (rows - 1) / 2.0) * row_spacing
-                
-                # Donji rub panela je na visini 'clearance'
-                # Centar panela po Y osi (duž nagiba) je na clearance + (p_height * cos_t) / 2 ? 
-                # Ne, centar panela u lokalnom sistemu (0,0) će se rotirati.
-                # Definišemo temena panela u lokalnom sistemu (X, Y, Z) gdje je panel u ravni Z=0
-                # Temena: BL, BR, TR, TL
-                w2, h2 = p_width / 2.0, p_height / 2.0
-                local_verts = [
-                    (-w2, -h2, 0), (w2, -h2, 0), (w2, h2, 0), (-w2, h2, 0)
-                ]
-                
-                global_verts = []
-                for lx, ly, lz in local_verts:
-                    # 1. Rotacija oko X ose (Nagib)
-                    # y' = y*cos - z*sin, z' = y*sin + z*cos
-                    ry = ly * cos_t - lz * sin_t
-                    rz = ly * sin_t + lz * cos_t
-                    
-                    # 2. Rotacija oko Z ose (Azimut)
-                    # x'' = x*cos(a) - y'*sin(a) ... Čekaj, azimut 0 je Sjever (Y+). 
-                    # Azimut 180 je Jug (Y-). 
-                    # Standardna rotacija u Radianceu: X=East, Y=North.
-                    # Rotacija za ugao A od Y ose u smjeru kazaljke:
-                    # x_new = x * sin(A) + y * cos(A) ?? 
-                    # Koristimo standardnu matricu rotacije oko Z za ugao theta = 90 - Azimut?
-                    # Najsigurnije: Vektor normale.
-                    # Normala (0, 1, 0) nakon nagiba postaje (0, cos_t, sin_t).
-                    # Rotiramo tu normalu za azimut.
-                    
-                    # Jednostavnija transformacija koordinata:
-                    # X_global = x_offset + lx * cos_a - ry * sin_a
-                    # Y_global = y_offset + lx * sin_a + ry * cos_a
-                    # Ovo pretpostavlja da je azimut mjeren od X ose. 
-                    # Za azimut od Sjevera (Y):
-                    # Ugao od X ose = 90 - Azimut.
-                    theta = math.radians(90) - rad_az
-                    cos_th = math.cos(theta)
-                    sin_th = math.sin(theta)
-                    
-                    gx = x_offset + lx * cos_th - ry * sin_th
-                    gy = y_offset + lx * sin_th + ry * cos_th
-                    gz = clearance + rz # Podizanje od tla
-                    
-                    global_verts.append((gx, gy, gz))
-                
-                # Upis poligona
-                pname = f"panel_{panel_id}"
-                panels_content += f"pv_module_glass polygon {pname}\n0\n0\n12\n"
-                for vx, vy, vz in global_verts:
-                    panels_content += f"  {vx:.4f} {vy:.4f} {vz:.4f}\n"
-                
-                # Dodavanje jednostavnog nosača (stubovi na uglovima)
-                # ... (može se dodati kasnije za detaljniju sjenu)
-
-        with open(os.path.join(rad_dir, 'panels.rad'), 'w') as f:
-            f.write(panels_content)
-            
-        log_success(f"Geometrija generisana: {panel_id} panela u {rad_dir}")
-        return {
-            'materials': os.path.join(rad_dir, 'materials.mat'),
-            'ground': os.path.join(rad_dir, 'ground.rad'),
-            'panels': os.path.join(rad_dir, 'panels.rad'),
-            'scene_dir': rad_dir
-        }
+    tilt = float(config.get('site_config', config).get('tilt_angle', 45.0))
+    tilt_rad = math.radians(tilt)
     
-    except Exception as e:
-        log_error(f"Greška pri generisanju geometrije: {e}")
-        return None
+    # Projekcija JEDNOG panela
+    dy = ph * math.cos(tilt_rad) 
+    dz = ph * math.sin(tilt_rad)
+    
+    # Projekcija CIJELOG sistema (2 panela po visini)
+    total_dy = 2 * dy
+    total_dz = 2 * dz
+    clearance = 0.8 # Najniža tačka na jugu
+
+    rad_content = [
+        "# Materijali",
+        "void plastic panel_mat 0 0 5 0.1 0.1 0.1 0.05 0.1",
+        "void plastic steel_mat 0 0 5 0.6 0.6 0.6 0.1 0.0",
+        "void plastic concrete_mat 0 0 5 0.6 0.6 0.6 0.0 0.0"
+    ]
+
+    # 1. SJEVERNI OBJEKTI (Temelj, Stub, Kontejner)
+    rad_content.append("\n# Temelj\nconcrete_mat box foundation\n0 0 15\n  -2.9 -2.9 0\n  5.8 5.8 0.2")
+    rad_content.append("\n# Stub\nsteel_mat box tower_base\n0 0 15\n  -2.835 -2.835 0.2\n  5.67 5.67 5.0")
+    rad_content.append("\n# Kontejner\nconcrete_mat box container\n0 0 15\n  -1.5 -1.1 0.2\n  3.0 2.2 2.4")
+
+    # 2. KOMPAKTNI SISTEM PANELA (2 reda po 6)
+    panels_per_row = 6
+    row_width = panels_per_row * pw
+    start_x = -row_width / 2
+    
+    # Pozicioniranje: Najviša ivica (sjeverna) je na Y = -3.0
+    y_top_limit = -3.0
+    y_bottom_limit = y_top_limit - total_dy
+
+    # Glavne noseće šine (Rails) - idu ispod cijelog sistema
+    # Postavljamo 3 šine: dole, sredina (spoj panela), gore
+    for rail_pos in [0.1, 1.0, 1.9]: # Pozicije u odnosu na visinu panela
+        ry = y_bottom_limit + (rail_pos * dy)
+        rz = clearance + (rail_pos * dz)
+        rad_content.append(f"\nsteel_mat box rail_{rail_pos}\n0 0 15")
+        rad_content.append(f"  {start_x:.3f} {ry:.3f} {rz - 0.05:.3f}\n  {row_width:.3f} 0.06 0.06")
+
+    # Paneli: r=0 je donji (južni), r=1 je gornji (sjeverni)
+    for r in range(2):
+        y_low = y_bottom_limit + (r * dy)
+        z_low = clearance + (r * dz)
+        
+        for p in range(panels_per_row):
+            cx = start_x + (p * pw)
+            name = f"panel_row{r}_{p}"
+            rad_content.append(f"\npanel_mat polygon {name}\n0 0 12")
+            # Donje tačke reda
+            rad_content.append(f"  {cx:.3f} {y_low:.3f} {z_low:.3f}")
+            rad_content.append(f"  {cx + pw:.3f} {y_low:.3f} {z_low:.3f}")
+            # Gornje tačke reda
+            rad_content.append(f"  {cx + pw:.3f} {y_low + dy:.3f} {z_low + dz:.3f}")
+            rad_content.append(f"  {cx:.3f} {y_low + dy:.3f} {z_low + dz:.3f}")
+
+    output_file = os.path.join(scene_path, 'objects.rad')
+    with open(output_file, 'w') as f:
+        f.write("\n".join(rad_content))
+    
+    log_success(f"✅ Geometrija završena: 2x6 panela u kompaktnom bloku južno od stuba.")
+    return output_file
+
+def generate_sensor_points(panels_geostats: List[Dict[str, Any]]) -> str:
+    """
+    Kreira fajl sa koordinatama (X Y Z) i vektorima (nX nY nZ) 
+    za svaki panel (prednja i zadnja strana).
+    """
+    sensors_path = "radiance_scene/sensors.pts"
+    with open(sensors_path, "w") as f:
+        for p in panels_geostats:
+            # Centar panela
+            cx, cy, cz = p['center']
+            nx, ny, nz = p['normal'] # Normala prednje strane
+            
+            # Prednja strana
+            f.write(f"{cx} {cy} {cz} {nx} {ny} {nz}\n")
+            # Zadnja strana (obrnuta normala za bifacijalni dobitak)
+            f.write(f"{cx} {cy} {cz} {-nx} {-ny} {-nz}\n")
+            
+    return sensors_path

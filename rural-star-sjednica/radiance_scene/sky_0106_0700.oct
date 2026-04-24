@@ -1,0 +1,4 @@
+#?RADIANCE
+oconv E:\Radiance_build\rural-star-sjednica\radiance_scene\skies\sky_0106_0700.rad E:\Radiance_build\rural-star-sjednica\radiance_scene\objects.rad
+FORMAT=Radiance_octree
+

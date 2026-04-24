@@ -1,179 +1,102 @@
 # Materials
-void plastic ground_mat
+void plastic panel_glass
 0
 0
-5 0.6 0.6 0.5 0 0
-void plastic concrete_mat
+5 0.9 0.9 0.9 0.0 0.0
+void plastic container_wall
 0
 0
-5 0.7 0.7 0.7 0 0
-void plastic metal_fence_mat
+5 0.7 0.65 0.6 0.0 0.0
+void plastic ground_plane
 0
 0
-5 0.3 0.3 0.3 0 0
-void plastic container_mat
+5 0.5 0.5 0.4 0.0 0.0
+ground_plane polygon ground
 0
 0
-5 0.8 0.8 0.85 0 0
-void glass pv_module_glass
-0
-0
-3 0.9 0.9 0.95
-
-# Ground Plane
-ground_mat polygon ground
+12 -20 -20 0 20 -20 0 20 20 0 -20 20 0
+container_wall polygon cont_roof
 0
 0
 12
-  -10 -10 0
-  10 -10 0
-  10 10 0
-  -10 10 0
-
-# Foundation
-concrete_mat polygon foundation_top
+-1.2 -3.0 2.6 1.2 -3.0 2.6 1.2 3.0 2.6 -1.2 3.0 2.6
+container_wall polygon cont_front
 0
 0
 12
-  -1.5 -1.5 0.5
-  1.5 -1.5 0.5
-  1.5 1.5 0.5
-  -1.5 1.5 0.5
-
-# Existing Fence (South Side)
-metal_fence_mat polygon fence_south
+-1.2 -3.0 0 1.2 -3.0 0 1.2 -3.0 2.6 -1.2 -3.0 2.6
+container_wall polygon cont_back
 0
 0
 12
-  -5.0 -3.5 0.0
-  5.0 -3.5 0.0
-  5.0 -3.5 2.5
-  -5.0 -3.5 2.5
-
-# Container PowerCube_IDCC
-container_mat polygon cont_0_front
+-1.2 3.0 0 1.2 3.0 0 1.2 3.0 2.6 -1.2 3.0 2.6
+container_wall polygon cont_left
 0
 0
 12
-  -0.8 3.2 0.0
-  0.8 3.2 0.0
-  0.8 3.2 2.0
-  -0.8 3.2 2.0
-
-# Container MTS9302_HA
-container_mat polygon cont_1_front
+-1.2 -3.0 0 -1.2 3.0 0 -1.2 3.0 2.6 -1.2 -3.0 2.6
+container_wall polygon cont_right
 0
 0
 12
-  2.0 3.5 0.0
-  3.0 3.5 0.0
-  3.0 3.5 2.0
-  2.0 3.5 2.0
-
-pv_module_glass polygon panel_1
+1.2 -3.0 0 1.2 3.0 0 1.2 3.0 2.6 1.2 -3.0 2.6
+panel_glass polygon panel_r0_p0
 0
 0
 12
-  -3.402 -1.694 1.000
-  -2.268 -1.694 1.000
-  -2.268 -3.306 2.611
-  -3.402 -3.306 2.611
-
-pv_module_glass polygon panel_2
+-3.402 4.500 0.500 -2.268 4.500 0.500 -2.268 6.111 2.111 -3.402 6.111 2.111
+panel_glass polygon panel_r0_p1
 0
 0
 12
-  -2.268 -1.694 1.000
-  -1.134 -1.694 1.000
-  -1.134 -3.306 2.611
-  -2.268 -3.306 2.611
-
-pv_module_glass polygon panel_3
+-2.268 4.500 0.500 -1.134 4.500 0.500 -1.134 6.111 2.111 -2.268 6.111 2.111
+panel_glass polygon panel_r0_p2
 0
 0
 12
-  -1.134 -1.694 1.000
-  -0.000 -1.694 1.000
-  -0.000 -3.306 2.611
-  -1.134 -3.306 2.611
-
-pv_module_glass polygon panel_4
+-1.134 4.500 0.500 0.000 4.500 0.500 0.000 6.111 2.111 -1.134 6.111 2.111
+panel_glass polygon panel_r0_p3
 0
 0
 12
-  -0.000 -1.694 1.000
-  1.134 -1.694 1.000
-  1.134 -3.306 2.611
-  -0.000 -3.306 2.611
-
-pv_module_glass polygon panel_5
+0.000 4.500 0.500 1.134 4.500 0.500 1.134 6.111 2.111 0.000 6.111 2.111
+panel_glass polygon panel_r0_p4
 0
 0
 12
-  1.134 -1.694 1.000
-  2.268 -1.694 1.000
-  2.268 -3.306 2.611
-  1.134 -3.306 2.611
-
-pv_module_glass polygon panel_6
+1.134 4.500 0.500 2.268 4.500 0.500 2.268 6.111 2.111 1.134 6.111 2.111
+panel_glass polygon panel_r0_p5
 0
 0
 12
-  2.268 -1.694 1.000
-  3.402 -1.694 1.000
-  3.402 -3.306 2.611
-  2.268 -3.306 2.611
-
-pv_module_glass polygon panel_7
+2.268 4.500 0.500 3.402 4.500 0.500 3.402 6.111 2.111 2.268 6.111 2.111
+panel_glass polygon panel_r1_p0
 0
 0
 12
-  -3.402 -4.194 1.000
-  -2.268 -4.194 1.000
-  -2.268 -5.806 2.611
-  -3.402 -5.806 2.611
-
-pv_module_glass polygon panel_8
+-3.402 7.500 0.500 -2.268 7.500 0.500 -2.268 9.111 2.111 -3.402 9.111 2.111
+panel_glass polygon panel_r1_p1
 0
 0
 12
-  -2.268 -4.194 1.000
-  -1.134 -4.194 1.000
-  -1.134 -5.806 2.611
-  -2.268 -5.806 2.611
-
-pv_module_glass polygon panel_9
+-2.268 7.500 0.500 -1.134 7.500 0.500 -1.134 9.111 2.111 -2.268 9.111 2.111
+panel_glass polygon panel_r1_p2
 0
 0
 12
-  -1.134 -4.194 1.000
-  -0.000 -4.194 1.000
-  -0.000 -5.806 2.611
-  -1.134 -5.806 2.611
-
-pv_module_glass polygon panel_10
+-1.134 7.500 0.500 0.000 7.500 0.500 0.000 9.111 2.111 -1.134 9.111 2.111
+panel_glass polygon panel_r1_p3
 0
 0
 12
-  -0.000 -4.194 1.000
-  1.134 -4.194 1.000
-  1.134 -5.806 2.611
-  -0.000 -5.806 2.611
-
-pv_module_glass polygon panel_11
+0.000 7.500 0.500 1.134 7.500 0.500 1.134 9.111 2.111 0.000 9.111 2.111
+panel_glass polygon panel_r1_p4
 0
 0
 12
-  1.134 -4.194 1.000
-  2.268 -4.194 1.000
-  2.268 -5.806 2.611
-  1.134 -5.806 2.611
-
-pv_module_glass polygon panel_12
+1.134 7.500 0.500 2.268 7.500 0.500 2.268 9.111 2.111 1.134 9.111 2.111
+panel_glass polygon panel_r1_p5
 0
 0
 12
-  2.268 -4.194 1.000
-  3.402 -4.194 1.000
-  3.402 -5.806 2.611
-  2.268 -5.806 2.611
+2.268 7.500 0.500 3.402 7.500 0.500 3.402 9.111 2.111 2.268 9.111 2.111

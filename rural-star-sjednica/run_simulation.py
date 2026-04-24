@@ -1,138 +1,164 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import os
 import sys
 import pandas as pd
-from typing import Dict, Any, Optional
+import pvlib
+from typing import Dict, Any
 
-from logger import log_info, log_success, log_error, log_warning
+# Importi tvojih modula
+from logger import log_info, log_success, log_error, log_warning, log_header
+from geometry_engine import generate_geometry_files
+from skies_engine import prepare_sky_simulation, generate_sky, read_epw_data
+from simulation_engine import build_octree, run_sensor_simulation
+from config_loader import load_equipment_data, load_scenarios
+from energy_simulator import simulate_energy_balance
+from generate_advanced_report import generate_pro_report
 
-# Konfiguracija
-try:
-    from config_loader import load_equipment_data, load_scenarios
-except ImportError:
-    log_error("config_loader nije pronađen.")
-    sys.exit(1)
-
-# Geometrija (Opciono)
-try:
-    from geometry_engine import generate_geometry_files
-except ImportError:
-    log_warning("geometry_engine nije pronađen.")
-    def generate_geometry_files(*args, **kwargs): 
-        return None
-
-# Energija
-try:
-    from energy_simulator import simulate_energy_balance
-except ImportError:
-    log_error("energy_simulator nije pronađen.")
-    sys.exit(1)
-
-# Radiance
-try:
-    from radiance_engine import RadianceEngine
-    RADIANCE_AVAILABLE = True
-except ImportError:
-    log_warning("radiance_engine nije dostupan.")
-    RADIANCE_AVAILABLE = False
-
-def load_weather_data(config):
-    log_info("Učitavam vremenske podatke...")
+def run_dual_simulation(epw_path: str, config: Dict[str, Any], equip_db: Dict[str, Any]) -> pd.DataFrame:
+    log_header("POKRETANJE DUALNE SIMULACIJE (PVGIS EPW FIX)")
+    
+    # 1. DIREKTNO UČITAVANJE EPW PREKO PVLIB-A
+    # Ovo preskače sve probleme sa csv parserom
     try:
-        import pvlib
-        lat = config.get('latitude', 42.94483338639821)
-        lon = config.get('longitude', 18.323625614573174)
-        
-        log_info(f"PVGIS TMY za {lat:.4f}, {lon:.4f} (1076m)...")
-        result = pvlib.iotools.get_pvgis_tmy(lat, lon, map_variables=True)
-        
-        # Sigurna ekstrakcija DataFrame-a
-        if isinstance(result, tuple):
-            df, meta = result
-        else:
-            df = result
-            
-        log_success(f"Podaci preuzeti: {len(df)} sati.")
-        return df
+        from pvlib.iotools import read_epw
+        data, metadata = read_epw(epw_path)
+        weather_df = data
+        altitude = metadata.get('altitude', 1055)
+        log_success(f"✅ EPW učitan. Pronađeno {len(weather_df)} zapisa.")
     except Exception as e:
-        log_error(f"Greška: {e}")
-        # Dummy podaci
-        dates = pd.date_range(start="2023-01-01", periods=8760, freq="h")
-        df = pd.DataFrame(index=dates)
-        df['ghi'] = 0.0; df['dni'] = 0.0; df['dhi'] = 0.0
-        df['temp_air'] = 20.0; df['wind_speed'] = 1.0
-        return df
+        log_error(f"Neuspjelo čitanje EPW preko pvlib: {e}")
+        return pd.DataFrame()
+
+    # 2. Mapiranje kolona - PVLib čitač ih naziva tačno ovako:
+    # 'ghi', 'dni', 'dhi', 'temp_air'
+    if 'temp' not in weather_df.columns and 'temp_air' in weather_df.columns:
+        weather_df['temp'] = weather_df['temp_air']
+
+    # 3. PVLib Model
+    site_cfg = config.get('system_parameters', config.get('site_config', {}))
+    lat = 42.9450
+    lon = 18.3240
+    
+    log_info(f"🤖 Računam PVLib za lokaciju: {lat}, {lon} (Alt: {altitude}m)")
+    
+    try:
+        solpos = pvlib.solarposition.get_solarposition(weather_df.index, lat, lon, altitude)
+        poa_output = pvlib.irradiance.get_total_irradiance(
+            surface_tilt=site_cfg.get('tilt_angle', 45.0), 
+            surface_azimuth=site_cfg.get('azimuth_angle', 180.0),
+            dni=weather_df['dni'], 
+            ghi=weather_df['ghi'], 
+            dhi=weather_df['dhi'], 
+            solar_zenith=solpos['zenith'],
+            solar_azimuth=solpos['azimuth'],
+            albedo=site_cfg.get('albedo', 0.40)
+        )
+        poa_pvlib = pd.DataFrame(poa_output)
+        log_success("✅ PVLib proračun završen.")
+    except Exception as e:
+        log_error(f"PVLib Crash: {e}")
+        # Ako i dalje puca, ispiši kolone da vidimo šta je unutra
+        log_info(f"Dostupne kolone: {list(weather_df.columns)}")
+        return pd.DataFrame()
+
+    # 3. Radiance Priprema (Prije petlje!)
+    log_info("🔦 Pripremam Radiance scenu i geometriju...")
+    rad_objects = generate_geometry_files(config, equip_db)
+    sky_dir = prepare_sky_simulation(weather_df, config)
+    
+    scene_path = "radiance_scene"
+    os.makedirs(scene_path, exist_ok=True)
+    sensors_file = os.path.join(scene_path, "sensors.pts")
+    
+    # Senzori na 0.5m zbog vjetra (Bileća/Čemerno setup)
+    with open(sensors_file, "w") as f:
+        f.write("0.0 -4.0 0.5  0.0 -0.707 0.707\n") # Front
+        f.write("0.0 -4.0 0.5  0.0 0.707 -0.707\n") # Back
+
+    # Analiziramo samo sate sa značajnim zračenjem (head 24 za test)
+    daylight = weather_df[weather_df['ghi'] > 10].head(24)
+    bf = site_cfg.get('bifaciality_factor', 0.80)
+
+    # 4. Glavna Simulacijska Petlja
+    log_info(f"🚀 Pokrećem rendering za {len(daylight)} sati...")
+    for timestamp, row in daylight.iterrows():
+        try:
+            sky_file = generate_sky(row, sky_dir)
+            if not sky_file: continue
+            
+            oct_file = build_octree(sky_file, [rad_objects], scene_path)
+            rad_irr = run_sensor_simulation(oct_file, sensors_file)
+
+            if len(rad_irr) >= 2:
+                # Siguran pristup PVLib podacima preko .at
+                try:
+                    pvlib_val = poa_pvlib[timestamp, 'poa_global']
+                except:
+                    pvlib_val = 0.0
+
+                rad_front, rad_back = rad_irr[0], rad_irr[1]
+                rad_total = rad_front + (rad_back * bf)
+
+                dual_results.append({
+                    'datetime': timestamp,
+                    'PVLib_POA_W': pvlib_val,
+                    'Radiance_Front_W': rad_front,
+                    'Radiance_Back_W': rad_back,
+                    'Radiance_Total_W': rad_total,
+                    'Ambient_Temp': row.get('temp', row.get('temp_air', 20.0))
+                })
+        except Exception as e:
+            log_warning(f"Greška na {timestamp}: {e}")
+
+    # 5. Spašavanje rezultata
+    if dual_results:
+        df_comp = pd.DataFrame(dual_results).set_index('datetime')
+        os.makedirs("results", exist_ok=True)
+        df_comp.to_csv("results/model_comparison.csv")
+        log_success("✅ Dualna simulacija uspješno završena.")
+    else:
+        log_error("❌ Simulacija nije generisala rezultate!")
+        
+    return df_comp
 
 def main():
-    log_info("="*60)
-    log_info("🚀 RURALSTAR SJEDNICA - FINALNA SIMULACIJA")
-    log_info("="*60)
-    
-    # Konfiguracija sajta
-    config = {
-        'latitude': 42.94483338639821,
-        'longitude': 18.323625614573174,
-        'altitude': 1076,
-        'n_panels': 12,
-        'tilt_angle': 45.0,
-        'azimuth_angle': 180.0, # Jug
-        'battery_capacity_kwh': 46.08, # 6x150Ah
-        'load_base_w': 820.0,
-        'gen_power_kw': 13.5,
-        'gen_fuel_eff_l_kwh': 0.35
-    }
+    if sys.platform == "win32":
+        import io
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+    log_header("RURALSTAR HYBRID - BILEĆA CASE STUDY")
     
     try:
-        equipment = load_equipment_data()
-        # Spoji hardkodirani config sa onim iz fajla ako postoji
-        scenarios = load_scenarios()
-        file_config = scenarios.get('site_config', {})
-        config.update(file_config)
+        os.makedirs("results", exist_ok=True)
+        
+        # Učitavanje setup-a
+        config = load_scenarios()
+        equip = load_equipment_data()
+        
+        # 1. Pokretanje poređenja modela (PVLib vs Radiance)
+        comp_df = run_dual_simulation("bileca_cemerno.epw", config, equip)
+        
+        if not comp_df.empty:
+            log_info("🔋 Simuliram hibridni sistem (Baterije/Potrošnja)...")
+            
+            # Koristimo preciznije Radiance podatke kao ulaz za PV produkciju
+            comp_df['production_w'] = comp_df['Radiance_Total_W']
+            
+            # Odabir prvog dostupnog scenarija za energetski balans
+            scenario_name = list(config.keys())[0]
+            final_data = simulate_energy_balance(comp_df, config[scenario_name], equip)
+            
+            # Finalni fajlovi i izvještaj
+            output_path = "results/final_simulation_output.csv"
+            final_data.to_csv(output_path)
+            log_success(f"💾 Podaci sačuvani u {output_path}")
+            
+            generate_pro_report(output_path, config)
+            log_success("🏆 PRO IZVJEŠTAJ GENERISAN!")
+        else:
+            log_error("Glavni DataFrame je prazan. Provjeri EPW fajl i Radiance putanje.")
+
     except Exception as e:
-        log_error(f"Greška konfiguracije: {e}")
-        return
-
-    log_info("Generišem geometriju...")
-    try:
-        generate_geometry_files(config, equipment)
-        log_success("Geometrija generisana.")
-    except Exception as e:
-        log_warning(f"Geometrija preskočena: {e}")
-
-    weather_df = load_weather_data(config)
-    
-    radiance_results = None
-    if RADIANCE_AVAILABLE:
-        log_info("Pokrećem Radiance...")
-        try:
-            rad_engine = RadianceEngine(config, equipment)
-            radiance_results = rad_engine.run_simulation(weather_df)
-        except Exception as e:
-            log_error(f"Radiance greška: {e}")
-    else:
-        log_info("Koristim PVLib (Radiance nedostupan).")
-
-    log_info("Energetski bilans...")
-    try:
-        results = simulate_energy_balance(config, equipment, weather_df, radiance_results=radiance_results)
-    except Exception as e:
-        log_error(f"Simulacija neuspjela: {e}")
-        return
-
-    if results:
-        log_success("SIMULACIJA ZAVRŠENA!")
-        log_info(f"PV: {results.get('pv_generation_wh', 0)/1000:.1f} kWh")
-        log_info(f"Potrošnja: {results.get('load_consumption_wh', 0)/1000:.1f} kWh")
-        log_info(f"Generator: {results.get('generator_runtime_minutes', 0)/60:.1f} h")
-        log_info(f"Gorivo: {results.get('fuel_consumption_liters', 0):.1f} L")
-        log_info(f"Min SoC: {results.get('min_soc_percent', 0):.1f}%")
+        log_error(f"Kritična greška u glavnom programu: {e}")
 
 if __name__ == "__main__":
-    if sys.platform == "win32":
-        import io, locale
-        try: locale.setlocale(locale.LC_ALL, '')
-        except: pass
-        for s in (sys.stdin, sys.stdout, sys.stderr):
-            if isinstance(s, io.TextIOWrapper): s.reconfigure(encoding='utf-8')
     main()
