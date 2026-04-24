@@ -12,6 +12,7 @@ from simulation_engine import build_octree, run_sensor_simulation
 from config_loader import load_equipment_data, load_scenarios
 from energy_simulator import simulate_energy_balance
 from generate_advanced_report import generate_pro_report
+from skies_engine import generate_sky
 
 def run_dual_simulation(epw_path: str, config: Dict[str, Any], equip_db: Dict[str, Any]) -> pd.DataFrame:
     log_header("POKRETANJE DUALNE SIMULACIJE (PVGIS EPW FIX)")
@@ -22,7 +23,9 @@ def run_dual_simulation(epw_path: str, config: Dict[str, Any], equip_db: Dict[st
         from pvlib.iotools import read_epw
         data, metadata = read_epw(epw_path)
         weather_df = data
-        altitude = metadata.get('altitude', 1055)
+        # Forsiramo visinu iz EPW-a (za Bileću će to biti 1055m)
+        current_altitude = metadata.get('altitude')
+        log_info(f"Izvor: {epw_path} | Visina: {current_altitude}m")
         log_success(f"✅ EPW učitan. Pronađeno {len(weather_df)} zapisa.")
     except Exception as e:
         log_error(f"Neuspjelo čitanje EPW preko pvlib: {e}")
@@ -38,10 +41,10 @@ def run_dual_simulation(epw_path: str, config: Dict[str, Any], equip_db: Dict[st
     lat = 42.9450
     lon = 18.3240
     
-    log_info(f"🤖 Računam PVLib za lokaciju: {lat}, {lon} (Alt: {altitude}m)")
+    log_info(f"🤖 Računam PVLib za lokaciju: {lat}, {lon} (Alt: {current_altitude}m)")
     
     try:
-        solpos = pvlib.solarposition.get_solarposition(weather_df.index, lat, lon, altitude)
+        solpos = pvlib.solarposition.get_solarposition(weather_df.index, lat, lon, current_altitude)
         poa_output = pvlib.irradiance.get_total_irradiance(
             surface_tilt=site_cfg.get('tilt_angle', 45.0), 
             surface_azimuth=site_cfg.get('azimuth_angle', 180.0),
@@ -73,6 +76,9 @@ def run_dual_simulation(epw_path: str, config: Dict[str, Any], equip_db: Dict[st
     with open(sensors_file, "w") as f:
         f.write("0.0 -4.0 0.5  0.0 -0.707 0.707\n") # Front
         f.write("0.0 -4.0 0.5  0.0 0.707 -0.707\n") # Back
+    
+    ##"dual dodan!"
+    dual_results = [] 
 
     # Analiziramo samo sate sa značajnim zračenjem (head 24 za test)
     daylight = weather_df[weather_df['ghi'] > 10].head(24)
@@ -80,18 +86,22 @@ def run_dual_simulation(epw_path: str, config: Dict[str, Any], equip_db: Dict[st
 
     # 4. Glavna Simulacijska Petlja
     log_info(f"🚀 Pokrećem rendering za {len(daylight)} sati...")
+
     for timestamp, row in daylight.iterrows():
         try:
-            sky_file = generate_sky(row, sky_dir)
-            if not sky_file: continue
-            
-            oct_file = build_octree(sky_file, [rad_objects], scene_path)
+            # 1. Sky and Octree generation
+            skies_engine = generate_sky(row, scene_path)
+            if not skies_engine: 
+                continue
+                
+            oct_file = build_octree(skies_engine, [rad_objects], scene_path)
             rad_irr = run_sensor_simulation(oct_file, sensors_file)
 
-            if len(rad_irr) >= 2:
-                # Siguran pristup PVLib podacima preko .at
+            # 2. Results processing (Now inside the loop)
+            if isinstance(rad_irr, (list, tuple)) and len(rad_irr) >= 2:
+                # Safe access to PVLib data
                 try:
-                    pvlib_val = poa_pvlib[timestamp, 'poa_global']
+                    pvlib_val = poa_pvlib.at[timestamp, 'poa_global']
                 except:
                     pvlib_val = 0.0
 
@@ -106,6 +116,7 @@ def run_dual_simulation(epw_path: str, config: Dict[str, Any], equip_db: Dict[st
                     'Radiance_Total_W': rad_total,
                     'Ambient_Temp': row.get('temp', row.get('temp_air', 20.0))
                 })
+                
         except Exception as e:
             log_warning(f"Greška na {timestamp}: {e}")
 

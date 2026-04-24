@@ -1,5 +1,6 @@
 import os
 import json
+from matplotlib import patches
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import pandas as pd
@@ -11,7 +12,6 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch, cm
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
-
 from logger import log_info, log_success, log_error, log_warning
 
 # Konfiguracija matplotliba za bolje fontove
@@ -111,8 +111,7 @@ def plot_system_layout(config, equipment):
         x_start = i * pitch
         # Nosač je širok (cols * p_width)
         width_total = cols * p_width
-        rect = plt.Rectangle((x_start, -p_length/2), width_total, p_length, 
-                             color='#003366', alpha=0.6, label=f'Nosač {i+1}' if i==0 else "")
+        rect = patches.Rectangle((x_start, -p_length/2), width_total, p_length, color='#003366', alpha=0.6, label=f'Nosač {i+1}' if i==0 else "")
         ax1.add_patch(rect)
         # Oznaka dimenzija
         ax1.text(x_start + width_total/2, 0, f"N{i+1}\n{width_total:.1f}m", 
@@ -268,6 +267,50 @@ def plot_monthly_balance(df):
     
     return monthly
 
+def generate_site_comparison_plot(df_pvgis, df_ladybug, output_path="report_results/comparison_benchmark.png"):
+    """
+    Kreira uporedni prikaz: 
+    1. Line graph: PVGIS Bileća vs Ladybug Čemerno (kWh)
+    2. Column graph: Specifična proizvodnja SJEDNICA 12x540W
+    """
+    # Grupisanje podataka po mjesecima (kWh)
+    monthly_pvgis = df_pvgis['production_w'].resample('M').sum() / 1000
+    monthly_ladybug = df_ladybug['production_w'].resample('M').sum() / 1000
+    
+    months = [m.strftime('%b') for m in monthly_pvgis.index]
+
+    # Kreiranje subplota
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
+    plt.subplots_adjust(hspace=0.3)
+
+    # --- GORNJI GRAFIKON: Line Graph (Poređenje lokacija) ---
+    ax1.plot(months, monthly_pvgis, marker='o', linewidth=2, color='#1f77b4', label='Bileća (PVGIS SARAH)')
+    ax1.plot(months, monthly_ladybug, marker='s', linewidth=2, color='#ff7f0e', linestyle='--', label='Čemerno (Ladybug TMYx)')
+    
+    ax1.set_title('Mesečna proizvodnja: Poređenje mikrolokacije vs. Regionalni reper', fontsize=14, fontweight='bold')
+    ax1.set_ylabel('Energija (kWh)', fontsize=12)
+    ax1.grid(True, alpha=0.3)
+    ax1.legend()
+
+    # --- DONJI GRAFIKON: Column Graph (SJEDNICA Fokus) ---
+    bars = ax2.bar(months, monthly_pvgis, color='#2ca02c', alpha=0.8, label='Sjednica 12x540W (Bileća)')
+    
+    # Dodavanje vrijednosti iznad kolona
+    for bar in bars:
+        yval = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2, yval + 5, f'{int(yval)}', ha='center', va='bottom', fontsize=9)
+
+    ax2.set_title('Fokus: SJEDNICA 12x540W (Finalni proračun - Bileća)', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Energija (kWh)', fontsize=12)
+    ax2.set_xlabel('Mesec', fontsize=12)
+    ax2.grid(axis='y', alpha=0.3)
+    ax2.legend()
+
+    # Snimanje
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    return output_path
+
 def create_pdf_report(config, df_results, monthly_data):
     """Kreira PDF izvještaj."""
     log_info("Kreiram PDF izvještaj...")
@@ -320,7 +363,11 @@ def create_pdf_report(config, df_results, monthly_data):
     ]))
     elements.append(t_config)
     elements.append(Spacer(1, 0.3*inch))
-    
+
+    ##Unutar funkcije koja pravi PDF: 
+    img_path = generate_site_comparison_plot(df_results_pvgis, df_results_ladybug)
+    elements.append(Image(img_path, width=16*cm, height=14*cm))
+    elements.append(Paragraph("Slika 1. Poređenje energetskog prinosa lokacija Bileća i Čemerno", caption_style))
     # --- 2. Vizualizacija Geometrije ---
     elements.append(Paragraph("2. Geometrija Rasporeda", heading_style))
     img_layout = Image("report_results/system_layout.png", width=6.5*inch, height=4*inch)
