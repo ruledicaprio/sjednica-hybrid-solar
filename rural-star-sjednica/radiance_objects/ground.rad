@@ -1,0 +1,9 @@
+# Tlo (Ground Plane)
+ground_mat polygon ground_plane
+0
+0
+12
+-20 -20 0
+20 -20 0
+20 20 0
+-20 20 0
