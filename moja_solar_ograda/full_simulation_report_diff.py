@@ -333,37 +333,64 @@ def get_weather_data():
         return df
 
 def create_wea_file(df):
+    """
+    Kreira WEa fajl u 'sirovom' formatu bez headera za maksimalnu kompatibilnost.
+    Format: MM DD HH MM DNI DHI
+    """
     wea_path = os.path.join(RAD_BASE, "skies", "weather.wea")
-    lines = [
-        f'site "Bileca" {LAT_REF:.4f} {LON_REF:.4f} 1 {int(ALTITUDE)}',
-        f'ground {ALBEDO:.2f}',
-        'date time DNI DHI'
-    ]
     
-    # Priprema podataka (popunjavanje nedostajućih vrijednosti)
+    # Priprema podataka
     df = df.copy()
+    
+    # Popuni nedostajuće DNI/DHI ako postoje NaN
     if 'dni' not in df.columns or df['dni'].isna().any():
         solpos = solarposition.get_solarposition(df.index, LAT_REF, LON_REF)
         df['zenith'] = solpos['apparent_zenith']
-        disc = irradiance.disc(df['ghi'], df['zenith'], df.index)
+        # Disc model za estimaciju
+        disc = irradiance.disc(df['ghi'].fillna(0), df['zenith'], df.index)
         df['dni'] = disc['dni'].fillna(0).clip(lower=0)
-        df['dhi'] = (df['ghi'] - df['dni'] * np.cos(np.radians(df['zenith']))).clip(lower=0)
+        df['dhi'] = (df['ghi'].fillna(0) - df['dni'] * np.cos(np.radians(df['zenith']))).clip(lower=0)
     
+    lines = []
+    count_valid = 0
+    
+    print("   🔄 Formatiram podatke (MM DD HH MM DNI DHI)...")
     for ts in df.index:
         row = df.loc[ts]
-        # Format: M D HH.MMM DNI DHI
-        # HH.MMM: sat + minut/60. Za satne podatke koristi se sat + 0.5 (sredina sata)
-        hour_dec = ts.hour + 0.5
-        dni = max(0.0, float(row.get('dni', 0) or 0))
-        dhi = max(0.0, float(row.get('dhi', 0) or 0))
-        lines.append(f"{ts.month} {ts.day} {hour_dec:.1f} {dni:.1f} {dhi:.1f}")
-    
+        dni = float(row.get('dni', 0) or 0)
+        dhi = float(row.get('dhi', 0) or 0)
+        
+        # Format: M D H MM DNI DHI
+        # Koristimo 30 minuta za satne podatke (sredina sata)
+        m = ts.month
+        d = ts.day
+        h = ts.hour
+        minute = 30 
+        
+        # Neki stari parseri mrze negative ili čudne vrijednosti, ensure positive
+        dni = max(0.0, dni)
+        dhi = max(0.0, dhi)
+        
+        line = f"{m} {d} {h} {minute} {dni:.1f} {dhi:.1f}"
+        lines.append(line)
+        
+        if dni > 0 or dhi > 0:
+            count_valid += 1
+
+    # KONAČNI SADRŽAJ: SAMO PODACI, BEZ HEADERA
     content = "\n".join(lines)
+    
     with open(wea_path, 'w', encoding='ascii', newline='\n') as f:
         f.write(content)
     
-    print(f"✅ WEa fajl kreiran: {wea_path} ({len(lines)} linija)")
+    print(f"✅ WEa fajl kreiran (BEZ HEADERA): {wea_path}")
+    print(f"   📊 Ukupno linija: {len(lines)} | Linija sa suncem: {count_valid}")
+    
+    if count_valid == 0:
+        print("   ⚠️ UPOZORENJE: Nema validnih podataka o zračenju! Provjeri PVGIS odgovor.")
+    
     return wea_path
+    
 
 # =============================================================================
 # ☀️ RADIANCE SIMULACIJA (FIXED PIPELINE)
@@ -376,30 +403,50 @@ def run_radiance(wea_path):
     res_file = os.path.join("results", "annual_irrad.txt")
     sensors_file = os.path.join("objects", "sensors.txt")
     
-    # 1. Gendaymtx
-    print("☀️ Generišem sky vektor (gendaymtx)...")
-    # Komanda kao lista, bez shell=True, bez redirecta
-    cmd_sky = ["gendaymtx", "-O", "1", wea_path]
+    # 1. Gendaymtx (FIX: Čitanje iz stdin umjesto argumenta fajla)
+    print("☀️ Generišem sky vektor (gendaymtx) preko stdin...")
+    
+    # Komanda bez imena fajla na kraju. Fajl ćemo ubaciti kroz stdin.
+    cmd_sky = ["gendaymtx", "-O", "1", "-"] 
+    # Napomena: "-" kaže programu da čita sa standardnog ulaza.
+    # Ako tvoja verzija baš ne podržava "-", probaj bez ikakvog argumenta za fajl.
     
     try:
-        with open(sky_file, 'w') as f_out:
-            proc = subprocess.run(cmd_sky, stdout=f_out, stderr=subprocess.PIPE, text=True, check=True)
+        # Čitamo WEa fajl i šaljemo ga u stdin
+        with open(wea_path, 'r') as f_in, open(sky_file, 'w') as f_out:
+            proc = subprocess.run(
+                cmd_sky, 
+                stdin=f_in,       # Šaljemo sadržaj WEa fajla unutra
+                stdout=f_out, 
+                stderr=subprocess.PIPE, 
+                text=True, 
+                check=True
+            )
     except subprocess.CalledProcessError as e:
         err_msg = e.stderr.strip() if e.stderr else "Nepoznata greška"
         print(f"❌ gendaymtx greška: {err_msg}")
         
-        # Dijagnostika
-        if os.path.exists(wea_path):
-            with open(wea_path, 'r') as f:
-                first_lines = [next(f) for _ in range(5)]
-            print("   📄 WEa sadržaj (prvih 5 linija):")
-            for l in first_lines: print(f"      {l.strip()}")
-        return False
+        # Dodatna dijagnostika: Probajmo sa direktnim putem ako stdin ne radi
+        print("💡 Pokušavam alternativni metod (direktan fajl)...")
+        try:
+            # Ponekad starije verzije moraju imati ime fajla, ali bez "-"
+            cmd_alt = ["gendaymtx", "-O", "1", wea_path]
+            with open(sky_file, 'w') as f_out:
+                subprocess.run(cmd_alt, stdout=f_out, stderr=subprocess.PIPE, text=True, check=True)
+            print("✅ Alternativni metod uspio!")
+            return True # Ako ovo uspije, nastavljamo
+        except Exception as e2:
+            print(f"❌ Alternativa također neuspjela: {e2.stderr if hasattr(e2, 'stderr') else e2}")
+            return False
+            
     except FileNotFoundError:
-        print("❌ gendaymtx nije pronađen! Provjeri PATH varijablu.")
+        print("❌ gendaymtx nije pronađen! Provjeri PATH.")
+        return False
+    except Exception as e:
+        print(f"❌ Neočekivana greška: {e}")
         return False
 
-    # 2. Oconv
+    # 2. Oconv (Bez promjena)
     print("🏗️ Kompajliram scenu (oconv)...")
     mats = os.path.join("materials", "materials.mat")
     objs = [
@@ -411,16 +458,15 @@ def run_radiance(wea_path):
     cmd_oct = ["oconv", mats] + objs
     
     try:
-        with open(oct_file, 'w') as f_out:
+        with open(oct_file, 'wb') as f_out: # Binary mode za .oct
             subprocess.run(cmd_oct, stdout=f_out, check=True)
     except Exception as e:
         print(f"❌ oconv greška: {e}")
         return False
 
-    # 3. Rtrace + Rcalc
+    # 3. Rtrace + Rcalc (Bez promjena)
     print("🔦 Računam irradijancu (rtrace)...")
-    # Broj senzora
-    n_sensors = sum(s["count"] for s in SIDES_CONFIG) * 2 # front + back
+    n_sensors = sum(s["count"] for s in SIDES_CONFIG) * 2 
     
     cmd_rtrace = [
         "rtrace", "-h", "-I", "-ab", "5", "-ad", "2048", "-lw", "1e-5", 
@@ -433,12 +479,10 @@ def run_radiance(wea_path):
         with open(sensors_file, 'r') as f_in, \
              open(res_file, 'w') as f_out:
             
-            # Pokreni rtrace
             p1 = subprocess.Popen(cmd_rtrace, stdin=f_in, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            # Pokreni rcalc
             p2 = subprocess.Popen(cmd_rcalc, stdin=p1.stdout, stdout=f_out, stderr=subprocess.PIPE)
             
-            p1.stdout.close() # Allow p1 to receive SIGPIPE if p2 exits.
+            p1.stdout.close()
             _, err2 = p2.communicate()
             
             if p2.returncode != 0:
