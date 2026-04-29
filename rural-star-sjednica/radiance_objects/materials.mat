@@ -1,0 +1,15 @@
+# Materijali za Sjednicu (Altitude: 107m)
+void plastic ground_mat
+0
+0
+5 0.40 0.40 0.30 0 0
+
+void plastic steel_mount
+0
+0
+5 0.60 0.60 0.60 0 0
+
+void glass pv_module_glass
+0
+0
+3 0.90 0.90 0.90
