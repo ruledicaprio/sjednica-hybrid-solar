@@ -76,7 +76,8 @@ def load_simulation_data():
         dates = pd.date_range(start="2023-01-01", periods=8760, freq="h")
         df_results = pd.DataFrame(index=dates)
         # Jednostavan sinusni model za proizvodnju
-        df_results['production'] = np.maximum(0, np.sin((df_results.index.hour - 6) * np.pi / 12) * 5.0) # do 5kW
+        dti = pd.DatetimeIndex(df_results.index)
+        df_results['production'] = np.maximum(0, np.sin((dti.hour - 6) * np.pi / 12) * 5.0) # do 5kW
         df_results['consumption'] = 0.82 + np.random.normal(0, 0.1, len(dates)) # ~820W base
         df_results['soc'] = 50.0 # Fiksni SOC za mock
         
@@ -187,12 +188,14 @@ def plot_system_layout(config, equipment):
     log_success(f"Sačuvano: {save_path}")
 
 def plot_daily_profile(df):
+    if not isinstance(df.index, pd.DatetimeIndex):
+        df.index = pd.to_datetime(df.index)
+    df_hourly = df.groupby(df.index.hour).mean()
     """Crtta dnevni profil proizvodnje i potrošnje (prosjek dana)."""
     log_info("Generišem dnevni profil...")
     
     # Grupiši po satu i uzmi prosjek
-    df_hourly = df.groupby(df.index.hour).mean()
-    
+        
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.plot(df_hourly.index, df_hourly['production'], 'o-', color='orange', label='Proizvodnja (kW)', linewidth=2)
     ax.plot(df_hourly.index, df_hourly['consumption'], 's-', color='red', label='Potrošnja (kW)', linewidth=2)
@@ -311,7 +314,8 @@ def generate_site_comparison_plot(df_pvgis, df_ladybug, output_path="report_resu
     plt.close()
     return output_path
 
-def create_pdf_report(config, df_results, monthly_data):
+def create_pdf_report(config, df_results, monthly_data,
+                      df_results_pvgis=None, df_results_ladybug=None):
     """Kreira PDF izvještaj."""
     log_info("Kreiram PDF izvještaj...")
     
@@ -363,7 +367,13 @@ def create_pdf_report(config, df_results, monthly_data):
     ]))
     elements.append(t_config)
     elements.append(Spacer(1, 0.3*inch))
-
+    caption_style = ParagraphStyle(
+        name='CaptionStyle',
+        parent=styles['Italic'],
+        alignment=TA_CENTER,
+        fontSize=9,
+        textColor=colors.grey
+    )
     ##Unutar funkcije koja pravi PDF: 
     img_path = generate_site_comparison_plot(df_results_pvgis, df_results_ladybug)
     elements.append(Image(img_path, width=16*cm, height=14*cm))
@@ -441,7 +451,8 @@ def main():
     monthly_data = plot_monthly_balance(df_results)
     
     # 4. PDF
-    create_pdf_report(config, df_results, monthly_data)
+    create_pdf_report(config, df_results, monthly_data,
+                  df_results_pvgis=df_results, df_results_ladybug=df_results)
     
     log_success("✅ Vizualizacije i izvještaj završeni! Provjerite folder 'report_results'.")
 

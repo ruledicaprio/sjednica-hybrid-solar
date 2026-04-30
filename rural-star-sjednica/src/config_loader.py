@@ -30,7 +30,7 @@ def load_json_file(filename: str) -> Dict[str, Any]:
 def load_equipment_data() -> Dict[str, Any]:
     """Loads equipment_db.json."""
     log_info("Učitavam equipment_db.json...")
-    return load_json_file('equipment_db.json')
+    return load_json_file('..\\config\\equipment_db.json')
 
 
 def load_scenarios() -> Dict[str, Any]:
@@ -41,7 +41,7 @@ def load_scenarios() -> Dict[str, Any]:
     would otherwise mistake for a scenario.
     """
     log_info("Učitavam site_config.json (samo scenariji)...")
-    raw = load_json_file('site_config.json')
+    raw = load_json_file('..\\config\\site_config.json')
 
     scenarios = {
         k: v for k, v in raw.items()
@@ -63,4 +63,4 @@ def load_full_config() -> Dict[str, Any]:
     Returns the complete site_config.json as-is.
     Useful for modules that need geometry_params, site_config block, etc.
     """
-    return load_json_file('site_config.json')
+    return load_json_file('..\\config\\site_config.json')
