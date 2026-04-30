@@ -3,7 +3,7 @@ import numpy as np
 import pvlib
 from typing import Dict, Any, Tuple
 from logger import log_info, log_warning, log_success, log_error
-
+from datetime import datetime
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -326,6 +326,7 @@ def simulate_energy_balance(
     Single-scenario entry point (called from run_simulation.py for backwards
     compatibility). Dispatches to the correct engine based on scenario keys.
     """
+    assert isinstance(df.index, pd.DatetimeIndex), "Indeks mora biti DatetimeIndex"
     name = scenario_config.get('description', 'unknown')
     log_info(f"🔋 Simuliram energetski balans: {name}")
 
