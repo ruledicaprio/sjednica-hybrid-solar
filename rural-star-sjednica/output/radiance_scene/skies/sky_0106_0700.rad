@@ -1,0 +1,20 @@
+# Sky for 1990-01-06 07:00:00+00:00
+Warning: sun altitude below zero at time step 1 6 7.00, printing error sky
+# gendaylit 1 6 7.00 -W 16.32 39.0 -g 0.2
+# Local solar time: 6.77
+# Solar altitude and azimuth: -5.1 -65.3
+
+void brightfunc skyfunc
+2 skybright perezlum.cal
+0
+10 0.00 0.00  0.000 0.000 0.000 0.000 0.000  0.905111 -0.415606 -0.089700 
+
+skyfunc glow ground_glow
+0
+0
+4 1 1 1 0
+
+ground_glow source ground
+0
+0
+4 0 0 -1 180

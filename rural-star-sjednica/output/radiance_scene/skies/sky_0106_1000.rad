@@ -1,0 +1,30 @@
+# Sky for 1990-01-06 10:00:00+00:00
+# gendaylit 1 6 10.00 -W 54.42 187.0 -g 0.2
+# Local solar time: 9.77
+# Solar altitude and azimuth: 21.9 -33.3
+# epsilon, delta, atmospheric precipitable water content : 1.1060 0.3516 2.0000 
+
+void light solar
+0
+0
+3 3.983e+05 3.983e+05 3.983e+05
+
+solar source sun
+0
+0
+4 0.509935 -0.774973 0.373340 0.533000
+
+void brightfunc skyfunc
+2 skybright perezlum.cal
+0
+10 2.629e+01 6.442e+00 -1.182705 -1.155035 9.401056 -2.764676 0.086230 0.509935 -0.774973 0.373340 
+
+skyfunc glow ground_glow
+0
+0
+4 1 1 1 0
+
+ground_glow source ground
+0
+0
+4 0 0 -1 180
