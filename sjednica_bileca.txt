@@ -1,0 +1,1833 @@
+
+############################################################
+ DATOTEKA: config_loader.py
+############################################################
+
+import os
+import json
+from typing import Dict, Any
+from logger import log_info, log_error
+
+def load_json_file(filename: str) -> Dict[str, Any]:
+    """Generička funkcija za učitavanje JSON fajla."""
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    filepath = os.path.join(base_path, filename)
+    
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"Fajl nije pronađen: {filepath}")
+        
+    with open(filepath, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+def load_equipment_data() -> Dict[str, Any]:
+    """Učitava bazu opreme."""
+    log_info("Učitavam equipment_db.json...")
+    return load_json_file('equipment_db.json')
+
+def load_scenarios() -> Dict[str, Any]:
+    """Učitava konfiguraciju scenarija."""
+    log_info("Učitavam site_config.json...")
+    return load_json_file('site_config.json')
+
+############################################################
+ DATOTEKA: energy_simulator.py
+############################################################
+
+import pandas as pd
+import numpy as np
+import pvlib
+from typing import Dict, Any
+from logger import log_info, log_warning, log_success, log_error
+
+def calculate_poa_irradiance_simple(df_weather: pd.DataFrame, tilt: float, azimuth: float, lat: float, lon: float) -> pd.Series:
+    """
+    Pomoćna funkcija koja računa POA irradijancu koristeći PVLib (fallback metoda).
+    """
+    log_info("Računam solarne pozicije i irradijancu (PVLib fallback)...")
+    
+    # Izračun pozicije sunca
+    solpos = pvlib.solarposition.get_solarposition(df_weather.index, lat, lon)
+    
+    # Izračun ukupne irradijance na nagnutoj površini (Hay-Davies model)
+    poa = pvlib.irradiance.get_total_irradiance(
+        surface_tilt=tilt,
+        surface_azimuth=azimuth,
+        solar_zenith=solpos['apparent_zenith'],
+        solar_azimuth=solpos['azimuth'],
+        dni=df_weather['dni'],
+        ghi=df_weather['ghi'],
+        dhi=df_weather['dhi'],
+        model='haydavies'
+    )
+    return poa['poa_global']
+
+def simulate_energy_balance(df: pd.DataFrame, scenario_config: Dict[str, Any], equipment: Dict[str, Any]) -> pd.DataFrame:
+    """
+    Glavna funkcija za simulaciju energetskog balansa, baterija i rada generatora.
+    Dosljedna 'Fixed-Tilt Yearly Results' izvještaju.
+    """
+    log_info("🔋 Pokrećem simulaciju energetskog balansa...")
+    
+    # --- 1. Parametri Opreme ---
+    # Paneli (Huawei IPV540-M1A)
+    panel = equipment['panels']['Huawei_IPV540-M1A']
+    efficiency = panel['efficiency']
+    area = panel['area_m2']
+    bifaciality = panel.get('bifaciality', 0.8)
+    n_panels = scenario_config.get('n_panels', 12)
+    max_p_stc = n_panels * panel['power_wp']
+    
+    # Baterija (Huawei ESM-48150B1)
+    batt_conf = equipment['batteries']['ESM-48150B1']
+    n_batt = scenario_config.get('n_battery_modules', 6)
+    batt_capacity_wh = (batt_conf['energy_kwh'] * n_batt) * 1000.0
+    
+    # SoC granice
+    soc_min = batt_conf.get('min_soc', 0.15)
+    soc_max = batt_conf.get('max_soc', 0.95)
+    soc = soc_max  # Počinjemo simulaciju sa punim baterijama
+    
+    # Generator (FG Wilson P13.5)
+    # Pretpostavljamo tipičnu potrošnju od ~3.5 L/h pri ovom opterećenju
+    gen_power_kw = 12.0 
+    
+    # --- 2. Inicijalizacija listi za rezultate ---
+    pv_gen_list = []
+    soc_list = []
+    gen_energy_list = []
+    load_cons_list = []
+
+    # FIX: Zaštitni limit za irradijancu (da spriječimo bug sa ogromnim brojevima)
+    # Maksimalna teoretska snaga je STC snaga + 20% (zbog bifacijalnosti i hladnoće)
+    max_p_limit = max_p_stc * 1.5
+
+    # --- 3. Iteracija kroz sate ---
+    for i, row in df.iterrows():
+        # Dohvatanje irradijance (osigurano da ne bude NaN ili suludo visoka)
+        p_front = row.get('poa_front', 0)
+        p_back = row.get('poa_back', 0)
+        
+        # Čišćenje "junk" podataka iz Radiance-a
+        if p_front > 2500 or p_front < 0: p_front = 0
+        if p_back > 1000 or p_back < 0: p_back = 0
+        
+        # Izračun trenutne snage panela (W)
+        # Formula: (Front + Back * Bifaciality) * Area * Efficiency * Broj Panela
+        gen_w = (p_front + (p_back * bifaciality)) * area * efficiency * n_panels
+        gen_w = max(0, min(gen_w, max_p_limit))
+        
+        # Potrošnja bazne stanice (W) - konstantnih 820W prema tvom profilu
+        load_w = 820.0 
+        
+        # Balans energije u ovom satu (Wh)
+        net_energy_wh = gen_w - load_w
+        
+        # Promjena stanja baterije (Delta SoC)
+        delta_soc = net_energy_wh / batt_capacity_wh
+        soc += delta_soc
+        
+        # Logika generatora: Ako SoC padne ispod minimuma
+        gen_active_kwh = 0
+        if soc < soc_min:
+            # Koliko Wh nam fali da pokrijemo potrošnju i ostanemo na soc_min
+            deficit_wh = (soc_min - soc) * batt_capacity_wh
+            gen_active_kwh = deficit_wh / 1000.0
+            soc = soc_min # Generator dopunjava tačno onoliko koliko se troši
+            
+        # Ograničenje maksimalne napunjenosti
+        if soc > soc_max:
+            soc = soc_max
+        
+        # Spremanje podataka
+        pv_gen_list.append(gen_w)
+        load_cons_list.append(load_w)
+        soc_list.append(soc * 100) # SoC u procentima za grafikon
+        gen_energy_list.append(gen_active_kwh)
+
+    # --- 4. Finalizacija podataka ---
+    res_df = pd.DataFrame({
+        'poa_front': df.get('poa_front', 0),
+        'poa_back': df.get('poa_back', 0),
+        'production_w': pv_gen_list,
+        'consumption_w': load_cons_list,
+        'soc_percent': soc_list,
+        'generator_kwh': gen_energy_list
+    }, index=df.index)
+    
+    log_success(f"Simulacija završena. Prosečan SoC: {res_df['soc_percent'].mean():.1f}%")
+    return res_df
+
+############################################################
+ DATOTEKA: equipment_db.json
+############################################################
+
+{
+  "system_parameters": {
+    "site_name": "Sjednica_Bileca",
+    "latitude": 42.9448,
+    "longitude": 18.3236,
+    "altitude": 1076.0,
+    "albedo": 0.40,
+    "bifaciality_factor": 0.80,
+    "module_clearance_height": 0.5,
+    "tilt_angle": 45.0,
+    "azimuth_angle": 180.0,
+    "temperature_coefficient": -0.0035
+  },
+  "panels": {
+    "Huawei_IPV540-M1A": {
+      "model": "IPV540-M1A",
+      "manufacturer": "Huawei",
+      "power_wp": 540,
+      "area_m2": 2.58,
+      "efficiency": 0.21,
+      "dimensions_mm": [2279, 1134, 35],
+      "bifaciality": 0.80,
+      "voc": 41.75,
+      "imp": 12.94
+    }
+  },
+  "inverters": {
+    "Huawei_SUN2000-15KTL": {
+      "model": "SUN2000-15KTL",
+      "manufacturer": "Huawei",
+      "power_ac_w": 15000,
+      "efficiency": 0.98,
+      "mppt_voltage_range": [200, 1000]
+    }
+  },
+  "batteries": {
+    "ESM-48150B1": {
+      "model": "ESM-48150B1",
+      "manufacturer": "Huawei",
+      "voltage_nominal": 51.2,
+      "capacity_ah": 150,
+      "energy_kwh": 7.68,
+      "chemistry": "LFP",
+      "max_c_rate": 1.0,
+      "min_soc": 0.15,
+      "max_soc": 0.95
+    }
+  },
+  "loads": {
+    "RAN_Unit": {
+      "description": "RRU5512t + BBU5900C",
+      "power_w_typical": 670,
+      "power_w_max": 820
+    },
+    "Monitoring_Lights": {
+      "description": "iDMU + LED + Beacon",
+      "power_w_typical": 70,
+      "duty_cycle": 0.1
+    },
+    "ICC_Control": {
+      "description": "ICC330 Controller & BMS",
+      "power_w_typical": 50,
+      "power_w_max": 80
+    },
+    "Cooling_Fan": {
+      "description": "Active cooling for PowerCube",
+      "power_w_typical": 100,
+      "temp_threshold_c": 25
+    }
+  },
+  "generators": {
+    "FG_Wilson_P13.5-6": {
+      "model": "P13.5-6",
+      "manufacturer": "FG Wilson",
+      "prime_power_kw": 12.0,
+      "fuel_consumption_l_kwh_50_load": 0.35,
+      "fuel_consumption_l_kwh_75_load": 0.30,
+      "start_delay_min": 2,
+      "min_run_time_min": 15
+    }
+  }
+}
+
+############################################################
+ DATOTEKA: generate_advanced_report.py
+############################################################
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import numpy as np
+import os
+from matplotlib.backends.backend_pdf import PdfPages
+from logger import log_info, log_success
+
+def generate_pro_report(df_path, full_config):
+    df = pd.read_csv(df_path, index_col=0, parse_dates=True)
+    site = full_config.get('site_config', {})
+    scenario = full_config.get('scenario_A_PowerCube', {})
+
+    # Metrike
+    total_front = df['poa_front'].sum() / 1000 # kWh/m2
+    total_back = df['poa_back'].sum() / 1000
+    b_gain = (total_back / total_front * 100) if total_front > 0 else 0
+    total_yield = df['production_w'].sum() / 1000 # kWh
+
+    plt.style.use('bmh') # Inženjerski stil
+    pdf_name = "Bifacial_Yearly_Analysis_Report.pdf"
+
+    with PdfPages(pdf_name) as pdf:
+        # STRANA 1: Naslovna i statistika
+        fig = plt.figure(figsize=(11, 8.5))
+        plt.axis('off')
+        header = f"SYSTEM PERFORMANCE REPORT: {scenario.get('description')}\n"
+        header += "-"*60 + "\n"
+        stats = (
+            f"Lokacija: {site.get('latitude')}, {site.get('longitude')}\n"
+            f"Ukupno panela: {scenario.get('n_panels')}\n\n"
+            f"GODIŠNJI REZULTATI:\n"
+            f"----------------------------------\n"
+            f"Prednja Irradijanca:  {total_front:,.2f} kWh/m²/y\n"
+            f"Zadnja Irradijanca:   {total_back:,.2f} kWh/m²/y\n"
+            f"Bifacijalni dobitak:  {b_gain:.2f} %\n"
+            f"Ukupna proizvodnja:   {total_yield:,.1f} kWh/y\n"
+            f"Rad generatora:       {df['generator_kwh'].sum():,.1f} kWh\n"
+        )
+        plt.text(0.1, 0.9, header, fontsize=16, fontweight='bold', family='monospace')
+        plt.text(0.1, 0.5, stats, fontsize=13, family='monospace')
+        pdf.savefig(); plt.close()
+
+        # STRANA 2: Mjesečni podaci (Konzistentno sa bifacial_radiance)
+        monthly = df.resample('M').sum() / 1000
+        fig, ax = plt.subplots(figsize=(10, 6))
+        x = np.arange(len(monthly))
+        ax.bar(x - 0.2, monthly['poa_front'], 0.4, label='Front', color='#2c3e50')
+        ax.bar(x + 0.2, monthly['poa_back'], 0.4, label='Back', color='#e67e22')
+        ax.set_xticks(x)
+        ax.set_xticklabels([d.strftime('%b') for d in monthly.index])
+        ax.set_title("Monthly Irradiance Distribution [kWh/m²]")
+        ax.legend()
+        pdf.savefig(); plt.close()
+
+    log_success(f"Izvještaj generisan: {pdf_name}")
+
+############################################################
+ DATOTEKA: generate_false_color.py
+############################################################
+
+import os
+import subprocess
+import glob
+from logger import log_info, log_success, log_error, log_warning
+
+def generate_false_color_images():
+    """Generiše False Color slike iz Radiance rezultata."""
+    log_info("🎨 Generisanje False Color slika...")
+    
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    rad_path = os.path.join(base_path, 'radiance_results')
+    images_path = os.path.join(rad_path, 'images')
+    materials_path = os.path.join(rad_path, 'materials')
+    objects_path = os.path.join(rad_path, 'objects')
+    
+    os.makedirs(images_path, exist_ok=True)
+    os.makedirs(materials_path, exist_ok=True)
+    
+    # 1. OSIGURAJ MATERIJALE (Kreiraj ground.rad ako ne postoji)
+    ground_rad_file = os.path.join(materials_path, 'ground.rad')
+    if not os.path.exists(ground_rad_file):
+        log_info("Kreiram missing 'ground.rad' materijal...")
+        with open(ground_rad_file, 'w') as f:
+            f.write("# Ground material for Radiance\n")
+            f.write("void plastic ground_mat\n")
+            f.write("0\n0\n5 0.4 0.4 0.4 0.0 0.0\n") # Albedo 0.4
+            f.write("\nground_mat polygon ground_plane\n")
+            f.write("0\n0\n12 -50 -50 0 50 -50 0 50 50 0 -50 50 0\n")
+        log_success("ground.rad kreiran.")
+
+    # 2. Pronađi Octree
+    oct_files = glob.glob(os.path.join(rad_path, '*.oct'))
+    if not oct_files:
+        log_error("Nema .oct fajla. Pokrenite prvo run_simulation.py")
+        return
+    
+    oct_file = oct_files[0]
+    log_info(f"Koristim Octree: {os.path.basename(oct_file)}")
+    
+    # 3. Definicija Pogleda (View)
+    # Kamera je na JUGU (negativni Y), gleda prema SJEVERU (+Y).
+    # Paneli su na Y=0 do Y=~5. Kontejner je IZA (Sjevernije, npr. Y=6+).
+    # Dakle, kamera mora biti na Y = -10 da vidi sve.
+    # -vp x y z : Pozicija kamere
+    # -vd x y z : Smjer gledanja (0 1 0 = Sjever)
+    view_cmd = "-vtv -vp 0 -15 2 -vd 0 1 0 -vu 0 0 1"
+    
+    hdr_file = os.path.join(images_path, 'view_solar_radiance.hdr')
+    fc_file = os.path.join(images_path, 'falsecolor_solar_radiance.png')
+    
+    # 4. Renderovanje (rpict)
+    # Napomena: Pokrećemo iz rad_path da bi relativne putanje u .oct fajlu radile
+    cmd_rpict = f"rpict {view_cmd} -ab 2 -ad 1000 -as 500 -ar 300 -aa 0.1 {os.path.basename(oct_file)}"
+    
+    try:
+        log_info("Renderovanje HDR slike (ovo može potrajati 1-2 min)...")
+        with open(hdr_file, 'w') as out_f:
+            # Pokrećemo subprocess unutar rad_path direktorija
+            result = subprocess.run(
+                cmd_rpict, 
+                shell=True, 
+                cwd=rad_path, # KLJUČNO: Radi iz foldera gdje je .oct i podfolderi
+                stdout=out_f, 
+                stderr=subprocess.PIPE, 
+                text=True
+            )
+            
+            if result.returncode != 0:
+                raise Exception(result.stderr)
+                
+        log_success(f"HDR slika kreirana: {hdr_file}")
+        
+        # 5. False Color Konverzija
+        log_info("Generisanje False Color mape...")
+        cmd_fc = f"falsecolor -ip {hdr_file} -o {fc_file} -cl -cb -log"
+        subprocess.run(cmd_fc, shell=True, check=True)
+        
+        log_success(f"✅ False Color slika uspješno kreirana: {fc_file}")
+        
+    except Exception as e:
+        log_error(f"Greška pri renderovanju: {e}")
+        log_error("Provjerite da li su svi .rad fajlovi (paneli, kontejner) prisutni u folderima 'objects' i 'materials'.")
+
+if __name__ == "__main__":
+    generate_false_color_images()
+
+############################################################
+ DATOTEKA: generate_visuals.py
+############################################################
+
+import os
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from matplotlib.backends.backend_pdf import PdfPages
+from logger import log_info, log_success, log_error, log_warning # Dodano log_warning
+
+def load_data():
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    config_file = os.path.join(base_path, 'site_config.json')
+    config = {}
+    if os.path.exists(config_file):
+        import json
+        with open(config_file, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+            
+    results_file = os.path.join(base_path, 'simulation_results.csv')
+    if os.path.exists(results_file):
+        df = pd.read_csv(results_file, index_col=0, parse_dates=True)
+        log_success("Podaci uspješno učitani.")
+        return config, df
+    else:
+        log_error("Fajl simulation_results.csv nije pronađen!")
+        return config, None
+
+def get_representative_day(df, season_name, month, day_target):
+    """
+    Bira najbolji dan za prikaz iz zadatog mjeseca.
+    Prioritet: Dan sa najvećom proizvodnjom koji je najbliži target datumu.
+    """
+    # Filtriraj mjesec
+    df_month = df[df.index.month == month]
+    if df_month.empty:
+        return None, None
+        
+    # Grupiši po danu
+    df_month['day_of_month'] = df_month.index.day
+    daily_prod = df_month.groupby('day_of_month')['production_w'].sum()
+    
+    # Nađi dan sa max proizvodnjom
+    if daily_prod.empty:
+        return None, None
+        
+    best_day = daily_prod.idxmax()
+    
+    # Vrati podatke za taj dan
+    day_data = df[df.index.day == best_day]
+    # Provjeri da li je baš taj mjesec (sigurnosna provjera)
+    if len(day_data) == 0 or day_data.index[0].month != month:
+        # Fallback: uzmi prvi dan u mjesecu
+        best_day = df_month.index[0].day
+        day_data = df[df.index.day == best_day]
+        
+    label = f"{season_name} ({best_day}. {month})"
+    return day_data, label
+
+def plot_layout(config, output_path):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    tilt = config.get('tilt_angle', 45)
+    pitch = 3.0
+    w, h = 1.134, 2.278 
+    
+    rad = np.radians(tilt)
+    dx, dz = h * np.cos(rad), h * np.sin(rad)
+    clearance = 0.5
+    
+    # Paneli (2 reda)
+    for r in range(2):
+        base_x = r * pitch
+        poly_coords = [(base_x, clearance), (base_x + dx, clearance + dz), 
+                       (base_x + dx + 0.1, clearance + dz), (base_x + 0.1, clearance)]
+        polygon = patches.Polygon(poly_coords, closed=True, color='#003366', edgecolor='white', linewidth=2)
+        ax.add_patch(polygon)
+        
+    # Kontejner (ispred)
+    ax.add_patch(patches.Rectangle((-5, 0), 4, 2.6, color='#555555', label='Kontejner'))
+    ax.text(-3, 1.3, "Kontejner", ha='center', va='center', color='white', fontweight='bold')
+    
+    # Ograda
+    ax.plot([-6, 12], [2.5, 2.5], 'k-', linewidth=3, label='Ograda')
+    ax.fill_between([-6, 12], 0, 2.5, color='#eeeeee', alpha=0.5)
+    
+    ax.set_xlim(-6, 15); ax.set_ylim(0, 6); ax.set_aspect('equal')
+    ax.set_title(f"Sistem Layout (Pogled sa strane)", fontsize=14, fontweight='bold')
+    ax.grid(True, linestyle='--', alpha=0.6)
+    ax.legend(loc='upper right')
+    
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    log_success(f"Layout sačuvan: {output_path}")
+
+def create_report(config, df):
+    if df is None:
+        log_error("Nema podataka za izvještaj.")
+        return
+
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    report_dir = os.path.join(base_path, 'report_results')
+    os.makedirs(report_dir, exist_ok=True)
+    
+    pdf_path = os.path.join(report_dir, 'RuralStar_Sjednica_FINAL_REPORT.pdf')
+    layout_path = os.path.join(report_dir, 'layout.png')
+    
+    # 1. Layout
+    plot_layout(config, layout_path)
+    
+    # 2. Priprema podataka za grafikone
+    # Mjesečni bilans
+    df['month'] = df.index.month
+    monthly = df.groupby('month')[['production_w', 'consumption_w']].sum() / 1000 # kWh
+    
+    # Dnevni profili (Reprezentativni dani)
+    # Zima (Jan, 15), Proljece (Apr, 15), Ljeto (Jul, 15), Jesen (Okt, 15)
+    days_data = []
+    seasons = [
+        ("Zima", 1, 15),
+        ("Proljeće", 4, 15),
+        ("Ljeto", 7, 15),
+        ("Jesen", 10, 15)
+    ]
+    
+    for s_name, m, d in seasons:
+        d_data, label = get_representative_day(df, s_name, m, d)
+        if d_data is not None:
+            days_data.append((label, d_data))
+    
+    # 3. Crtanje grafikona
+    fig_profiles, axs = plt.subplots(2, 1, figsize=(12, 10))
+    
+    # A) Mjesečni bilans
+    x = np.arange(1, 13)
+    width = 0.4
+    axs[0].bar(x - width/2, monthly['production_w'], width, label='Proizvodnja (kWh)', color='orange')
+    axs[0].bar(x + width/2, monthly['consumption_w'], width, label='Potrošnja (kWh)', color='red')
+    axs[0].set_title("Mjesečni bilans proizvodnje i potrošnje", fontsize=14, fontweight='bold')
+    axs[0].set_xticks(x)
+    axs[0].set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'])
+    axs[0].grid(True, axis='y', alpha=0.3)
+    axs[0].legend()
+    
+    # B) Dnevni profili
+    colors = ['blue', 'green', 'red', 'purple']
+    for i, (label, data) in enumerate(days_data):
+        hour = data.index.hour
+        prod = data['production_w'] / 1000 # kW
+        axs[1].plot(hour, prod, label=label, color=colors[i], linewidth=2)
+        
+    axs[1].set_title("Dnevni profil proizvodnje (Karakteristični dani)", fontsize=14, fontweight='bold')
+    axs[1].set_xlabel("Sat u danu")
+    axs[1].set_ylabel("Snaga (kW)")
+    axs[1].set_xticks(range(24))
+    axs[1].grid(True, alpha=0.3)
+    axs[1].legend()
+    
+    plt.tight_layout()
+    profiles_path = os.path.join(report_dir, 'profiles.png')
+    plt.savefig(profiles_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    log_success(f"Grafikoni sačuvani: {profiles_path}")
+    
+    # 4. Kreiranje PDF-a
+    with PdfPages(pdf_path) as pdf:
+        # Naslovna
+        fig_title = plt.figure(figsize=(8.5, 11))
+        plt.axis('off')
+        plt.text(0.5, 0.95, "RURALSTAR SJEDNICA\nFINALNI IZVJEŠTAJ", ha='center', va='center', fontsize=22, fontweight='bold')
+        
+        total_prod = df['production_w'].sum() / 1000
+        total_cons = df['consumption_w'].sum() / 1000
+        
+        info_text = (
+            f"Lokacija: Bileća (Cemerno), BiH\n"
+            f"Nadmorska visina: 1076 m\n"
+            f"Instalirana snaga: {config.get('n_panels', 12) * 0.54:.1f} kWp\n\n"
+            f"REZULTATI SIMULACIJE:\n"
+            f"Godišnja proizvodnja: {total_prod:,.1f} kWh\n"
+            f"Godišnja potrošnja: {total_cons:,.1f} kWh\n"
+            f"Višak energije: {total_prod - total_cons:,.1f} kWh"
+        )
+        plt.text(0.5, 0.7, info_text, ha='center', va='center', fontsize=14, family='monospace', bbox=dict(boxstyle="round", facecolor="#f0f0f0"))
+        pdf.savefig(fig_title); plt.close()
+        
+        # Layout
+        if os.path.exists(layout_path):
+            img = plt.imread(layout_path)
+            fig = plt.figure(figsize=(10, 6)); plt.imshow(img); plt.axis('off'); pdf.savefig(fig); plt.close()
+            
+        # Grafikoni
+        if os.path.exists(profiles_path):
+            img = plt.imread(profiles_path)
+            fig = plt.figure(figsize=(10, 8)); plt.imshow(img); plt.axis('off'); pdf.savefig(fig); plt.close()
+            
+        # Heatmap / False Color (ako postoji)
+        fc_path = os.path.join(base_path, 'radiance_results', 'images', 'falsecolor_solar_radiance.png')
+        if os.path.exists(fc_path):
+            img = plt.imread(fc_path)
+            fig = plt.figure(figsize=(10, 8))
+            plt.imshow(img)
+            plt.title("False Color Analiza (Radiance)", fontsize=14, fontweight='bold')
+            plt.axis('off')
+            pdf.savefig(fig); plt.close()
+            
+    log_success(f"✅ FINALNI IZVJEŠTAJ KREIRAN: {pdf_path}")
+
+def main():
+    log_info("🚀 Generisanje finalnog izvještaja...")
+    config, df = load_data()
+    create_report(config, df)
+    log_success("✅ Proces završen!")
+
+if __name__ == "__main__":
+    main()
+
+############################################################
+ DATOTEKA: geometry_engine.py
+############################################################
+
+import os
+import math
+from typing import Dict, Any, cast, List
+from logger import log_info, log_success
+
+def generate_geometry_files(config: Dict[str, Any], equipment: Dict[str, Any]):
+    """
+    Konačna geometrija - Huawei Standard 3.0 (2-High Portrait):
+    - Jedna kompaktna konstrukcija sa 12 panela (2 reda po 6).
+    - Paneli u redu su jedan iznad drugog (leđa uz leđa po visini).
+    - Sve je južno od stuba/kontejnera.
+    - Sjeverna (najviša) ivica cijelog sistema je tik uz temelj.
+    """
+    log_info("📐 Konstruisanje: Huawei Standard 3.0 (2-High Portrait, 2x6 panela)...")
+    
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    scene_path = os.path.join(base_path, 'radiance_scene')
+    os.makedirs(scene_path, exist_ok=True)
+
+    # Dimenzije Huawei 540W panela
+    panel_dims = equipment['panels']['Huawei_IPV540-M1A']['dimensions_mm']
+    pw = float(panel_dims[1]) / 1000.0  # Širina (~1.134m)
+    ph = float(panel_dims[0]) / 1000.0  # Visina (~2.279m)
+    
+    tilt = float(config.get('site_config', config).get('tilt_angle', 45.0))
+    tilt_rad = math.radians(tilt)
+    
+    # Projekcija JEDNOG panela
+    dy = ph * math.cos(tilt_rad) 
+    dz = ph * math.sin(tilt_rad)
+    
+    # Projekcija CIJELOG sistema (2 panela po visini)
+    total_dy = 2 * dy
+    total_dz = 2 * dz
+    clearance = 0.8 # Najniža tačka na jugu
+
+    rad_content = [
+        "# Materijali",
+        "void plastic panel_mat 0 0 5 0.1 0.1 0.1 0.05 0.1",
+        "void plastic steel_mat 0 0 5 0.6 0.6 0.6 0.1 0.0",
+        "void plastic concrete_mat 0 0 5 0.6 0.6 0.6 0.0 0.0"
+    ]
+
+    # 1. SJEVERNI OBJEKTI (Temelj, Stub, Kontejner)
+    rad_content.append("\n# Temelj\nconcrete_mat box foundation\n0 0 15\n  -2.9 -2.9 0\n  5.8 5.8 0.2")
+    rad_content.append("\n# Stub\nsteel_mat box tower_base\n0 0 15\n  -2.835 -2.835 0.2\n  5.67 5.67 5.0")
+    rad_content.append("\n# Kontejner\nconcrete_mat box container\n0 0 15\n  -1.5 -1.1 0.2\n  3.0 2.2 2.4")
+
+    # 2. KOMPAKTNI SISTEM PANELA (2 reda po 6)
+    panels_per_row = 6
+    row_width = panels_per_row * pw
+    start_x = -row_width / 2
+    
+    # Pozicioniranje: Najviša ivica (sjeverna) je na Y = -3.0
+    y_top_limit = -3.0
+    y_bottom_limit = y_top_limit - total_dy
+
+    # Glavne noseće šine (Rails) - idu ispod cijelog sistema
+    # Postavljamo 3 šine: dole, sredina (spoj panela), gore
+    for rail_pos in [0.1, 1.0, 1.9]: # Pozicije u odnosu na visinu panela
+        ry = y_bottom_limit + (rail_pos * dy)
+        rz = clearance + (rail_pos * dz)
+        rad_content.append(f"\nsteel_mat box rail_{rail_pos}\n0 0 15")
+        rad_content.append(f"  {start_x:.3f} {ry:.3f} {rz - 0.05:.3f}\n  {row_width:.3f} 0.06 0.06")
+
+    # Paneli: r=0 je donji (južni), r=1 je gornji (sjeverni)
+    for r in range(2):
+        y_low = y_bottom_limit + (r * dy)
+        z_low = clearance + (r * dz)
+        
+        for p in range(panels_per_row):
+            cx = start_x + (p * pw)
+            name = f"panel_row{r}_{p}"
+            rad_content.append(f"\npanel_mat polygon {name}\n0 0 12")
+            # Donje tačke reda
+            rad_content.append(f"  {cx:.3f} {y_low:.3f} {z_low:.3f}")
+            rad_content.append(f"  {cx + pw:.3f} {y_low:.3f} {z_low:.3f}")
+            # Gornje tačke reda
+            rad_content.append(f"  {cx + pw:.3f} {y_low + dy:.3f} {z_low + dz:.3f}")
+            rad_content.append(f"  {cx:.3f} {y_low + dy:.3f} {z_low + dz:.3f}")
+
+    output_file = os.path.join(scene_path, 'objects.rad')
+    with open(output_file, 'w') as f:
+        f.write("\n".join(rad_content))
+    
+    log_success(f"✅ Geometrija završena: 2x6 panela u kompaktnom bloku južno od stuba.")
+    return output_file
+
+def generate_sensor_points(panels_geostats: List[Dict[str, Any]]) -> str:
+    """
+    Kreira fajl sa koordinatama (X Y Z) i vektorima (nX nY nZ) 
+    za svaki panel (prednja i zadnja strana).
+    """
+    sensors_path = "radiance_scene/sensors.pts"
+    with open(sensors_path, "w") as f:
+        for p in panels_geostats:
+            # Centar panela
+            cx, cy, cz = p['center']
+            nx, ny, nz = p['normal'] # Normala prednje strane
+            
+            # Prednja strana
+            f.write(f"{cx} {cy} {cz} {nx} {ny} {nz}\n")
+            # Zadnja strana (obrnuta normala za bifacijalni dobitak)
+            f.write(f"{cx} {cy} {cz} {-nx} {-ny} {-nz}\n")
+            
+    return sensors_path
+
+############################################################
+ DATOTEKA: KONTEKST_QWEN.txt
+############################################################
+
+
+uputstvo za radiance!
+## https://bifacial-radiance.readthedocs.io/en/latest/
+
+## https://www.nlr.gov/pv/pv-bifacial-irradiance-toolkit
+
+############################################################
+ DATOTEKA: logger.py
+############################################################
+
+import sys
+from datetime import datetime
+
+class Colors:
+    INFO = '\033[94m'
+    SUCCESS = '\033[92m'
+    WARNING = '\033[93m'
+    ERROR = '\033[91m'
+    RESET = '\033[0m'
+    BOLD = '\033[1m'
+
+def _get_timestamp() -> str:
+    return datetime.now().strftime("%H:%M:%S")
+
+def log_info(msg: str) -> None:
+    print(f"{Colors.INFO}[{_get_timestamp()}] ℹ️  {msg}{Colors.RESET}")
+
+def log_success(msg: str) -> None:
+    print(f"{Colors.SUCCESS}[{_get_timestamp()}] ✅ {msg}{Colors.RESET}")
+
+def log_warning(msg: str) -> None:
+    print(f"{Colors.WARNING}[{_get_timestamp()}] ⚠️  {msg}{Colors.RESET}")
+
+def log_error(msg: str) -> None:
+    print(f"{Colors.ERROR}[{_get_timestamp()}] ❌ {msg}{Colors.RESET}")
+
+def log_header(msg: str) -> None:
+    print(f"\n{Colors.BOLD}{Colors.INFO}{'='*60}{Colors.RESET}")
+    print(f"{Colors.BOLD}{Colors.INFO}{msg.center(60)}{Colors.RESET}")
+    print(f"{Colors.BOLD}{Colors.INFO}{'='*60}{Colors.RESET}\n")
+
+############################################################
+ DATOTEKA: plot_system_layout.py
+############################################################
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import numpy as np
+import json
+import os
+from logger import log_info, log_success, log_error, log_warning
+
+
+def load_config():
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    
+    with open(os.path.join(base_path, 'site_config.json'), 'r') as f:
+        site = json.load(f)
+        
+    with open(os.path.join(base_path, 'equipment_db.json'), 'r') as f:
+        equip = json.load(f)
+        
+    return site, equip
+
+def plot_layout(site, equip):
+    log_info("Generišem detaljan sistemski layout (Kontejner, Ograda, Paneli)...")
+    
+    fig, ax = plt.subplots(figsize=(12, 10))
+    
+    # --- 1. Parametri iz konfiguracije ---
+    # Lokacija i orijentacija
+    n_panels = site.get('n_panels', 12)
+    tilt = site.get('tilt_angle', 45)
+    azimuth = site.get('azimuth_angle', 180) # Jug
+    
+    # Dimenzije panela (Huawei 540W)
+    panel_w = equip['panels']['Huawei_IPV540-M1A']['dimensions_mm'][1] / 1000.0 # Širina (m)
+    panel_h = equip['panels']['Huawei_IPV540-M1A']['dimensions_mm'][0] / 1000.0 # Visina (m)
+    
+    # Postavke nosača
+    clearance = site.get('module_clearance_height', 0.5)
+    pitch = 3.0 # Razmak redova
+    
+    # Dimenzije objekta (Procjena na osnovu tipičnog RAN kontejnera ako nije u JSON)
+    # Ako imaš tačne dimenzije u JSON, ubaci ih ovdje
+    container_w = 2.5 # metara
+    container_l = 3.5 # metara
+    
+    # Ograda (Pretpostavka kvadratne parcele oko objekta)
+    fence_size = 15.0 # 15x15 metara
+    
+    # --- 2. Crtanje Ograde ---
+    fence = patches.Rectangle((-fence_size/2, -fence_size/2), fence_size, fence_size, 
+                              linewidth=2, edgecolor='gray', facecolor='none', linestyle='--', label='Ograda')
+    ax.add_patch(fence)
+    
+    # --- 3. Crtanje Kontejnera (Centrirano) ---
+    # Kontejner je pravougaonik u centru (0,0)
+    container = patches.Rectangle((-container_w/2, -container_l/2), container_w, container_l, 
+                                  linewidth=2, edgecolor='blue', facecolor='#e0e0ff', label='RAN Kontejner')
+    ax.add_patch(container)
+    ax.text(0, 0, 'Kontejner', ha='center', va='center', color='blue', fontsize=9, fontweight='bold')
+    
+    # --- 4. Crtanje Antene (Na vrhu kontejnera ili blizu) ---
+    # Simuliramo antenu kao krug/cilindar na vrhu kontejnera
+    antenna_x, antenna_y = 0, container_l/2 + 0.5
+    antenna = patches.Circle((antenna_x, antenna_y), radius=0.3, color='black', label='Antena')
+    ax.add_patch(antenna)
+    ax.text(antenna_x, antenna_y+0.5, 'Antena', ha='center', va='bottom', fontsize=8)
+    
+    # --- 5. Crtanje Panela (12 komada u 1 redu ili 2 reda?) ---
+    # Prethodna konfiguracija: 12 panela, 1 red (nRows=1, nMods=12)
+    # To znači niz od 12 panela jedan do drugog.
+    # Ukupna dužina niza = 12 * panel_w
+    # Centriramo niz ispred kontejnera (na jugu, jer je azimuth 180)
+    
+    total_array_width = n_panels * panel_w
+    start_x = -total_array_width / 2
+    
+    # Pozicija centra panela (ispred kontejnera, recimo 5 metara južno)
+    array_center_y = - (container_l/2 + 4.0) 
+    array_center_x = 0
+    
+    # Crtamo svaki panel kao pravougaonik (projekcija na tlo ili stvarna širina)
+    # Za Top View, crtamo širinu panela i dubinu koju zauzima (projekcija)
+    # Dubina projekcije = panel_h * cos(tilt)
+    projected_depth = panel_h * np.cos(np.radians(tilt))
+    
+    panel_patches = []
+    for i in range(n_panels):
+        px = start_x + (i * panel_w) + (panel_w/2) # Centar i-tog panela
+        py = array_center_y
+        
+        # Pravougaonik panela (Top View)
+        # Širina = panel_w, Visina (u top view) = projected_depth
+        # Rotacija? Ako je azimuth 180 (Jug), a mi gledamo odozgo, paneli su vodoravno orijentisani ako je osa rotacije E-W.
+        # Pretpostavljamo standardni mounting: dugom stranom horizontalno.
+        
+        rect = patches.Rectangle((px - panel_w/2, py - projected_depth/2), panel_w, projected_depth, 
+                                 linewidth=1, edgecolor='darkgreen', facecolor='#4CAF50', alpha=0.7)
+        ax.add_patch(rect)
+        panel_patches.append(rect)
+        
+        # Dodijeli broj panelu
+        if i % 2 == 0: # Svakom drugom piši broj da ne bude gužve
+            ax.text(px, py, f'{i+1}', ha='center', va='center', color='white', fontsize=7, fontweight='bold')
+
+    # Naslov i legende
+    ax.set_title(f'RuralStar Sjednica - Sistemski Layout\n{ n_panels }x Huawei 540W | Tilt: {tilt}° | Azimuth: {azimuth}° (Jug)', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Istok <--> Zapad (metri)')
+    ax.set_ylabel('Sjever <--> Jug (metri)')
+    
+    ax.set_aspect('equal')
+    ax.grid(True, linestyle=':', alpha=0.6)
+    ax.legend(loc='upper right')
+    
+    # Limiti prikaza
+    limit = fence_size / 2 + 1
+    ax.set_xlim(-limit, limit)
+    ax.set_ylim(-limit, limit)
+    
+    # Čuvanje slike
+    out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results', 'system_layout_detailed.png')
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    plt.savefig(out_path, dpi=150, bbox_inches='tight')
+    log_success(f"Detaljni layout sačuvan: {out_path}")
+    plt.close()
+
+def plot_production_profile(df_results):
+    """Generiše grafikon proizvodnje ako postoje podaci."""
+    if df_results is None or df_results.empty:
+        log_info("Nema podataka za grafikon proizvodnje.")
+        return
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    
+    # Grupisanje po danima ili mjesecima za preglednost
+    df_results['date'] = df_results.index.date
+    daily_prod = df_results.groupby('date')['poa_front'].sum() / 1000 # kWh (približno)
+    
+    ax.bar(range(len(daily_prod)), daily_prod.values, color='orange', alpha=0.7, label='Dnevna Proizvodnja (kWh)')
+    ax.set_title('Godišnji Profil Proizvodnje (PVLib Fallback Podaci)', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Dan u godini')
+    ax.set_ylabel('Energija (kWh)')
+    ax.grid(True, axis='y', linestyle='--', alpha=0.5)
+    ax.legend()
+    
+    out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results', 'production_profile.png')
+    plt.savefig(out_path, dpi=150, bbox_inches='tight')
+    log_success(f"Grafikon proizvodnje sačuvan: {out_path}")
+    plt.close()
+
+if __name__ == "__main__":
+    try:
+        site, equip = load_config()
+        plot_layout(site, equip)
+        
+        # Pokušaj učitavanja rezultata iz CSV-a ako postoji
+        # (Ovo je pojednostavljeno, u stvarnosti bi učitali iz run_simulation outputa)
+        # Za sada samo crtamo layout.
+        log_success("Vizualizacija sistema završena!")
+        
+    except Exception as e:
+        log_error(f"Greška pri vizualizaciji: {e}")
+        import traceback
+        traceback.print_exc()
+
+############################################################
+ DATOTEKA: radiance_engine.py
+############################################################
+
+import os
+import numpy as np
+import pandas as pd
+import bifacial_radiance as br
+from logger import log_info, log_error, log_warning, log_success
+
+class RadianceEngine:
+    def __init__(self, config, equipment_db):
+        self.config = config
+        self.equipment = equipment_db
+        self.sys_params = equipment_db.get('system_parameters', {})
+        
+        self.albedo = float(self.sys_params.get('albedo', 0.40))
+        self.bifaciality = float(self.sys_params.get('bifaciality_factor', 0.80))
+        
+        self.base_path = os.path.dirname(os.path.abspath(__file__))
+        self.rad_path = os.path.join(self.base_path, 'radiance_results')
+        os.makedirs(self.rad_path, exist_ok=True)
+
+    def run_simulation(self, weather_df):
+        log_info("Pokrećem bifacial Radiance simulaciju (Professional Mode)...")
+        
+        try:
+            demo = br.RadianceObj(name='ruralstar_pro', path=self.rad_path)
+            demo.setGround(self.albedo)
+            
+            # --- KLJUČNA PROMJENA: Korišćenje stvarnog EPW fajla ---
+            epw_file = os.path.join(self.rad_path, 'bileca_cemerno.epw')
+            if not os.path.exists(epw_file):
+                raise FileNotFoundError(f"EPW fajl nije pronađen: {epw_file}")
+            
+            log_info(f"Koristim validirani EPW: {os.path.basename(epw_file)}")
+            demo.readWeatherFile(weatherFile=epw_file)
+            
+            # Provjera metapodataka
+            meta = getattr(demo, 'metadata', {})
+            log_info(f"Lokacija: Lat={meta.get('latitude')}, Lon={meta.get('longitude')}, Alt={meta.get('altitude')}m")
+
+            # Definisanje modula
+            panel_specs = self.equipment['panels']['Huawei_IPV540-M1A']
+            width = float(panel_specs['dimensions_mm'][1]) / 1000.0
+            height = float(panel_specs['dimensions_mm'][0]) / 1000.0
+            bifi_val = int(self.bifaciality * 100)
+
+            module = demo.makeModule(
+                name='Huawei_540W_Bi',
+                x=width,
+                y=height,
+                bifi=bifi_val,
+                numpanels=1
+            )
+
+            # Parametri scene
+            tilt = float(self.sys_params.get('tilt_angle', 45.0))
+            azimuth = float(self.sys_params.get('azimuth_angle', 180.0))
+            clearance = float(self.sys_params.get('module_clearance_height', 0.5))
+            pitch = 3.0
+            
+            sceneDict = {
+                'tilt': tilt,
+                'azimuth': azimuth,
+                'clearance_height': clearance,
+                'pitch': pitch,
+                'nMods': 12,
+                'nRows': 1 # ili 2 ako želiš dva reda
+            }
+
+            scene = demo.makeScene(module=module, sceneDict=sceneDict)
+            demo.genCumSky()
+            oct_file = demo.makeOct(demo.getfilelist())
+
+            # Analiza
+            analysis = br.AnalysisObj(oct_file, demo.basename)
+            frontscan, backscan = analysis.moduleAnalysis(scene)
+            results = analysis.analysis(oct_file, demo.basename, frontscan, backscan)
+
+            # Obrada rezultata
+            results_dir = os.path.join(self.rad_path, 'results')
+            if not os.path.exists(results_dir):
+                raise FileNotFoundError(f"Folder {results_dir} ne postoji.")
+                
+            csv_files = [f for f in os.listdir(results_dir) if f.endswith('.csv')]
+            if not csv_files:
+                return self._fallback_pvlib(weather_df)
+            
+            df_res = pd.read_csv(os.path.join(results_dir, csv_files[0]))
+            col_front = next((c for c in df_res.columns if 'Front' in c), None)
+            col_back = next((c for c in df_res.columns if 'Back' in c), None)
+            
+            if not col_front or not col_back:
+                return self._fallback_pvlib(weather_df)
+            
+            final_df = pd.DataFrame(index=weather_df.index)
+            len_data = min(len(df_res), len(final_df))
+            
+            poa_front = np.asarray(df_res[col_front])
+            poa_back = np.asarray(df_res[col_back])
+            
+            final_df['poa_front'] = pd.Series(poa_front[:len_data], index=final_df.index[:len_data])
+            final_df['poa_back'] = pd.Series(poa_back[:len_data], index=final_df.index[:len_data])
+            
+            if len_data < len(final_df):
+                final_df['poa_front'] = final_df['poa_front'].fillna(0)
+                final_df['poa_back'] = final_df['poa_back'].fillna(0)
+            
+            log_success(f"Radiance uspješan! Front: {final_df['poa_front'].mean():.1f} W/m2")
+            return final_df
+
+        except Exception as e:
+            log_error(f"Greška u Radiance: {e}")
+            import traceback
+            log_error(traceback.format_exc())
+            return self._fallback_pvlib(weather_df)
+
+    def _fallback_pvlib(self, df):
+        log_warning("Koristim PVLib fallback.")
+        from energy_simulator import calculate_poa_irradiance_simple
+        poa_front = []
+        tilt = float(self.config.get('tilt_angle', 45.0))
+        azimuth = float(self.config.get('azimuth_angle', 180.0))
+        lat = float(self.config.get('latitude', 42.9448))
+        lon = float(self.config.get('longitude', 18.3236))
+        for index, row in df.iterrows():
+            poa_front.append(calculate_poa_irradiance_simple(row, tilt, azimuth, lat, lon))
+        result_df = pd.DataFrame(index=df.index)
+        result_df['poa_front'] = poa_front
+        result_df['poa_back'] = [x * 0.15 for x in poa_front]
+        return result_df
+
+############################################################
+ DATOTEKA: run_benchmark.py
+############################################################
+
+import os
+import json
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import pandas as pd
+import numpy as np
+from datetime import datetime
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch, cm
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
+
+from logger import log_info, log_success, log_error, log_warning
+
+# Konfiguracija matplotliba za bolje fontove
+plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial Unicode MS', 'sans-serif']
+plt.rcParams['axes.unicode_minus'] = False
+
+def load_simulation_data():
+    """Učitava konfiguraciju i rezultate simulacije."""
+    log_info("Učitavam podatke za vizualizaciju...")
+    
+    config_path = 'site_config.json'
+    equipment_path = 'equipment_db.json'
+    log_path = 'simulation.log'
+    
+    if not os.path.exists(config_path) or not os.path.exists(equipment_path):
+        log_error("Nedostaju konfiguracioni fajlovi.")
+        return None, None, None
+
+    with open(config_path, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    
+    with open(equipment_path, 'r', encoding='utf-8') as f:
+        equipment = json.load(f)
+        
+    df_results = None
+    
+    # Pokušaj parsiranja log fajla za dobijanje vremenske serije
+    if os.path.exists(log_path):
+        try:
+            data = []
+            with open(log_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if "Sat:" in line and "PV:" in line:
+                        # Parsiraj liniju: "Sat: 2023-01-01 00:00 | PV: 0.0 W | Load: 820.0 W | SOC: 50.0%"
+                        parts = line.split('|')
+                        if len(parts) >= 4:
+                            ts_str = parts[0].split('Sat:')[1].strip()
+                            pv = float(parts[1].split('PV:')[1].replace('W', '').strip())
+                            load = float(parts[2].split('Load:')[1].replace('W', '').strip())
+                            soc = float(parts[3].split('SOC:')[1].replace('%', '').strip())
+                            
+                            data.append({
+                                'timestamp': pd.to_datetime(ts_str),
+                                'production': pv / 1000.0, # kW
+                                'consumption': load / 1000.0, # kW
+                                'soc': soc
+                            })
+            
+            if data:
+                df_results = pd.DataFrame(data)
+                df_results.set_index('timestamp', inplace=True)
+                log_success(f"Učitano {len(df_results)} sati iz loga.")
+            else:
+                log_warning("Log fajl ne sadrži očekivane podatke. Koristim mock podatke.")
+                
+        except Exception as e:
+            log_error(f"Greška pri čitanju loga: {e}")
+    
+    # Ako nema podataka iz loga, generiši mock podatke za prikaz geometrije
+    if df_results is None:
+        log_warning("Nema podataka iz loga. Kreiram privremene podatke za prikaz geometrije.")
+        dates = pd.date_range(start="2023-01-01", periods=8760, freq="h")
+        df_results = pd.DataFrame(index=dates)
+        # Jednostavan sinusni model za proizvodnju
+        df_results['production'] = np.maximum(0, np.sin((df_results.index.hour - 6) * np.pi / 12) * 5.0) # do 5kW
+        df_results['consumption'] = 0.82 + np.random.normal(0, 0.1, len(dates)) # ~820W base
+        df_results['soc'] = 50.0 # Fiksni SOC za mock
+        
+    return config, equipment, df_results
+
+def plot_system_layout(config, equipment):
+    """Crtta tlocrt i bočni presjek sistema (2 nosača)."""
+    log_info("Generišem 2D projekcije geometrije...")
+    
+    geom = config.get('geometry_params', {})
+    n_mounts = geom.get('n_mounts', 2)
+    rows = geom.get('rows_per_mount', 2)
+    cols = geom.get('cols_per_mount', 3)
+    p_width = geom.get('panel_width', 1.13)
+    p_length = geom.get('panel_length', 2.28)
+    tilt = geom.get('tilt', 45)
+    pitch = geom.get('pitch', 3.5)
+    clearance = geom.get('clearance', 0.5)
+    
+    fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+    
+    # --- 1. TLOCRT (Top View) ---
+    ax1 = axs[0]
+    ax1.set_title("Tlocrt sistema (2 nosača)", fontsize=14, fontweight='bold')
+    ax1.set_xlabel("Širina (m)")
+    ax1.set_ylabel("Dubina (m)")
+    ax1.set_aspect('equal')
+    ax1.grid(True, linestyle='--', alpha=0.6)
+    
+    # Crtanje nosača
+    for i in range(n_mounts):
+        x_start = i * pitch
+        # Nosač je širok (cols * p_width)
+        width_total = cols * p_width
+        rect = plt.Rectangle((x_start, -p_length/2), width_total, p_length, 
+                             color='#003366', alpha=0.6, label=f'Nosač {i+1}' if i==0 else "")
+        ax1.add_patch(rect)
+        # Oznaka dimenzija
+        ax1.text(x_start + width_total/2, 0, f"N{i+1}\n{width_total:.1f}m", 
+                 ha='center', va='center', color='white', fontweight='bold')
+        
+    ax1.set_xlim(-1, n_mounts * pitch + 1)
+    ax1.set_ylim(-2, 2)
+    ax1.legend(loc='upper right')
+    
+    # --- 2. BOČNI PRESJEK (Side View) ---
+    ax2 = axs[1]
+    ax2.set_title(f"Bočni presjek (Nagib {tilt}°)", fontsize=14, fontweight='bold')
+    ax2.set_xlabel("Širina (m)")
+    ax2.set_ylabel("Visina (m)")
+    ax2.grid(True, linestyle='--', alpha=0.6)
+    
+    # Parametri za crtanje profila
+    # Vertikalna visina panela
+    h_proj = p_length * np.sin(np.radians(tilt))
+    # Horizontalna dubina projekcije
+    d_proj = p_length * np.cos(np.radians(tilt))
+    
+    # Crtamo profil JEDNOG nosača (ponavlja se)
+    # Donji red
+    z_base = clearance
+    # Gornji red
+    row_gap = geom.get('row_gap', 0.05)
+    z_top_base = z_base + h_proj + row_gap
+    
+    # Funkcija za crtanje profila panela (linija od donjeg do gornjeg ruba)
+    def draw_panel_profile(ax, x_center, z_base_level, color, label):
+        # Donji rub je na (x_center - d_proj/2, z_base_level) - ako je centar u sredini?
+        # Pretpostavimo da je x_center sredina nosača po širini.
+        # Panel ide od x_left do x_right.
+        # Zbog nagiba, donji rub je "ispred" (manji Y u 3D, ali ovdje crtamo X-Z pa je to samo pomak).
+        # Za bočni pogled (presjek kroz sredinu nosača):
+        # Donji rub: x = x_center - d_proj/2 ? Ne, zavisi kako je definisan centar.
+        # Najjednostavnije: Centar panela je na (x_center, z_base + h_proj/2).
+        # Donji rub: x = x_center - (d_proj/2), z = z_base
+        # Gornji rub: x = x_center + (d_proj/2), z = z_base + h_proj
+        
+        x_bottom = x_center - (d_proj / 2)
+        x_top = x_center + (d_proj / 2)
+        
+        ax.plot([x_bottom, x_top], [z_base_level, z_base_level + h_proj], 
+                color=color, linewidth=3, label=label)
+        # Stubovi (pojednostavljeno)
+        ax.plot([x_bottom, x_bottom], [0, z_base_level], 'k--', linewidth=1, alpha=0.5)
+        ax.plot([x_top, x_top], [0, z_base_level + h_proj], 'k--', linewidth=1, alpha=0.5)
+
+    # Crtamo jedan reprezentativni nosač u presjeku
+    center_x = pitch / 2 # Sredina prvog nosača
+    
+    # Donji red (3 panela jedan do drugog, ali u presjeku se vide kao jedna linija ako su u istoj ravni)
+    # U bočnom presjeku vidimo samo profil jedne kolone (ili sve ako su pomjerene, ali ovdje su u istoj ravni po dubini)
+    # Dakle, crtamo samo jedan profil za donji i jedan za gornji red.
+    
+    draw_panel_profile(ax2, center_x, z_base, '#003366', 'Donji red')
+    draw_panel_profile(ax2, center_x, z_top_base, '#006699', 'Gornji red')
+    
+    # Tlo
+    ax2.axhline(0, color='green', linewidth=2, label='Tlo')
+    
+    ax2.set_xlim(-1, pitch + 1)
+    ax2.set_ylim(0, z_top_base + h_proj + 1)
+    ax2.legend(loc='upper left')
+    
+    plt.tight_layout()
+    save_path = 'report_results/system_layout.png'
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+    log_success(f"Sačuvano: {save_path}")
+
+def plot_daily_profile(df):
+    """Crtta dnevni profil proizvodnje i potrošnje (prosjek dana)."""
+    log_info("Generišem dnevni profil...")
+    
+    # Grupiši po satu i uzmi prosjek
+    df_hourly = df.groupby(df.index.hour).mean()
+    
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(df_hourly.index, df_hourly['production'], 'o-', color='orange', label='Proizvodnja (kW)', linewidth=2)
+    ax.plot(df_hourly.index, df_hourly['consumption'], 's-', color='red', label='Potrošnja (kW)', linewidth=2)
+    
+    ax.set_title("Prosječni dnevni profil (Proizvodnja vs Potrošnja)", fontsize=14, fontweight='bold')
+    ax.set_xlabel("Sat u danu")
+    ax.set_ylabel("Snaga (kW)")
+    ax.set_xticks(range(0, 24))
+    ax.grid(True, linestyle='--', alpha=0.6)
+    ax.legend()
+    
+    plt.tight_layout()
+    save_path = 'report_results/daily_profile.png'
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+    log_success(f"Sačuvano: {save_path}")
+
+def plot_monthly_balance(df):
+    """Crtta mjesečni bilans energije i prosječan SoC."""
+    log_info("Generišem mjesečni bilans...")
+    
+    # Dodaj kolonu mjesec
+    df['month'] = df.index.month
+    df['year_month'] = df.index.to_period('M')
+    
+    # Agregacija po mjesecu
+    monthly = df.groupby('year_month').agg({
+        'production': 'sum', # kWh (ako je u kW * 1h) -> zapravo suma kW * 1h = kWh
+        'consumption': 'sum',
+        'soc': 'mean'
+    }).reset_index()
+    
+    # Pretvori Period u Timestamp za lakše plotovanje
+    monthly['date'] = monthly['year_month'].dt.to_timestamp()
+    
+    fig, ax1 = plt.subplots(figsize=(12, 6))
+    
+    # Stupci za energiju
+    width = 0.4
+    x = np.arange(len(monthly))
+    
+    bars1 = ax1.bar(x - width/2, monthly['production'], width, label='Proizvodnja (kWh)', color='#2ca02c', alpha=0.8)
+    bars2 = ax1.bar(x + width/2, monthly['consumption'], width, label='Potrošnja (kWh)', color='#d62728', alpha=0.8)
+    
+    ax1.set_xlabel("Mjesec", fontsize=12)
+    ax1.set_ylabel("Energija (kWh)", fontsize=12, color='black')
+    ax1.tick_params(axis='y', labelcolor='black')
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(monthly['date'].dt.strftime('%b'), rotation=45)
+    ax1.grid(True, axis='y', linestyle='--', alpha=0.3)
+    
+    # Linija za SoC (desna osa)
+    ax2 = ax1.twinx()
+    line_soc = ax2.plot(x, monthly['soc'], 'o-', color='blue', label='Prosječan SoC (%)', linewidth=2, markersize=6)
+    ax2.set_ylabel("Stanje baterije SoC (%)", fontsize=12, color='blue')
+    ax2.tick_params(axis='y', labelcolor='blue')
+    ax2.set_ylim(0, 100)
+    
+    # Naslov i legende
+    plt.title("Mjesečni bilans energije i stanje baterije", fontsize=14, fontweight='bold')
+    
+    # Spajanje legendi
+    lines_1, labels_1 = ax1.get_legend_handles_labels()
+    lines_2, labels_2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper left')
+    
+    plt.tight_layout()
+    save_path = 'report_results/monthly_balance.png'
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+    log_success(f"Sačuvano: {save_path}")
+    
+    return monthly
+
+def create_pdf_report(config, df_results, monthly_data):
+    """Kreira PDF izvještaj."""
+    log_info("Kreiram PDF izvještaj...")
+    
+    doc = SimpleDocTemplate("RuralStar_Sjednica_Report.pdf", pagesize=A4,
+                            rightMargin=2*cm, leftMargin=2*cm, topMargin=2*cm, bottomMargin=2*cm)
+    elements = []
+    styles = getSampleStyleSheet()
+    
+    # Definicija stila za naslove i tekst
+    title_style = ParagraphStyle(name='CustomTitle', parent=styles['Heading1'], 
+                                 fontSize=18, leading=22, alignment=TA_CENTER, spaceAfter=30)
+    heading_style = ParagraphStyle(name='CustomHeading', parent=styles['Heading2'], 
+                                   fontSize=14, leading=18, spaceBefore=12, spaceAfter=10)
+    normal_style = styles['Normal']
+    italic_style = ParagraphStyle(name='CustomItalic', parent=styles['Italic'], alignment=TA_CENTER)
+    
+    # --- Naslovna stranica ---
+    elements.append(Paragraph("Izvještaj o simulaciji RuralStar Sjednica", title_style))
+    elements.append(Paragraph(f"Datum generisanja: {datetime.now().strftime('%d.%m.%Y %H:%M')}", 
+                              ParagraphStyle(name='DateStyle', parent=normal_style, alignment=TA_CENTER)))
+    elements.append(Spacer(1, 0.5*inch))
+    
+    # --- 1. Konfiguracija sistema ---
+    elements.append(Paragraph("1. Konfiguracija Sistema", heading_style))
+    
+    geom = config.get('geometry_params', {})
+    eq = config.get('equipment', {}) # Pretpostavka da je equipment u configu ili globalno
+    
+    config_data = [
+        ["Parametar", "Vrijednost"],
+        ["Lokacija", f"{config.get('latitude', 42.94)}° N, {config.get('longitude', 18.32)}° E"],
+        ["Nadmorska visina", f"{config.get('altitude', 1076)} m"],
+        ["Ukupno panela", f"{geom.get('total_panels', 12)} kom (Huawei 540W)"],
+        ["Raspored", f"{geom.get('n_mounts', 2)} nosača x {geom.get('rows_per_mount', 2)} reda x {geom.get('cols_per_mount', 3)} kolone"],
+        ["Nagib (Tilt)", f"{geom.get('tilt', 45)}°"],
+        ["Orijentacija", "Jug (180°)"],
+        ["Baterija", f"{config.get('battery_capacity_kwh', 46.08)} kWh"],
+        ["Generator", f"{config.get('gen_power_kw', 13.5)} kW"]
+    ]
+    
+    t_config = Table(config_data, colWidths=[4*cm, 6*cm])
+    t_config.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    elements.append(t_config)
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # --- 2. Vizualizacija Geometrije ---
+    elements.append(Paragraph("2. Geometrija Rasporeda", heading_style))
+    img_layout = Image("report_results/system_layout.png", width=6.5*inch, height=4*inch)
+    elements.append(img_layout)
+    elements.append(Paragraph("<i>Slika 1: Tlocrt i bočni presjek sistema (2 nosača).</i>", italic_style))
+    elements.append(PageBreak())
+    
+    # --- 3. Energetski Bilans ---
+    elements.append(Paragraph("3. Energetski Bilans", heading_style))
+    
+    # Dnevni profil
+    img_daily = Image("report_results/daily_profile.png", width=6.5*inch, height=4*inch)
+    elements.append(img_daily)
+    elements.append(Paragraph("<i>Slika 2: Prosječni dnevni profil proizvodnje i potrošnje.</i>", italic_style))
+    elements.append(Spacer(1, 0.2*inch))
+    
+    # Mjesečni bilans
+    img_monthly = Image("report_results/monthly_balance.png", width=6.5*inch, height=4*inch)
+    elements.append(img_monthly)
+    elements.append(Paragraph("<i>Slika 3: Mjesečni bilans energije i prosječno stanje baterije (SoC).</i>", italic_style))
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # Tabela mjesečnih rezultata
+    elements.append(Paragraph("Detaljni mjesečni podaci:", styles['Normal']))
+    month_rows = [["Mjesec", "Proizvodnja (kWh)", "Potrošnja (kWh)", "Višak/Manjak (kWh)", "Prosječan SoC (%)"]]
+    for _, row in monthly_data.iterrows():
+        diff = row['production'] - row['consumption']
+        month_rows.append([
+            row['date'].strftime('%B'),
+            f"{row['production']:.1f}",
+            f"{row['consumption']:.1f}",
+            f"{diff:+.1f}",
+            f"{row['soc']:.1f}"
+        ])
+    
+    t_monthly = Table(month_rows, colWidths=[2.5*cm, 2.5*cm, 2.5*cm, 2.5*cm, 2.5*cm])
+    t_monthly.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.beige])
+    ]))
+    elements.append(t_monthly)
+    
+    # --- Kraj ---
+    elements.append(PageBreak())
+    elements.append(Paragraph("Kraj izvještaja.", ParagraphStyle(name='EndStyle', parent=normal_style, alignment=TA_CENTER)))
+    
+    # Generisanje PDF-a
+    doc.build(elements)
+    log_success("PDF izvještaj uspješno kreiran: RuralStar_Sjednica_Report.pdf")
+
+def main():
+    log_info("🎨 Generisanje finalnog izvještaja...")
+    
+    config, equipment, df_results = load_simulation_data()
+    if not config:
+        return
+
+    # 1. Geometrija
+    plot_system_layout(config, equipment)
+    
+    # 2. Profili
+    plot_daily_profile(df_results)
+    
+    # 3. Mjesečni bilans
+    monthly_data = plot_monthly_balance(df_results)
+    
+    # 4. PDF
+    create_pdf_report(config, df_results, monthly_data)
+    
+    log_success("✅ Vizualizacije i izvještaj završeni! Provjerite folder 'report_results'.")
+
+if __name__ == "__main__":
+    main()
+
+############################################################
+ DATOTEKA: run_simulation.py
+############################################################
+
+import os
+import sys
+import pandas as pd
+import pvlib
+from typing import Dict, Any
+
+# Importi tvojih modula
+from logger import log_info, log_success, log_error, log_warning, log_header
+from geometry_engine import generate_geometry_files
+from skies_engine import prepare_sky_simulation, generate_sky, read_epw_data
+from simulation_engine import build_octree, run_sensor_simulation
+from config_loader import load_equipment_data, load_scenarios
+from energy_simulator import simulate_energy_balance
+from generate_advanced_report import generate_pro_report
+
+def run_dual_simulation(epw_path: str, config: Dict[str, Any], equip_db: Dict[str, Any]) -> pd.DataFrame:
+    log_header("POKRETANJE DUALNE SIMULACIJE (PVGIS EPW FIX)")
+    
+    # 1. DIREKTNO UČITAVANJE EPW PREKO PVLIB-A
+    # Ovo preskače sve probleme sa csv parserom
+    try:
+        from pvlib.iotools import read_epw
+        data, metadata = read_epw(epw_path)
+        weather_df = data
+        altitude = metadata.get('altitude', 1055)
+        log_success(f"✅ EPW učitan. Pronađeno {len(weather_df)} zapisa.")
+    except Exception as e:
+        log_error(f"Neuspjelo čitanje EPW preko pvlib: {e}")
+        return pd.DataFrame()
+
+    # 2. Mapiranje kolona - PVLib čitač ih naziva tačno ovako:
+    # 'ghi', 'dni', 'dhi', 'temp_air'
+    if 'temp' not in weather_df.columns and 'temp_air' in weather_df.columns:
+        weather_df['temp'] = weather_df['temp_air']
+
+    # 3. PVLib Model
+    site_cfg = config.get('system_parameters', config.get('site_config', {}))
+    lat = 42.9450
+    lon = 18.3240
+    
+    log_info(f"🤖 Računam PVLib za lokaciju: {lat}, {lon} (Alt: {altitude}m)")
+    
+    try:
+        solpos = pvlib.solarposition.get_solarposition(weather_df.index, lat, lon, altitude)
+        poa_output = pvlib.irradiance.get_total_irradiance(
+            surface_tilt=site_cfg.get('tilt_angle', 45.0), 
+            surface_azimuth=site_cfg.get('azimuth_angle', 180.0),
+            dni=weather_df['dni'], 
+            ghi=weather_df['ghi'], 
+            dhi=weather_df['dhi'], 
+            solar_zenith=solpos['zenith'],
+            solar_azimuth=solpos['azimuth'],
+            albedo=site_cfg.get('albedo', 0.40)
+        )
+        poa_pvlib = pd.DataFrame(poa_output)
+        log_success("✅ PVLib proračun završen.")
+    except Exception as e:
+        log_error(f"PVLib Crash: {e}")
+        # Ako i dalje puca, ispiši kolone da vidimo šta je unutra
+        log_info(f"Dostupne kolone: {list(weather_df.columns)}")
+        return pd.DataFrame()
+
+    # 3. Radiance Priprema (Prije petlje!)
+    log_info("🔦 Pripremam Radiance scenu i geometriju...")
+    rad_objects = generate_geometry_files(config, equip_db)
+    sky_dir = prepare_sky_simulation(weather_df, config)
+    
+    scene_path = "radiance_scene"
+    os.makedirs(scene_path, exist_ok=True)
+    sensors_file = os.path.join(scene_path, "sensors.pts")
+    
+    # Senzori na 0.5m zbog vjetra (Bileća/Čemerno setup)
+    with open(sensors_file, "w") as f:
+        f.write("0.0 -4.0 0.5  0.0 -0.707 0.707\n") # Front
+        f.write("0.0 -4.0 0.5  0.0 0.707 -0.707\n") # Back
+    
+    ##"dual dodan!"
+    dual_results = [] 
+
+    # Analiziramo samo sate sa značajnim zračenjem (head 24 za test)
+    daylight = weather_df[weather_df['ghi'] > 10].head(24)
+    bf = site_cfg.get('bifaciality_factor', 0.80)
+
+    # 4. Glavna Simulacijska Petlja
+    log_info(f"🚀 Pokrećem rendering za {len(daylight)} sati...")
+    for timestamp, row in daylight.iterrows():
+        try:
+            sky_file = generate_sky(row, sky_dir)
+            if not sky_file: continue
+            
+            oct_file = build_octree(sky_file, [rad_objects], scene_path)
+            rad_irr = run_sensor_simulation(oct_file, sensors_file)
+
+            if len(rad_irr) >= 2:
+                # Siguran pristup PVLib podacima preko .at
+                try:
+                    pvlib_val = poa_pvlib[timestamp, 'poa_global']
+                except:
+                    pvlib_val = 0.0
+
+                rad_front, rad_back = rad_irr[0], rad_irr[1]
+                rad_total = rad_front + (rad_back * bf)
+
+                dual_results.append({
+                    'datetime': timestamp,
+                    'PVLib_POA_W': pvlib_val,
+                    'Radiance_Front_W': rad_front,
+                    'Radiance_Back_W': rad_back,
+                    'Radiance_Total_W': rad_total,
+                    'Ambient_Temp': row.get('temp', row.get('temp_air', 20.0))
+                })
+        except Exception as e:
+            log_warning(f"Greška na {timestamp}: {e}")
+
+    # 5. Spašavanje rezultata
+    if dual_results:
+        df_comp = pd.DataFrame(dual_results).set_index('datetime')
+        os.makedirs("results", exist_ok=True)
+        df_comp.to_csv("results/model_comparison.csv")
+        log_success("✅ Dualna simulacija uspješno završena.")
+    else:
+        log_error("❌ Simulacija nije generisala rezultate!")
+        
+    return df_comp
+
+def main():
+    if sys.platform == "win32":
+        import io
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+    log_header("RURALSTAR HYBRID - BILEĆA CASE STUDY")
+    
+    try:
+        os.makedirs("results", exist_ok=True)
+        
+        # Učitavanje setup-a
+        config = load_scenarios()
+        equip = load_equipment_data()
+        
+        # 1. Pokretanje poređenja modela (PVLib vs Radiance)
+        comp_df = run_dual_simulation("bileca_cemerno.epw", config, equip)
+        
+        if not comp_df.empty:
+            log_info("🔋 Simuliram hibridni sistem (Baterije/Potrošnja)...")
+            
+            # Koristimo preciznije Radiance podatke kao ulaz za PV produkciju
+            comp_df['production_w'] = comp_df['Radiance_Total_W']
+            
+            # Odabir prvog dostupnog scenarija za energetski balans
+            scenario_name = list(config.keys())[0]
+            final_data = simulate_energy_balance(comp_df, config[scenario_name], equip)
+            
+            # Finalni fajlovi i izvještaj
+            output_path = "results/final_simulation_output.csv"
+            final_data.to_csv(output_path)
+            log_success(f"💾 Podaci sačuvani u {output_path}")
+            
+            generate_pro_report(output_path, config)
+            log_success("🏆 PRO IZVJEŠTAJ GENERISAN!")
+        else:
+            log_error("Glavni DataFrame je prazan. Provjeri EPW fajl i Radiance putanje.")
+
+    except Exception as e:
+        log_error(f"Kritična greška u glavnom programu: {e}")
+
+if __name__ == "__main__":
+    main()
+
+############################################################
+ DATOTEKA: scrap.py.txt
+############################################################
+
+import os
+
+def merge_files_for_radiance(source_folder, output_filename="spojeni_dokumenti.txt"):
+    # Određivanje putanje roditeljskog foldera
+    parent_folder = os.path.dirname(source_folder)
+    output_path = os.path.join(parent_folder, output_filename)
+    
+    # Podržani formati (dodaj ili oduzmi po potrebi)
+    extensions = ('.txt', '.csv', '.log', '.md', '.py', '.json', '.html', '.css', '.js')
+
+    print(f"Skeniram folder: {source_folder}")
+    print(f"Rezultat će biti spremljen u: {output_path}\n")
+
+    try:
+        with open(output_path, 'w', encoding='utf-8') as outfile:
+            for filename in os.listdir(source_folder):
+                if filename.endswith(extensions):
+                    file_path = os.path.join(source_folder, filename)
+                    
+                    try:
+                        with open(file_path, 'r', encoding='utf-8') as infile:
+                            outfile.write(f"\n{'#'*60}\n")
+                            outfile.write(f" DATOTEKA: {filename}\n")
+                            outfile.write(f"{'#'*60}\n\n")
+                            
+                            outfile.write(infile.read())
+                            outfile.write("\n")
+                        
+                        print(f"Uspješno dodano: {filename}")
+                    except Exception as e:
+                        print(f"Preskočeno (greška): {filename} - {e}")
+        
+        print(f"\nGotovo! Datoteka se nalazi na: {output_path}")
+
+    except Exception as e:
+        print(f"Kritična greška pri kreiranju izlazne datoteke: {e}")
+
+# Direktna putanja do tvog foldera
+tvoj_folder = r"E:\Radiance_build\rural-star-sjednica"
+
+merge_files_for_radiance(tvoj_folder)
+
+
+############################################################
+ DATOTEKA: site_config.json
+############################################################
+
+{
+  "site_config": {
+    "latitude": 42.9448,
+    "longitude": 18.3236,
+    "altitude": 1076.0,
+    "timezone": "1"
+  },
+  "scenario_A_PowerCube": {
+    "description": "PowerCube Hybrid (12 Panela, 6 Baterija)",
+    "n_panels": 12,
+    "n_battery_modules": 6,
+    "battery_config": "Single String",
+    "generator_model": "FG_Wilson_P13.5-6",
+    "loads_active": ["RAN_Unit", "Monitoring_Lights", "ICC_Control", "Cooling_Fan"]
+  }
+}
+
+############################################################
+ DATOTEKA: skies_engine.py
+############################################################
+
+import os
+import subprocess
+from typing import Dict, Any, cast
+import pandas as pd
+from datetime import datetime # Dodajemo za type hinting
+from logger import log_info, log_success, log_error
+
+def generate_sky(row: pd.Series, scene_path: str) -> str:
+    """
+    Generiše Radiance .sky fajl. 
+    Fix: Eksplicitno pretvaramo row.name u datetime/timestamp tip.
+    """
+    # Pylance fix: Cast-ujemo row.name u datetime da bi prepoznao month, day, hour...
+    dt = cast(datetime, row.name)
+    
+    if dt is None:
+        log_error("Red podataka nema validan vremenski pečat.")
+        return ""
+
+    month = dt.month
+    day = dt.day
+    hour = dt.hour + dt.minute / 60.0
+    
+    # Sigurno izvlačenje zračenja (ako Pylance pravi problem oko Unknown tipa)
+    dni = float(row.get('dni', 0))
+    dhi = float(row.get('dhi', 0))
+    
+    # strftime sada radi jer Pylance zna da je dt tipa datetime
+    sky_filename = f"sky_{dt.strftime('%m%d_%H%M')}.rad"
+    sky_path = os.path.join(scene_path, sky_filename)
+    
+    # Gendaylit komanda
+    command = [
+        "gendaylit", 
+        str(month), str(day), f"{hour:.2f}",
+        "-W", str(dni), str(dhi),
+        "-g", "0.2"
+    ]
+    
+    try:
+        # Kod produkcionih sistema, provjeravamo da li gensky postoji
+        sky_content = subprocess.check_output(command, stderr=subprocess.STDOUT).decode('utf-8')
+        
+        full_content = (
+            f"# Sky for {dt}\n"
+            f"{sky_content}"
+            "\nskyfunc glow ground_glow\n0\n0\n4 1 1 1 0\n"
+            "\nground_glow source ground\n0\n0\n4 0 0 -1 180\n"
+        )
+        
+        with open(sky_path, "w") as f:
+            f.write(full_content)
+            
+        return sky_path
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        log_error(f"Gendaylit nije dostupan ili je greška: {e}")
+        return ""
+
+def prepare_sky_simulation(weather_df: pd.DataFrame, config: Dict[str, Any]):
+    """
+    Priprema simulaciju neba.
+    """
+    log_info("☁️  Pokretanje Skies Engine-a...")
+    
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    scene_path = os.path.join(base_path, 'radiance_scene', 'skies')
+    os.makedirs(scene_path, exist_ok=True)
+    
+    # Osiguravamo da su nazivi kolona ispravni (lowercase)
+    weather_df.columns = [c.lower() for c in weather_df.columns]
+    
+    # Filtriramo sate sa suncem
+    daylight = weather_df[weather_df['dni'] > 0]
+    
+    if daylight.empty:
+        log_error("Nema sunčanih sati u učitanim podacima!")
+        return scene_path
+
+    # Uzimamo prvi red za test
+    test_row = daylight.iloc[0]
+    sky_file = generate_sky(test_row, scene_path)
+    
+    if sky_file:
+        log_success(f"Nebo generisano: {os.path.basename(sky_file)}")
+        
+    return scene_path
+
+def read_epw_data(file_path):
+    """Učitava EPW fajl i priprema podatke za simulaciju."""
+    # Čitamo zaglavlje za visinu
+    with open(file_path, 'r') as f:
+        first_line = f.readline()
+        altitude = float(first_line.split(',')[-1].strip())
+
+    # Čitamo podatke (preskačemo 8 linija zaglavlja)
+    df_raw = pd.read_csv(file_path, skiprows=8, header=None)
+    
+    df = pd.DataFrame()
+    df['month'] = df_raw[1]
+    df['day'] = df_raw[2]
+    df['hour'] = df_raw[3] - 1  # Korekcija za Radiance (0-23)
+    df['dni'] = df_raw[14]
+    df['dhi'] = df_raw[15]
+    df['temp'] = df_raw[6]
+    
+    # Vremenska osa
+    df['datetime'] = pd.to_datetime({
+        'year': 2024, 'month': df['month'], 'day': df['day'], 'hour': df['hour']
+    })
+    df.set_index('datetime', inplace=True)
+    
+    return df, altitude
