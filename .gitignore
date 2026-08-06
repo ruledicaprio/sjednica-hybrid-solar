@@ -1,4 +1,3 @@
-```python
 # Compiled Python files
 *.pyc
 __pycache__/
@@ -19,7 +18,6 @@ node_modules/
 *.env.*
 
 # Editors
-.vscode/
 .idea/
 
 # Coverage reports
@@ -30,4 +28,17 @@ htmlcov/
 # Python cache
 .mypy_cache/
 .pytest_cache/
-```
+
+# Vendored Radiance distribution — download from radiance-online.org,
+# do not commit. Previously bloated this repo to ~100 MB.
+bin/
+lib/
+Radiance_*_Windows.zip
+
+# Regenerable Radiance simulation artifacts
+rural-star-sjednica/output/radiance_results/
+rural-star-sjednica/output/radiance_scene/
+*.oct
+*.hdr
+*.smx
+weather_cache.csv

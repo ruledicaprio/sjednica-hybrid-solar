@@ -1,21 +1,34 @@
 # sjednica-hybrid-solar
 
-Solar/hybrid energy infrastructure project ("Solarna ograda"). Uses the
-Radiance lighting-simulation suite (LBNL) vendored under `bin/` and
-`lib/` for irradiance/bifacial-panel simulations, plus two subprojects:
-`rural-star-sjednica/` (structured Python simulation pipeline) and
-`moja_solar_ograda/` (working scripts, CAD/DXF data, weather files).
+Solar/hybrid energy infrastructure project ("Solarna ograda"), now
+focused on RFP/proposal documents (see below). One subproject remains:
+`rural-star-sjednica/` (structured Python simulation pipeline).
 
-## Repo rename history
+For the solar portion of the RFPs we now just use the existing solar
+irradiation figures under
+`rural-star-sjednica/output/report_results/` — the simulation pipeline
+is kept for reference but is not being re-run.
+
+## Repo history
 
 - Renamed on GitHub from `ruledicaprio/radiance_build` to
-  `ruledicaprio/sjednica-hybrid-solar`. Local git remote updated to match.
-- Hardcoded absolute paths (`E:\Radiance_build\...`) in
-  `moja_solar_ograda/*.py` scripts were made portable — computed from
-  `__file__` instead of tied to the old folder name.
-- Do NOT rename references to the actual third-party **Radiance**
-  rendering engine (`bin/`, `lib/`, `radiance_engine.py`, its docs) —
-  that's vendored software, not this project's branding.
+  `ruledicaprio/sjednica-hybrid-solar`.
+- **2026-08-06 cleanup (history rewritten, force-pushed).** The repo was
+  ~100 MB because it vendored a full Radiance Windows distribution. These
+  were purged from all history:
+  - `bin/`, `lib/` and `Radiance_*_Windows.zip` — the Radiance suite.
+    It is third-party redistributable software; download it from
+    radiance-online.org rather than committing it here.
+  - `moja_solar_ograda/` — superseded by `rural-star-sjednica/`.
+  - `rural-star-sjednica/output/radiance_{results,scene}/`,
+    `__pycache__/`, `weather_cache.csv` — regenerable artifacts.
+
+  Result: ~100 MB -> ~3.6 MB tracked, `.git` 66 MB -> ~1.9 MB. A full
+  pre-cleanup backup bundle is at
+  `D:\sjednica-hybrid-solar-BACKUP-20260806.bundle` (local only).
+- Because Radiance is no longer vendored, `src/radiance_engine.py`,
+  `src/skies_engine.py` and `src/generate_false_color.py` will not run
+  until a Radiance install is on `PATH`.
 
 ## Active initiative: RFP / proposal documents
 
