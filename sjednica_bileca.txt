@@ -1689,7 +1689,7 @@ def merge_files_for_radiance(source_folder, output_filename="spojeni_dokumenti.t
         print(f"Kritična greška pri kreiranju izlazne datoteke: {e}")
 
 # Direktna putanja do tvog foldera
-tvoj_folder = r"E:\Radiance_build\rural-star-sjednica"
+tvoj_folder = r"E:\sjednica-hybrid-solar\rural-star-sjednica"
 
 merge_files_for_radiance(tvoj_folder)
 
