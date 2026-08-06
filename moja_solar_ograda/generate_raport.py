@@ -15,7 +15,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Konfiguracija
-PROJECT_ROOT = r"E:\Radiance_build\moja_solar_ograda"
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 RAD_BASE = os.path.join(PROJECT_ROOT, "sjednica_bileca_irradiance_outward_max")
 RESULTS_FILE = os.path.join(RAD_BASE, "results", "annual_irrad.txt")
 WEATHER_FILE = os.path.join(RAD_BASE, "EPWs", "weather.epw") # Treba nam za vremensku seriju

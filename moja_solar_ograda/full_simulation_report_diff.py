@@ -19,7 +19,7 @@ warnings.filterwarnings("ignore")
 # =============================================================================
 # 📁 KONFIGURACIJA I PUTANJE
 # =============================================================================
-PROJECT_ROOT = r"E:\Radiance_build\moja_solar_ograda"
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SIM_NAME = "sjednica_bileca_irradiance_outward_max"
 RAD_BASE = os.path.join(PROJECT_ROOT, SIM_NAME)
 

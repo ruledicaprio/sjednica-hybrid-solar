@@ -32,7 +32,7 @@ os.makedirs(BASE_PATH, exist_ok=True)
 os.makedirs(os.path.join(BASE_PATH, "results"), exist_ok=True)
 
 # ✅ DXF putanja (tačno kako si naveo)
-DXF_PATH = r"E:\Radiance_build\moja_solar_ograda\EPWs\02_Dispozicija K2_S30_DXF.txt"
+DXF_PATH = os.path.join(SCRIPT_DIR, "02_Dispozicija K2_S30_DXF.txt")
 
 # EPW putanja (robusna detekcija)
 EPW_FILE = os.path.join(SCRIPT_DIR, "tmy_42.946_18.322_2005_2020.epw")

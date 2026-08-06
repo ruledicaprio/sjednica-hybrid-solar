@@ -3,15 +3,15 @@ Would you like to see how to rotate or animate this rectangle once it's on your 
 Thanks for letting us know. Your feedback helps make AI Mode better for everyone, including you.
 sredio sam ovaj dio. Pogledaj sljedeci    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<frozen os>", line 236, in makedirs
-FileNotFoundError: [WinError 3] The system cannot find the path specified: 'E:\\Radiance_build\\moja_solar_ograda\\tmy_42.946_18.322_2005_2020.epw\\moja_solar_ograda'
-(.venv) PS E:\Radiance_build\moja_solar_ograda> & e:/Radiance_build/.venv/Scripts/python.exe e:/Radiance_build/moja_solar_ograda/solar_final_ograda.py
+FileNotFoundError: [WinError 3] The system cannot find the path specified: 'E:\\sjednica-hybrid-solar\\moja_solar_ograda\\tmy_42.946_18.322_2005_2020.epw\\moja_solar_ograda'
+(.venv) PS E:\sjednica-hybrid-solar\moja_solar_ograda> & e:/sjednica-hybrid-solar/.venv/Scripts/python.exe e:/sjednica-hybrid-solar/moja_solar_ograda/solar_final_ograda.py
 Traceback (most recent call last):
-  File "e:\Radiance_build\moja_solar_ograda\solar_final_ograda.py", line 25, in <module>
+  File "e:\sjednica-hybrid-solar\moja_solar_ograda\solar_final_ograda.py", line 25, in <module>
     os.makedirs(BASE_PATH, exist_ok=True)
     ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "<frozen os>", line 236, in makedirs
-FileNotFoundError: [WinError 3] The system cannot find the path specified: 'E:\\Radiance_build\\moja_solar_ograda\\tmy_42.946_18.322_2005_2020.epw\\moja_solar_ograda'
-(.venv) PS E:\Radiance_build\moja_solar_ograda> 
+FileNotFoundError: [WinError 3] The system cannot find the path specified: 'E:\\sjednica-hybrid-solar\\moja_solar_ograda\\tmy_42.946_18.322_2005_2020.epw\\moja_solar_ograda'
+(.venv) PS E:\sjednica-hybrid-solar\moja_solar_ograda> 
 
 Ako si zainteresovan mogu ti poslati skriptu i da mi je pokusasj ocijeniti konzistentno.
 Greška nastaje jer pokušavaš kreirati folder unutar putanje koja "glumi" folder, a zapravo je vjerovatno zamišljena kao datoteka (.epw).
@@ -25,7 +25,7 @@ python
 # BASE_PATH = os.path.join(putanja_do_epw, "moja_solar_ograda") 
 
 # Ispravno bi bilo da BASE_PATH bude folder projekta, a ne unutar .epw fajla:
-BASE_PATH = r'E:\Radiance_build\moja_solar_ograda'
+BASE_PATH = r'E:\sjednica-hybrid-solar\moja_solar_ograda'
 Use code with caution.
 Što se tiče skripte:
 Naravno, pošalji je! Rado ću je pregledati.
@@ -40,7 +40,7 @@ Slobodno zalijepi kod ovdje (ili najbitnije dijelove). Čekam skriptu!
 
 Da radimo radiance, nice guess.  - Dosta toga ćeš razumjeti iz skripte a ja ti dodatno saljem ponudu koju smo dobili. naime htio bi da prosisim Huawei sistem sa 14 na 19 panela 
 skripta je ovdje:
-E:\Radiance_build\moja_solar_ograda
+E:\sjednica-hybrid-solar\moja_solar_ograda
 
 """
 RURALSTAR POWER SYSTEM - SJEDNICA, BILEĆA (VISINA 10m)
@@ -65,7 +65,7 @@ from matplotlib.patches import Polygon, Rectangle
 # ==============================================================================
 MAIN_NAME = "moja_solar_ograda"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-BASE_PATH = os.path.join(SCRIPT_DIR, "E:\\Radiance_build\\moja_solar_ograda\\tmy_42.946_18.322_2005_2020.epw", MAIN_NAME)
+BASE_PATH = os.path.join(SCRIPT_DIR, "E:\\sjednica-hybrid-solar\\moja_solar_ograda\\tmy_42.946_18.322_2005_2020.epw", MAIN_NAME)
 os.makedirs(BASE_PATH, exist_ok=True)
 
 MAX_HEIGHT = 10.0  # ⚠️ KRAJNJA VISINA MODELA I PRESJEKA
@@ -289,7 +289,7 @@ Temelj (AB Ploča): Dimenzije 5.8m x 5.8m su vrlo robusne za 10m stub, što je d
 za markdown ti saljem zadnju skriptu i kataloge od potrosaca koje smo obrađivali u skripti. Provjeri konzistentnost skripte sa podacima iz zvanicne dokumentacije. Uporedi količine  i šta je tačno potrebno za seamless rad sistema sa 14 panela ka o i onog sa 19 panela. Ja hocu da ugradim veci kapacitet. Potrebno je istražiti huawei opremu da to i strucno možemo tražiti od njih. tj. šta u odnosu na ponuđeno trebamo još dobiti (osim agregata ;O)
 
 Da li missamo neki data iz epwa?
-E:\Radiance_build\moja_solar_ogradatmy_42.946_18.322_2005_2020.epw
+E:\sjednica-hybrid-solar\moja_solar_ogradatmy_42.946_18.322_2005_2020.epw
 LOCATION,unknown,-,unknown,ECMWF/ERA,unknown,42.946000,18.322000,1,1050
 DESIGN CONDITIONS,0
 TYPICAL/EXTREME PERIODS,0
@@ -303,7 +303,7 @@ DATA PERIODS,1,1,Data,Thursday, 1/ 1,12/31
 2007,1,1,3,0,B8B8E8B8?1A1A1A1?0?0?0?0B8B8?0?0?0?0?0?0?0?0,0.01,-2.21,85.92,91495.22,9999,9999,266.61,0.00,-0.00,0.00,999999,999999,999999,9999,69,2.0,99,99,9999,99999,9,999999999,999,0.999,999,99,999,999,99
 2007,?
 
-### ORIGINALNI DOKUMENT : E:\Radiance_build\moja_solar_ograda\02_Dispozicija K2_S30 m.dwg
+### ORIGINALNI DOKUMENT : E:\sjednica-hybrid-solar\moja_solar_ograda\02_Dispozicija K2_S30 m.dwg
 AC1024     CÀ  C  C               €   à±  àx                                                                            h@ø÷’*µïÝññ»éëß¦Û<ƒ>™Û¡òãûH¸!Cí²7B»‹¦ZZ}‰í4]ÔËüý#T;
 ‰
 Û®2gšPî`x6ý’I2öÞ}IÜÿOòd)wÐkÄ0·c;¡"¤"‘ð‹ÚNÎøFj–sÙ/ghÔ÷JJÐWhvPV bRdAëRdAËRdAkRdAkRdA5^í_m[†               
@@ -489,7 +489,7 @@ def analiziraj_kapacitet():
     print(f"Dodatni kapacitet baterija: +300Ah (ESM-150A x2)")
 
 # Pokretanje
-output_path = "E:\\Radiance_build\\moja_solar_ograda"
+output_path = "E:\\sjednica-hybrid-solar\\moja_solar_ograda"
 if not os.path.exists(output_path): os.makedirs(output_path)
 
 generate_radiance_scene(output_path)
@@ -662,7 +662,7 @@ def provjera_konzistentnosti():
         print("ICC330 DCDU-150AN2 podržava max 2x SSU/PCU. Potreban dodatni SSU za puni kapacitet 19 panela.")
 
 # Pokretanje analize
-base_path = r"E:\Radiance_build\moja_solar_ograda"
+base_path = r"E:\sjednica-hybrid-solar\moja_solar_ograda"
 generate_final_model(base_path)
 provjera_konzistentnosti()
 Use code with caution.
@@ -773,7 +773,7 @@ sivi_metal box agregat
         print(f"{'='*45}")
 
 # Pokretanje
-model = SolarOgradaModel(r"E:\Radiance_build\moja_solar_ograda")
+model = SolarOgradaModel(r"E:\sjednica-hybrid-solar\moja_solar_ograda")
 model.generate_geometry()
 model.print_bilans()
 Use code with caution.

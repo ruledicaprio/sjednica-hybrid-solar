@@ -31,7 +31,7 @@ if sys.platform == "win32":
 # =============================================================================
 # 📁 PUTANJE & KONFIGURACIJA
 # =============================================================================
-PROJECT_ROOT = r"E:\Radiance_build\moja_solar_ograda"
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 RAD_BASE = os.path.join(PROJECT_ROOT, "sjednica_bileca_irradiance_outward_max")
 os.makedirs(RAD_BASE, exist_ok=True)
 for sub in ["materials", "objects", "skies", "results", "EPWs"]:
