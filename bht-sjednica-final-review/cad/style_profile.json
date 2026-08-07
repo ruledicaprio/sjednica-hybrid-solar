@@ -1,0 +1,479 @@
+{
+ "layers": {
+  "0": {
+   "color": 7,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 7
+  },
+  "Defpoints": {
+   "color": 7,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 7
+  },
+  "Kote blok": {
+   "color": 7,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 7
+  },
+  "plavi": {
+   "color": 5,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 4
+  },
+  "Tekst": {
+   "color": 253,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 7
+  },
+  "Novi1": {
+   "color": 30,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 7
+  },
+  "Okvir": {
+   "color": 3,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 3
+  },
+  "Objekat": {
+   "color": 6,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 4
+  },
+  "Orijentacija": {
+   "color": 1,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 1
+  },
+  "MAGENTA": {
+   "color": 6,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 3
+  },
+  "CRVENI": {
+   "color": 1,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 1
+  },
+  "Osovina": {
+   "color": 6,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 2
+  },
+  "Kote": {
+   "color": 7,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 2
+  },
+  "Silueta stuba": {
+   "color": 5,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 2
+  },
+  "Kabal": {
+   "color": 7,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 4
+  },
+  "DEBELA": {
+   "color": 7,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 2
+  },
+  "Konstrukcija": {
+   "color": 5,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 3
+  },
+  "Panel": {
+   "color": 110,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 3
+  },
+  "haman nevidljiva": {
+   "color": 15,
+   "ltype": "ACAD_ISO03W100",
+   "lw": 9,
+   "seen": 1
+  },
+  "pozicije": {
+   "color": 7,
+   "ltype": "Continuous",
+   "lw": -3,
+   "seen": 1
+  }
+ },
+ "textstyles": {
+  "Standard": "times.ttf",
+  "ubejda 1_100": "arial.ttf",
+  "50": "ARIALN.TTF",
+  "20": "arial.ttf",
+  "stil-1": "swisscl.ttf",
+  "RomanS": "arial.ttf",
+  "10": "ARIALN.TTF",
+  "5": "ARIALN.TTF"
+ },
+ "dimstyles": {
+  "M 20": {
+   "dimscale": 20.0,
+   "dimtxt": 2.5,
+   "dimasz": 1.0,
+   "dimexe": 2.0,
+   "dimexo": 0.0,
+   "dimdec": 2,
+   "dimtxsty": "Standard"
+  },
+  "M 50": {
+   "dimscale": 50.0,
+   "dimtxt": 2.5,
+   "dimasz": 1.0,
+   "dimexe": 2.0,
+   "dimexo": 0.0,
+   "dimdec": 0,
+   "dimtxsty": "Standard"
+  },
+  "Standard": {
+   "dimscale": 1,
+   "dimtxt": 2.5,
+   "dimasz": 2.5,
+   "dimexe": 1.25,
+   "dimexo": 0.625,
+   "dimdec": 2,
+   "dimtxsty": null
+  },
+  "M 200": {
+   "dimscale": 200.0,
+   "dimtxt": 2.5,
+   "dimasz": 1.0,
+   "dimexe": 2.0,
+   "dimexo": 0.0,
+   "dimdec": 0,
+   "dimtxsty": "Standard"
+  },
+  "M 100": {
+   "dimscale": 100.0,
+   "dimtxt": 2.5,
+   "dimasz": 1.0,
+   "dimexe": 2.0,
+   "dimexo": 0.0,
+   "dimdec": 0,
+   "dimtxsty": "Standard"
+  },
+  "Annotative": {
+   "dimscale": 0.0,
+   "dimtxt": 2.5,
+   "dimasz": 2.5,
+   "dimexe": 1.25,
+   "dimexo": 0.625,
+   "dimdec": 2,
+   "dimtxsty": "Standard"
+  },
+  "ISO-25": {
+   "dimscale": 1,
+   "dimtxt": 2.5,
+   "dimasz": 2.5,
+   "dimexe": 1.25,
+   "dimexo": 0.625,
+   "dimdec": 2,
+   "dimtxsty": "Standard"
+  },
+  "STANDARD": {
+   "dimscale": 1,
+   "dimtxt": 2.5,
+   "dimasz": 2.5,
+   "dimexe": 1.25,
+   "dimexo": 0.625,
+   "dimdec": 2,
+   "dimtxsty": "Standard"
+  },
+  "50": {
+   "dimscale": 1.2,
+   "dimtxt": 13.0,
+   "dimasz": 5.0,
+   "dimexe": 3.0,
+   "dimexo": 3.0,
+   "dimdec": 0,
+   "dimtxsty": "50"
+  },
+  "20": {
+   "dimscale": 1,
+   "dimtxt": 5.0,
+   "dimasz": 0.1,
+   "dimexe": 0.3,
+   "dimexo": 0.8,
+   "dimdec": 2,
+   "dimtxsty": "20"
+  },
+  "1-100": {
+   "dimscale": 1,
+   "dimtxt": 19.0,
+   "dimasz": 15.0,
+   "dimexe": 10.0,
+   "dimexo": 20.0,
+   "dimdec": 1,
+   "dimtxsty": "stil-1"
+  },
+  "1 - 10": {
+   "dimscale": 1,
+   "dimtxt": 2.5,
+   "dimasz": 1.0,
+   "dimexe": 3.0,
+   "dimexo": 3.0,
+   "dimdec": 1,
+   "dimtxsty": "10"
+  },
+  "1 - 5": {
+   "dimscale": 1,
+   "dimtxt": 2.5,
+   "dimasz": 0.5,
+   "dimexe": 3.0,
+   "dimexo": 3.0,
+   "dimdec": 2,
+   "dimtxsty": "5"
+  }
+ },
+ "ltypes": [
+  "ACAD_ISO03W100",
+  "ACAD_ISO04W100",
+  "ByBlock",
+  "ByLayer",
+  "Continuous",
+  "DASHDOT",
+  "DASHDOT2",
+  "DASHED",
+  "DASHED2",
+  "DIVIDE"
+ ],
+ "blocks": {
+  "Leader STRELICA": 7,
+  "Kota blok": 7,
+  "Sastavnica": 7,
+  "A$C2CBF1454": 1,
+  "_Oblique": 1,
+  "_ARCHTICK": 1,
+  "kota1": 1,
+  "KOTE1": 1,
+  "A$C06C727B9": 1
+ },
+ "text_heights": {
+  "90.0": 27,
+  "300.0": 26,
+  "60.0": 17,
+  "2100.0": 11,
+  "50.0": 10,
+  "62.5": 9,
+  "80.0": 7,
+  "120.0": 4,
+  "400.0": 4,
+  "250.8": 3,
+  "500.0": 1
+ },
+ "insunits": {
+  "4": 4,
+  "6": 3
+ },
+ "files": {
+  "01 Osnova.dxf": {
+   "ents": {
+    "DIMENSION": 66,
+    "LWPOLYLINE": 60,
+    "MTEXT": 15,
+    "HATCH": 10,
+    "ARC": 1,
+    "INSERT": 1
+   },
+   "extmin": [
+    -7.2,
+    137.8,
+    -0.0
+   ],
+   "extmax": [
+    8103.7,
+    6366.7,
+    0.0
+   ],
+   "layouts": [
+    "Layout1",
+    "Layout2",
+    "Model"
+   ]
+  },
+  "01 Situacija 1_200.dxf": {
+   "ents": {
+    "LWPOLYLINE": 58,
+    "HATCH": 12,
+    "DIMENSION": 8,
+    "MTEXT": 7,
+    "ARC": 2,
+    "INSERT": 1
+   },
+   "extmin": [
+    -0.6,
+    -23.3,
+    -0.0
+   ],
+   "extmax": [
+    36024.8,
+    56600.1,
+    0.0
+   ],
+   "layouts": [
+    "Layout1",
+    "Layout2",
+    "Model"
+   ]
+  },
+  "02 Presjek 1_1.dxf": {
+   "ents": {
+    "LINE": 368,
+    "ARC": 110,
+    "LWPOLYLINE": 73,
+    "POINT": 64,
+    "DIMENSION": 15,
+    "MTEXT": 9,
+    "HATCH": 6,
+    "CIRCLE": 4
+   },
+   "extmin": [
+    -6.9,
+    138.2,
+    -0.0
+   ],
+   "extmax": [
+    8101.0,
+    6366.5,
+    0.0
+   ],
+   "layouts": [
+    "Layout1",
+    "Layout2",
+    "Model"
+   ]
+  },
+  "3.5.1 Jednopolna shema PMO.dxf": {
+   "ents": {
+    "LWPOLYLINE": 68,
+    "MTEXT": 11,
+    "CIRCLE": 3,
+    "INSERT": 1,
+    "HATCH": 1,
+    "POLYLINE": 1,
+    "OLE2FRAME": 1
+   },
+   "extmin": [
+    215856.0,
+    -4010.1,
+    0.0
+   ],
+   "extmax": [
+    359479.0,
+    213523.8,
+    0.0
+   ],
+   "layouts": [
+    "Layout1",
+    "Layout2",
+    "Model"
+   ]
+  },
+  "3.5.3 Nacrt rasporeda opreme na objektu.dxf": {
+   "ents": {
+    "CIRCLE": 132,
+    "LWPOLYLINE": 71,
+    "MTEXT": 33,
+    "LINE": 21,
+    "HATCH": 17,
+    "OLE2FRAME": 3,
+    "INSERT": 1,
+    "ARC": 1
+   },
+   "extmin": [
+    10225.9,
+    -3457.2,
+    0.0
+   ],
+   "extmax": [
+    16950.0,
+    6586.5,
+    0.0
+   ],
+   "layouts": [
+    "Layout1",
+    "Layout2",
+    "Model"
+   ]
+  },
+  "3.5.8. Nacrt izjednačavanja potencijala u kontejneru.dxf": {
+   "ents": {
+    "LWPOLYLINE": 83,
+    "HATCH": 19,
+    "MULTILEADER": 17,
+    "LINE": 15,
+    "MTEXT": 11,
+    "CIRCLE": 4,
+    "ELLIPSE": 2,
+    "INSERT": 1
+   },
+   "extmin": [
+    14012.7,
+    476.3,
+    0.0
+   ],
+   "extmax": [
+    17855.0,
+    6215.7,
+    0.0
+   ],
+   "layouts": [
+    "Layout1",
+    "Layout2",
+    "Model"
+   ]
+  },
+  "3.5.9. Nacrt polaganja uzemljivača objekta.dxf": {
+   "ents": {
+    "LWPOLYLINE": 388,
+    "CIRCLE": 121,
+    "LINE": 58,
+    "HATCH": 48,
+    "MTEXT": 33,
+    "MULTILEADER": 11,
+    "DIMENSION": 5,
+    "ARC": 4
+   },
+   "extmin": [
+    248639.0,
+    42164.4,
+    0.0
+   ],
+   "extmax": [
+    278794.4,
+    87847.1,
+    0.0
+   ],
+   "layouts": [
+    "Layout1",
+    "Layout2",
+    "Model"
+   ]
+  }
+ }
+}
