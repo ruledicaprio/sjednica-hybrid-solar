@@ -42,3 +42,19 @@ rural-star-sjednica/output/radiance_scene/
 *.hdr
 *.smx
 weather_cache.csv
+
+# --- bht-sjednica-final-review: keep the work product, not the source material ---
+# The repo was deliberately reduced from ~100 MB to ~3.6 MB (see CLAUDE.md).
+# These are third-party or regenerable inputs held locally; they are NOT committed.
+# NOTE: .gitignore has no trailing-comment syntax - a comment after a pattern on the
+# same line becomes part of the pattern and silently matches nothing.
+
+# 232 MB certified site project (client archive)
+bht-sjednica-final-review/SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m/
+# 41 MB vendor manuals (Huawei, FG Wilson) - the one datasheet we rely on is in reference/
+bht-sjednica-final-review/EQUIPEMENT/
+# 80 MB pre-change snapshot, mostly the un-optimised 79.5 MB Prilog III
+bht-sjednica-final-review/TD-OUTPUT-BASELINE-20260807/
+# render previews and scratch CAD
+bht-sjednica-final-review/cad/_*.png
+bht-sjednica-final-review/cad/_frame_test.dxf

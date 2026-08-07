@@ -1,0 +1,139 @@
+{
+ "_source": "Design values settled by review/01-huawei-solar.md, 02-construction.md, 03-electrical.md and the Investor's site corrections in 05-site-corrections.md. Dimensions in mm.",
+ "module": {
+  "model": "Huawei iPV585-M2A / 585 W",
+  "L": 2278,
+  "W": 1134,
+  "T": 30,
+  "kg": 32.0,
+  "Voc": 51.55,
+  "Imp": 13.67,
+  "source": "PVM p.43 Table 3-5"
+ },
+ "support": {
+  "bom": "21540481 (Standard A-shaped 3.0, LOW)",
+  "anchor_bom": "21540482",
+  "crossbeam": 4089,
+  "long_margin": 306.5,
+  "overhang": 558.5,
+  "modules_each": 6,
+  "arrangement": "2 rows x 3 columns, portrait",
+  "field_w": 3476.0,
+  "field_slope": 4576,
+  "strip_spacing": 2600,
+  "anchor_group_spacing": 1800,
+  "weight_kg": 154,
+  "source": "PVM p.80 Table 3-29, p.171 Table 4-18, p.180 Table 4-20",
+  "proj": 3236,
+  "rise": 3236,
+  "strip_l": 3300,
+  "strip_w": 450
+ },
+ "array": {
+  "count": 2,
+  "modules_total": 12,
+  "kWp": 7.02,
+  "tilt_deg": 45,
+  "azimuth_deg": 180,
+  "bottom_edge": 500,
+  "top_edge": 3736,
+  "above_fence": 1836
+ },
+ "wind": {
+  "site_qp_kNm2": 1.2,
+  "site_gust_ms": 45,
+  "rated_gust_ms": {
+   "15": 40,
+   "25": 40,
+   "35": 35,
+   "45": 31
+  },
+  "rated_q_kNm2": {
+   "15": 0.87,
+   "25": 0.87,
+   "35": 0.67,
+   "45": 0.52
+  },
+  "verdict": "No catalogue tilt is compliant; tender requires certified site-specific static calculation pre-award."
+ },
+ "foundation": {
+  "strip_w_top": 450,
+  "strip_w_base": 550,
+  "strip_l": 3300,
+  "strip_d": 900,
+  "concrete": "C25 on C10",
+  "rebar": "O10 / 335 MPa",
+  "cover": 50,
+  "note": "Depth and reinforcement to be confirmed by the bidder's certified calculation for qp >= 1.20 kN/m2."
+ },
+ "genset": {
+  "model": "FG Wilson P22-6 (Skid) ili ekvivalent",
+  "kVA": 22,
+  "kW": 17.6,
+  "engine": "Perkins 404D-22G, 4-cyl, naturally aspirated, 1500 rpm",
+  "alternator": "FG Wilson FGL10060, SHUNT excitation, IP23, class H",
+  "skid_L": 1550,
+  "skid_W": 620,
+  "skid_H": 1020,
+  "mass_dry_kg": 378,
+  "mass_wet_kg": 385,
+  "fuel_l_h_standby_100pct": 5.9,
+  "_source": "FG Wilson P22-6(Skid) technical data sheet, 2019-08-14 — EQUIPEMENT/GENSET/P22-6_FG_Wilson_full_datasheet_2019-08-14.pdf. Supersedes the 3-page web printout that carried no dimensions or weights."
+ },
+ "tank": {
+  "litres": 500,
+  "type": "dvoplasni",
+  "L": 1200,
+  "W": 700,
+  "H": 800
+ },
+ "ventilation": {
+  "radiator_m3h": 1980,
+  "radiator_m3h_site_derated": 2151,
+  "combustion_air_m3h": 90,
+  "max_external_restriction_Pa": 125,
+  "heat_to_water_kW": 19.6,
+  "heat_radiated_to_room_kW": 7.1,
+  "intake_mm": [
+   500,
+   700
+  ],
+  "discharge_mm": [
+   600,
+   600
+  ],
+  "duct": "limeni kanal ≈6 m² od radijatora do izlazne žaluzine",
+  "room_fan_m3h": 1200,
+  "room_min_m3h": 120,
+  "exhaust_flow_m3h": 234,
+  "exhaust_T_C": 505,
+  "exhaust_DN": 50,
+  "exhaust_DN_recommended": 65,
+  "max_back_pressure_kPa": 10.2,
+  "_verdict": "The tendered arrangement is ADEQUATE. Intake 500x700 gives 3.4 m/s and ~16 Pa; discharge 600x600 gives ~15 Pa; with the duct the total stays well inside the manufacturer's 125 Pa external-restriction budget. The 1200 m3/h axial fan is a supplementary room-ventilation fan (stated minimum 120 m3/h = 6 ACH), not the cooling path — the radiator's own fan moves the 1980 m3/h. DN50 exhaust meets the 10.2 kPa back-pressure limit (~2.6 kPa) but runs at 33 m/s; DN65 is recommended to stay under the customary 30 m/s.",
+  "_source": "Computed from the manufacturer data sheet; supersedes the estimates in 03-electrical.md RED-01/RED-04."
+ },
+ "container": {
+  "ext": [
+   3005,
+   2300
+  ],
+  "wall": 60,
+  "int": [
+   2885,
+   2180
+  ],
+  "empty": true,
+  "door": [
+   900,
+   2000
+  ],
+  "floor_note": "Genset wet 385 kg over 0.96 m2 = 3.93 kN/m2; full 500 l tank ~500 kg over 0.84 m2 = 5.84 kN/m2; combined 885 kg. Spreader grillage still recommended under the skid rails, but the loads are far below the 1350 kg assumed in 03-electrical.md."
+ },
+ "access": {
+  "skid_width_mm": 620,
+  "door_clear_mm": 900,
+  "gate_clear_mm": 1000,
+  "verdict": "FITS — 620 mm skid through a 900 mm door leaves 280 mm; height 1020 mm against a 2000 mm door. No roof panel removal or wall opening needed."
+ }
+}
