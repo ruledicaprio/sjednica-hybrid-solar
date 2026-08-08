@@ -26,14 +26,22 @@ def build_octree(sky_file, objects_file, output_oct="scene.oct"):
 def run_sensor_simulation(octree_file, sensor_file):
     """
     Pokreće rtrace simulaciju za senzore definisane u .pts fajlu.
-    Vraća prosječnu iradijaciju u W/m2.
+    Vraća listu iradijacija u W/m2, jedna vrijednost po senzoru (redoslijed kao u
+    .pts fajlu - ovdje: [prednja strana, zadnja strana]). Poziv u run_simulation.py
+    očekuje tačno ovo (rad_irr[0], rad_irr[1]) - vraćanje jedne prosječne vrijednosti
+    umjesto liste (kako je ranije pisalo ovdje) tiho je odbacivalo svaki rezultat
+    (isinstance(rad_irr, (list, tuple)) je uvijek bilo False za float), pa je puna
+    24-satna simulacija prolazila kroz Radiance ali završavala s praznim DataFrame-om.
     """
     if not octree_file or not os.path.exists(octree_file):
-        return 0.0
+        return []
 
     # rtrace parametri za preciznu simulaciju (-I+ je mod za iradijaciju)
+    # -n paralelizuje po zrakama; sa svega 2 senzora (prednja/zadnja strana panela)
+    # korisno je najviše -n 2, veći broj procesa samo besposleno čeka.
     cmd = [
-        'rtrace', '-I+', '-h', 
+        'rtrace', '-I+', '-h',
+        '-n', '2',     # paralelni procesi (ograničeno brojem senzora, ne jezgara)
         '-ab', '3',    # Broj ambijentalnih odbitaka
         '-ad', '2048', # Ambient divisions
         '-as', '1024', # Ambient samples
@@ -55,9 +63,9 @@ def run_sensor_simulation(octree_file, sensor_file):
                 # Ali sa -I+ rtrace često vraća direktne vrijednosti
                 avg_val = (float(vals[0]) + float(vals[1]) + float(vals[2])) / 3.0
                 irradiances.append(avg_val)
-        
-        return np.mean(irradiances) if irradiances else 0.0
-        
+
+        return irradiances
+
     except Exception as e:
         log_error(f"rtrace greška: {e}")
-        return 0.0
+        return []

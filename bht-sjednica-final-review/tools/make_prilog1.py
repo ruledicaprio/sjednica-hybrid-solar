@@ -56,6 +56,20 @@ def style(doc):
         h.font.color.rgb = ORANGE if i == 1 else GREY
         h.paragraph_format.space_before = Pt(10 if i == 1 else 7)
         h.paragraph_format.space_after = Pt(3)
+    ti = doc.styles["Title"]
+    ti.font.name = "Arial"
+    ti.font.size = Pt(15)
+    ti.font.bold = True
+    ti.font.color.rgb = ORANGE
+    ti.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    ti.paragraph_format.space_after = Pt(2)
+    su = doc.styles["Subtitle"]
+    su.font.name = "Arial"
+    su.font.size = Pt(13)
+    su.font.bold = True
+    su.font.color.rgb = RGBColor(0, 0, 0)
+    su.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    su.paragraph_format.space_after = Pt(4)
 
 
 def shade(cell, hexcolor):
@@ -68,6 +82,10 @@ def table(doc, headers, rows, widths=None):
     t = doc.add_table(rows=1, cols=len(headers))
     t.style = "Table Grid"
     t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    trPr = t.rows[0]._tr.get_or_add_trPr()
+    hdr = OxmlElement("w:tblHeader")
+    hdr.set(qn("w:val"), "true")
+    trPr.append(hdr)
     for i, h in enumerate(headers):
         c = t.rows[0].cells[i]
         c.text = ""
@@ -99,6 +117,57 @@ def para(doc, text, bold=False, size=9.5, italic=False, space=4):
     return p
 
 
+def warning(doc, text, size=9.5):
+    """Shaded, left-bordered callout paragraph for normative warnings -- replaces
+    ad hoc bold=True paragraphs so callouts are visually distinct from headings
+    and emphasized body text, not just bold."""
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(4)
+    p.paragraph_format.space_after = Pt(6)
+    pPr = p._p.get_or_add_pPr()
+    shd = OxmlElement("w:shd")
+    shd.set(qn("w:fill"), "FCEEDD")
+    pPr.append(shd)
+    pBdr = OxmlElement("w:pBdr")
+    left = OxmlElement("w:left")
+    left.set(qn("w:val"), "single")
+    left.set(qn("w:sz"), "18")
+    left.set(qn("w:space"), "4")
+    left.set(qn("w:color"), "F5821F")
+    pBdr.append(left)
+    pPr.append(pBdr)
+    p.paragraph_format.left_indent = Pt(8)
+    r = p.add_run(text)
+    r.bold = True
+    r.font.size = Pt(size)
+    return p
+
+
+def add_field(paragraph, instr, font_size=None, color=None):
+    """Insert a Word field (e.g. PAGE, NUMPAGES) as a run sequence."""
+    def _run():
+        r = paragraph.add_run()
+        if font_size:
+            r.font.size = font_size
+        if color:
+            r.font.color.rgb = color
+        return r
+
+    r1 = _run()
+    fb = OxmlElement("w:fldChar")
+    fb.set(qn("w:fldCharType"), "begin")
+    r1._r.append(fb)
+    r2 = _run()
+    it = OxmlElement("w:instrText")
+    it.set(qn("xml:space"), "preserve")
+    it.text = instr
+    r2._r.append(it)
+    r3 = _run()
+    fe = OxmlElement("w:fldChar")
+    fe.set(qn("w:fldCharType"), "end")
+    r3._r.append(fe)
+
+
 def bullet(doc, text, size=9.5):
     p = doc.add_paragraph(style="List Bullet")
     p.paragraph_format.space_after = Pt(2)
@@ -127,22 +196,18 @@ def build():
     fp = doc.sections[0].footer.paragraphs[0]
     fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
     fr = fp.add_run("PRILOG I — Specifikacija zahtjeva · BS Sjednica (Bileća) · "
-                    "Rev. 1, 2026")
+                    "Rev. 1, 2026 · stranica ")
     fr.font.size = Pt(7.5)
     fr.font.color.rgb = GREY
+    add_field(fp, "PAGE", font_size=Pt(7.5), color=GREY)
+    fr2 = fp.add_run(" od ")
+    fr2.font.size = Pt(7.5)
+    fr2.font.color.rgb = GREY
+    add_field(fp, "NUMPAGES", font_size=Pt(7.5), color=GREY)
 
     # ---------------- title ------------------------------------------------
-    t = doc.add_paragraph()
-    t.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = t.add_run("PRILOG I TENDERSKOJ DOKUMENTACIJI")
-    r.bold = True
-    r.font.size = Pt(15)
-    r.font.color.rgb = ORANGE
-    t2 = doc.add_paragraph()
-    t2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r2 = t2.add_run("SPECIFIKACIJA ZAHTJEVA")
-    r2.bold = True
-    r2.font.size = Pt(13)
+    t = doc.add_paragraph("PRILOG I TENDERSKOJ DOKUMENTACIJI", style="Title")
+    t2 = doc.add_paragraph("SPECIFIKACIJA ZAHTJEVA", style="Subtitle")
     t3 = doc.add_paragraph()
     t3.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r3 = t3.add_run("Autonomni hibridni sistem napajanja — bazna stanica SJEDNICA "
@@ -167,7 +232,8 @@ def build():
           ["Stavka", "Ranije navedeno", "Ispravno (mjerodavno)", "Izvor"],
           [["Geometrija PV polja",
             "projekcija 2590 mm, gornja ivica +3,09 m",
-            "projekcija 3236 mm, gornja ivica +3,74 m",
+            "projekcija 3236 mm, gornja ivica +3,74 m (v. red niže — sada +4,74 m "
+            "uz 3×4 konfiguraciju)",
             "Huawei PVM Tab. 4-20; izvedeno iz polja modula, a ne iz uzdužne grede"],
            ["Visina ograde", "1,80 m", "1,90 m", "ovjereni projekat lokacije"],
            ["Kontejner",
@@ -187,7 +253,13 @@ def build():
             "snijeg nije mjerodavan — vjetrom raznošena lokacija (bura)"],
            ["Snijeg", "s_k = 3,00 kN/m² mjerodavno",
             "provjera obavezna, ali nije mjerodavna",
-            "iskustvo Investitora na lokaciji"]],
+            "iskustvo Investitora na lokaciji"],
+           ["Konfiguracija nosača",
+            "2 nosača, 6 modula (2×3), +0,50/+3,74 m, 15,91 m² izloženosti/nosaču",
+            "3 nosača, 4 modula (2×2), +1,50/+4,74 m, 10,55 m² izloženosti/nosaču — "
+            "manji presjek dozvoljava veću visinu bez povećanja opterećenja",
+            "review/07-calculations.md F.6 — custom izrada, kataloški nosač ne "
+            "zadovoljava ni pri ranijoj ni pri ovoj konfiguraciji"]],
           widths=[3.2, 4.0, 4.4, 5.0])
 
     # ---------------- 1. site ----------------------------------------------
@@ -245,20 +317,22 @@ def build():
     doc.add_heading("3. LOT 1 — Nosači fotonaponskih panela", 1)
     doc.add_heading("3.1 Konfiguracija", 2)
     table(doc, ["Parametar", "Zahtjev"],
-          [["Broj nosača", "2 kom (osnovna izvedba)"],
-           ["Moduli", "12 × 585 Wp = 7,02 kWp; 6 modula po nosaču, 2 reda × 3 stupca, portret"],
+          [["Broj nosača", "3 kom"],
+           ["Moduli", "12 × 585 Wp = 7,02 kWp; 4 modula po nosaču, 2 reda × 2 stupca, portret"],
            ["Tip modula", "Huawei iPV585-M2A (2278 × 1134 × 30 mm) ili ekvivalent"],
            ["Nagib", "fiksno 45° — ZADRŽAN zbog decembarskog prinosa"],
            ["Azimut", "180° (JUG)"],
-           ["Širina polja", "3476 mm (poprečna greda 4089 mm, bočni prepust 306,5 mm)"],
+           ["Širina polja", "2305 mm (poprečna greda 2918 mm, bočni prepust 306,5 mm)"],
            ["Dužina polja po nagibu", "4576 mm (2 × 2278 mm)"],
            ["Horizontalna projekcija", "3236 mm pri 45°"],
-           ["Donja / gornja ivica", "+0,50 m / +3,74 m"],
-           ["Nadvišenje ograde", "1,84 m iznad kote ograde h = 1,90 m"],
-           ["Površina izloženosti vjetru", "15,91 m² po nosaču"],
-           ["Referentni proizvod",
-            "Huawei Standard A-shaped Support 3.0 LOW, BOM 21540481, ankeri 21540482 "
-            "— ili ekvivalent koji zadovoljava Tačku 3.2"]],
+           ["Donja / gornja ivica", "+1,50 m / +4,74 m"],
+           ["Nadvišenje ograde", "2,84 m iznad kote ograde h = 1,90 m"],
+           ["Površina izloženosti vjetru", "10,55 m² po nosaču"],
+           ["Referentna izvedba",
+            "CUSTOM IZRADA čeličnog nosača po opterećenju iz Tačke 3.2 — nijedan "
+            "kataloški proizvod (npr. Huawei Standard A-shaped Support 3.0) ne "
+            "zadovoljava opterećenje vjetrom na ovoj lokaciji ni pri ovoj, manjoj "
+            "površini nosača"]],
           widths=[5.0, 11.6])
 
     para(doc, "Obrazloženje nagiba 45°: pri podnevnoj visini Sunca 23,6° na dan 21.12. "
@@ -269,21 +343,20 @@ def build():
          italic=True, size=9)
 
     doc.add_heading("3.2 Projektna opterećenja konstrukcije (OBAVEZNO)", 2)
-    para(doc, "UPOZORENJE: kataloški nosač tipa A ima deklarisanu otpornost 31 m/s "
-              "(0,52 kN/m²) pri nagibu 45° i 40 m/s (0,87 kN/m²) pri 15°/25°, što je "
-              "ISPOD opterećenja ovog lokaliteta. Nijedan standardni nagib kataloškog "
-              "proizvoda ne zadovoljava. Ponuđač je dužan ponuditi konstrukciju "
-              "dimenzionisanu i dokazanu za stvarno opterećenje lokaliteta.", bold=True)
+    warning(doc, "OSNOVA PRORAČUNA: kataloški nosač tipa A ima deklarisanu otpornost "
+              "31 m/s (0,52 kN/m²) pri nagibu 45° i 40 m/s (0,87 kN/m²) pri 15°/25°, "
+              "što je ISPOD opterećenja ovog lokaliteta — i pri punoj (2×6) i pri ovoj, "
+              "manjoj (3×4) površini nosača. Zahtijeva se CUSTOM IZRADA konstrukcije "
+              "dimenzionisane i dokazane za stvarno opterećenje lokaliteta (Tačka 3.1); "
+              "kataloški proizvod se ne prihvata kao osnovna ponuda.")
     table(doc, ["Parametar", "Zahtjev"],
           [["Pritisak vjetra", "qp ≥ 1,20 kN/m² (udar 3 s ≈ 45 m/s)"],
            ["Koeficijent sile", "cf ≥ 1,5 pri 45° prema EN 1991-1-4 §7.3, osim uz dokaz"],
-           ["Sila podizanja po nosaču", "≥27 kN (GSN, γQ = 1,5 / γG,fav = 0,9)"],
-           ["Horizontalna sila po nosaču", "≥30 kN (GSN)"],
-           ["Moment prevrtanja po nosaču", "≥64 kNm (GSN)"],
-           ["Mjerodavno", "podizanje (uplift) i prevrtanje, a NE nosivost tla"],
-           ["Potvrda proizvođača",
-            "pisana potvrda za konkretnu lokaciju (planinski vrh), ako se nudi "
-            "kataloški proizvod"]],
+           ["Površina izloženosti vjetru", "10,55 m² po nosaču"],
+           ["Sila podizanja po nosaču", "≥18,1 kN (GSN, γQ = 1,5 / γG,fav = 0,9)"],
+           ["Horizontalna sila po nosaču", "≥13,4 kN (GSN)"],
+           ["Moment prevrtanja po nosaču", "≥62,8 kNm (GSN)"],
+           ["Mjerodavno", "podizanje (uplift) i prevrtanje, a NE nosivost tla"]],
           widths=[5.4, 11.2])
 
     doc.add_heading("3.3 Materijal i izrada (OBAVEZNO)", 2)
@@ -309,11 +382,17 @@ def build():
            ["Broj", "min. 2 ankera po temeljnoj traci, odnosno 4 po nosaču"],
            ["Nosivost", "karakteristična sila čupanja ≥30 kN po ankeru"],
            ["Dubina ugradnje", "prema ETA za konkretnu podlogu (beton / stijena)"],
+           ["Projektna sila",
+            "ukupno podizanje po nosaču ≥18,1 kN; sila po traci od momenta prevrtanja "
+            "≥39,3 kN pri razmaku traka 1600 mm — ovo je mjerodavno opterećenje za "
+            "sidrenje, ne ukupno podizanje"],
            ["Dokazivanje",
             "ispitivanje čupanjem na ≥10 % ugrađenih ankera, min. 2 po nosaču, do "
             "1,5 × projektne sile, uz zapisnik ovjeren od nadzornog organa"],
            ["Alternativa",
-            "livena U-sidra M16/320 dozvoljena SAMO uz gravitacioni temelj ≥1,14 m³ po nosaču"]],
+            "livena U-sidra M16/320 dozvoljena SAMO uz gravitacioni temelj ≥0,75 m³ po "
+            "nosaču — momenat prevrtanja i dalje zahtijeva provjeru lokalnog istezanja "
+            "trake, ne samo ukupne mase"]],
           widths=[4.0, 12.6])
 
     doc.add_heading("3.5 Temelji (OBAVEZNO)", 2)
@@ -322,30 +401,23 @@ def build():
            ["Podložni beton", "C12/15, d = 50 mm"],
            ["Armatura", "B500B, zaštitni sloj ≥50 mm"],
            ["Geometrija",
-            "2 trake po nosaču, min. 450 mm široke × 3300 mm duge, razmak 2600 mm, "
-            "pravac SJEVER–JUG; dubina prema statičkom proračunu (≥900 mm)"],
-           ["Smještaj", "IZVAN ograđenog platoa, 1400 mm južno od kote ograde"],
+            "2 trake po nosaču (×3 nosača = 6 traka ukupno), min. 450 mm široke × "
+            "3300 mm duge, razmak 1600 mm, pravac SJEVER–JUG; dubina prema statičkom "
+            "proračunu (≥900 mm)"],
+           ["Smještaj", "IZVAN ograđenog platoa, 400 mm južno od kote ograde"],
            ["Dubina smrzavanja", "temeljna spojnica ispod dubine smrzavanja; Ponuđač navodi vrijednost"]],
           widths=[4.0, 12.6])
     para(doc, "NAPOMENA: postojeća AB ploča 5,40 × 5,40 m već postoji i NIJE predmet "
               "ovog LOT-a.", italic=True, size=9)
 
     doc.add_heading("3.6 Uzemljenje (LOT 1)", 2)
-    for b in ["povezivanje oba nosača na postojeći prstenasti uzemljivač Fe/Zn 25 × 4 mm",
+    for b in ["povezivanje sva tri nosača na postojeći prstenasti uzemljivač Fe/Zn 25 × 4 mm",
               "vodič: bakarno uže ≥50 mm² prema EN 62305-3, Tabela 7, otporno na UV i "
               "ukopavanje — NIJE dozvoljen H07V-K 25 mm² (unutrašnji instalacioni vodič)",
               "bimetalni (Cu/Fe-Zn) ukrsni komadi radi sprječavanja galvanske korozije",
               "kontinuitet spojeva ≤0,1 Ω; ukupni otpor uzemljenja ≤10 Ω",
               "DC kablovi na razmaku ≥0,5 m od odvoda gromobranske instalacije"]:
         bullet(doc, b)
-
-    doc.add_heading("3.7 Opcija: tri nosača sa po 4 modula", 2)
-    para(doc, "Ponuđač može, kao alternativu, ponuditi TRI nosača sa po 4 modula "
-              "(3 × 4 = 12 modula, ista snaga 7,02 kWp). Površina izloženosti vjetru po "
-              "nosaču smanjuje se sa 15,91 m² na 7,95 m² (−50 %), čime se približno "
-              "prepolovljuju sila podizanja i moment prevrtanja po temelju, uz "
-              "zadržavanje nagiba 45°. Cijena se iskazuje posebno (Prilog II, Tačka 1.8). "
-              "Kupac zadržava pravo izbora.")
 
     # ---------------- 4. LOT 2 ---------------------------------------------
     doc.add_heading("4. LOT 2 — Dizel električni agregat i instalacije", 1)
@@ -407,15 +479,14 @@ def build():
           widths=[4.6, 12.0])
 
     doc.add_heading("4.5 Elektroinstalacije i zaštita (OBAVEZNO)", 2)
-    para(doc, "KRITIČNO — POBUDA GENERATORA. Referentni agregat je u standardnoj izvedbi "
+    warning(doc, "KRITIČNO — POBUDA GENERATORA. Referentni agregat je u standardnoj izvedbi "
               "SHUNT pobude, za koju tehnički list proizvođača deklariše trajnu struju "
               "kratkog spoja 0 % (nezavisna pobuda PMG / AUX je opcija). Kod SHUNT pobude "
               "napon na stezaljkama se pri kvaru uruši, pobuda nestaje, a trajna struja "
               "kvara padne na ≈0,5 × In — ISPOD nazivne struje, pa ne može aktivirati "
               "nijednu prekostrujnu zaštitu. Zbog toga se zahtijeva NEZAVISNA POBUDA "
               "(PMG ili AREP/AUX) sa 3 × In u trajanju ≥10 s (Tačka 4.1), a zaštita "
-              "zaštitnom strujnom sklopkom ostaje OBAVEZNA kao drugi nivo zaštite.",
-         bold=True)
+              "zaštitnom strujnom sklopkom ostaje OBAVEZNA kao drugi nivo zaštite.")
     table(doc, ["Element", "Zahtjev"],
           [["Struja kvara (SHUNT)",
             "prvi poluperiod 407 A (12,8 × In, X\"d = 0,078) → prelazna 205 A "
@@ -455,9 +526,8 @@ def build():
 
     # ---------------- 5. proofs --------------------------------------------
     doc.add_heading("5. Dokazi koji se dostavljaju UZ PONUDU (uslov kvalifikacije)", 1)
-    para(doc, "Ponuda koja ne sadrži dokaze označene kao OBAVEZNI smatra se "
-              "neprihvatljivom. Dokazi se NE dostavljaju naknadno, nakon dodjele ugovora.",
-         bold=True)
+    warning(doc, "Ponuda koja ne sadrži dokaze označene kao OBAVEZNI smatra se "
+              "neprihvatljivom. Dokazi se NE dostavljaju naknadno, nakon dodjele ugovora.")
     table(doc, ["Br.", "Dokaz", "LOT", "Status"],
           [["1", "Statički proračun nosive konstrukcije i temelja za qp ≥ 1,20 kN/m² pri "
                  "45°, ovjeren i potpisan od ovlaštenog inženjera, sa dokazom na "
@@ -468,21 +538,19 @@ def build():
             "1", "OBAVEZNO"],
            ["5", "ETA odobrenje ponuđenih hemijskih ankera sa proračunom nosivosti",
             "1", "OBAVEZNO"],
-           ["6", "Pisana potvrda proizvođača nosača za konkretnu lokaciju (planinski vrh), "
-                 "ako se nudi kataloški proizvod", "1", "OBAVEZNO"],
-           ["7", "Tehnički list (TDS) ponuđenog agregata sa podacima o hlađenju, "
+           ["6", "Tehnički list (TDS) ponuđenog agregata sa podacima o hlađenju, "
                  "izduvu i masama", "2", "OBAVEZNO"],
-           ["8", "Proračun ventilacije sa padom pritiska ukupne putanje (≤125 Pa)",
+           ["7", "Proračun ventilacije sa padom pritiska ukupne putanje (≤125 Pa)",
             "2", "OBAVEZNO"],
-           ["9", "Proračun protutlaka izduvnog sistema", "2", "OBAVEZNO"],
-           ["10", "Proračun nosivosti poda kontejnera za skid i pun spremnik",
+           ["8", "Proračun protutlaka izduvnog sistema", "2", "OBAVEZNO"],
+           ["9", "Proračun nosivosti poda kontejnera za skid i pun spremnik",
             "2", "OBAVEZNO"],
-           ["11", "Jednopolna shema novog GRO sa zaštitnim uređajima", "2", "OBAVEZNO"],
-           ["12", "Ovlaštenje proizvođača ili ovlaštenog distributera za ponuđeni agregat",
+           ["10", "Jednopolna shema novog GRO sa zaštitnim uređajima", "2", "OBAVEZNO"],
+           ["11", "Ovlaštenje proizvođača ili ovlaštenog distributera za ponuđeni agregat",
             "2", "OBAVEZNO"],
-           ["13", "ISO 9001 i ISO 14001 proizvođača agregata", "2", "OBAVEZNO"],
-           ["14", "Kataloška dokumentacija sa označenim ponuđenim tipovima", "1, 2", "OBAVEZNO"],
-           ["15", "Akustički proračun, ako se zahtijeva nivo buke", "2", "po potrebi"]],
+           ["12", "ISO 9001 i ISO 14001 proizvođača agregata", "2", "OBAVEZNO"],
+           ["13", "Kataloška dokumentacija sa označenim ponuđenim tipovima", "1, 2", "OBAVEZNO"],
+           ["14", "Akustički proračun, ako se zahtijeva nivo buke", "2", "po potrebi"]],
           widths=[1.2, 9.6, 1.6, 4.2])
 
     # ---------------- 6. tests ---------------------------------------------

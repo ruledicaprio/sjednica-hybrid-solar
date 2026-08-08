@@ -131,14 +131,22 @@ CONFLICTS = {
             r"|2[,.]59\s*m\b",
         "3236 (correct - module field)": r"3236\s*mm|3[,.]24\s*m\b",
     },
+    # +3,74 was correct for the 2x6 design; the 2026-08-08 3x4 redesign raised the
+    # bottom edge to spend the freed-up wind budget on height (review/07-calculations.md
+    # F.6), so +3,74 is now only a legitimate historical/superseded mention (Prilog I
+    # §0's corrigendum table, or S-03's design-history note) when the corrected +4,74
+    # appears nearby, same lookahead pattern as the 2590/3236 correction above.
     "top panel edge level": {
-        "+3,09 (WRONG)": r"\+?3[,.]09(?![^§]{0,90}3[,.]74)",
-        "+3,74 (correct)": r"\+?3[,.]7\d",
+        "+3,09 (WRONG - superseded twice)": r"\+?3[,.]09(?![^§]{0,90}3[,.]74)",
+        "+3,74 (superseded - was correct for 2x6)": r"\+?3[,.]74(?![^§]{0,90}4[,.]74)",
+        "+4,74 (correct - 3x4 raised)": r"\+?4[,.]74",
     },
     "fence overhang": {
         "0,17 m (WRONG)": r"0[,.]17\s*m",
         "0,20 m (WRONG)": r"nadvi[šs]uje ogradu[^.]{0,20}0[,.]20\s*m",
-        "1,84 m / 1836 mm (correct)": r"1[,.]84\s*m|1836\s*mm",
+        "1,84 m / 1836 mm (superseded - was correct for 2x6)":
+            r"(1[,.]84\s*m|1836\s*mm)(?![^§]{0,90}(2[,.]84|2836))",
+        "2,84 m / 2836 mm (correct - 3x4 raised)": r"2[,.]84\s*m|2836\s*mm",
     },
 }
 

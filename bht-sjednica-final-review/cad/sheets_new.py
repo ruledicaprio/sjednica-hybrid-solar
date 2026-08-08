@@ -42,34 +42,37 @@ def register(B):
         fw, proj = sup["field_w"], sup["proj"]
         # The foundations sit OUTSIDE the fence, south of it; the upper (north) part
         # of the panel oversails the fence.  At 45 deg the panel plane reaches the
-        # 1.90 m fence height 1400 mm north of its lower edge, so 1400 mm of the
-        # 3236 mm projection lies south of the fence (south strip is 1950 mm) and
-        # 1836 mm oversails.  See review/05-site-corrections.md.
+        # 1.90 m fence height north of its lower edge, so that run lies south of the
+        # fence (south strip is 1950 mm) and the rest oversails.  See
+        # review/07-calculations.md F.6 and review/05-site-corrections.md.
         run_to_fence = (1900.0 - D["array"]["bottom_edge"]) / math.tan(
             math.radians(D["array"]["tilt_deg"]))
         ay = oy - run_to_fence
-        axs = [ox + F / 2 - fw - 500, ox + F / 2 + 500]
+        mid = ox + F / 2
+        gap = 500
+        total_w = 3 * fw + 2 * gap
+        axs = [mid - total_w / 2 + i * (fw + gap) for i in range(3)]
 
         for i, ax in enumerate(axs, 1):
             rect(msp, ax, ay, fw, proj, "Panel", color=110, lw=70)
             msp.add_line((ax, ay + proj / 2), (ax + fw, ay + proj / 2),
                          dxfattribs={"layer": "Panel", "color": 8})
-            for j in (1, 2):
-                msp.add_line((ax + fw * j / 3, ay), (ax + fw * j / 3, ay + proj),
-                             dxfattribs={"layer": "Panel", "color": 8})
+            msp.add_line((ax + fw / 2, ay), (ax + fw / 2, ay + proj),
+                         dxfattribs={"layer": "Panel", "color": 8})
             for so in (fw / 2 - sup["strip_spacing"] / 2,
                        fw / 2 + sup["strip_spacing"] / 2):
                 rect(msp, ax + so - 225, ay - 250, 450, 1500,
                      "Temelj", color=32, lw=35)
-            _txt(msp, f"PV-{i}  ·  6 × 585 Wp  ·  45°  JUG", ax + fw / 2,
+            _txt(msp, f"PV-{i}  ·  4 × 585 Wp  ·  45°  JUG", ax + fw / 2,
                  ay - 900, 2.2 * SC, layer="Tekst", color=7, align=TA.CENTER)
 
-        mid = ox + F / 2
-        msp.add_lwpolyline([(axs[0] + fw / 2, ay + proj), (axs[0] + fw / 2, oy - 380),
-                            (mid, oy - 380), (mid, cy + 150)],
+        msp.add_lwpolyline([(mid, ay + proj), (mid, cy + 150)],
                            dxfattribs={"layer": "Kabal", "color": 2, "lineweight": 35})
-        msp.add_lwpolyline([(axs[1] + fw / 2, ay + proj), (axs[1] + fw / 2, oy - 380)],
-                           dxfattribs={"layer": "Kabal", "color": 2, "lineweight": 35})
+        for ax in (axs[0], axs[2]):
+            msp.add_lwpolyline([(ax + fw / 2, ay + proj), (ax + fw / 2, oy - 380),
+                                (mid, oy - 380), (mid, cy + 150)],
+                               dxfattribs={"layer": "Kabal", "color": 2,
+                                           "lineweight": 35})
 
         v = D["ventilation"]
         solid_rect(msp, cx + 250, cy + CH - 60, v["intake_mm"][0], 60,
@@ -96,28 +99,29 @@ def register(B):
         leader(msp, (cx + CW - 600, cy + CH + 60),
                "kanal + žaluzina 600 × 600; ventilator 1200 m³/h; izduv DN 50 (pref. DN 65)",
                1500, 1350, SC)
-        leader(msp, (mid, oy - 380), "DC trasa 2 × 2 × 25 m u PEHD Ø50 → PVDB",
+        leader(msp, (mid, oy - 380), "DC trasa u PEHD Ø50 → PVDB (3 stringa, v. E-01)",
                2900, -1250, SC)
         leader(msp, (axs[0] + 400, ay - 100),
-               "2 temeljne trake po nosaču, 450 × 3300, razmak 2600 — IZVAN ograde",
+               "2 temeljne trake po nosaču (×3), 450 × 3300, razmak 1600 — IZVAN ograde",
                -2200, -900, SC)
 
         north_arrow(msp, 19500, 11700, 1700)
         scale_bar(msp, 1200, 4500, SC, total_m=5, step_m=1)
         legend(msp, 1200, 4150, SC, [
-            (110, "LOT 1 — nosači FN panela PV-1 i PV-2 (6 × 585 Wp, 45°, JUG)"),
-            (32,  "LOT 1 — AB temeljne trake 450 × 3300 mm, razmak 2600 mm"),
+            (110, "LOT 1 — nosači FN panela PV-1, PV-2, PV-3 (4 × 585 Wp, 45°, JUG)"),
+            (32,  "LOT 1 — AB temeljne trake 450 × 3300 mm, razmak 1600 mm"),
             (2,   "LOT 1 — DC trasa u PEHD Ø50 do PVDB"),
             (30,  "LOT 2 — DEA 22 kVA u skid izvedbi i spremnik 500 l"),
             (4,   "LOT 2 — žaluzine, kanal, ventilacija i izduv (SJEVERNA strana)"),
         ])
-        note_block(msp, 7900, 4150, SC, "NAPOMENA — MJERODAVNO OPTEREĆENJE:", [
+        note_block(msp, 7900, 4150, SC, "NAPOMENA — PRORAČUNSKO OPTEREĆENJE:", [
             "Vjetar na lokaciji qp ≥ 1,20 kN/m² (udar 3 s ≈ 45 m/s), prema ovjerenoj",
-            "dokumentaciji lokacije. Kataloški nosač tipa A: 0,52 kN/m² pri 45° i",
-            "0,87 kN/m² pri 15°/25° — ISPOD opterećenja lokaliteta. Ponuđač uz ponudu",
-            "dostavlja ovjeren statički proračun (Prilog II, Tačka 1.3).",
-            "GEOMETRIJA: temelji IZVAN ograde (1400 mm od ograde, pojas 1950 mm);",
-            "gornji dio panela nadvišuje ogradu 1836 mm, na visini +3,50 m — iznad",
+            "dokumentaciji lokacije — iznad kataloškog kapaciteta standardnog nosača",
+            "tipa A, stoga nosač CUSTOM IZRADA prema opterećenju iz proračuna",
+            "(review/07-calculations.md F.6): sail 10,55 m²/nosaču, ULS uzgon 18,1 kN,",
+            "moment 62,8 kNm — ovjerava ponuđač statičkim proračunom (Prilog II, 1.3).",
+            "GEOMETRIJA: temelji IZVAN ograde (400 mm od ograde, pojas 1950 mm);",
+            "gornji dio panela nadvišuje ogradu 2836 mm, na visini +4,74 m — iznad",
             "krova kontejnera. Kontejner je PRAZAN.",
         ])
         return doc
@@ -160,9 +164,9 @@ def register(B):
         msp.add_line((fx, GY), (fx, GY + 1900),
                      dxfattribs={"layer": "Ograda", "color": 8, "lineweight": 50})
 
-        for lvl, lab in ((b, "donja ivica panela  +0,50"),
+        for lvl, lab in ((b, f"donja ivica panela  +{b / 1000:.2f}".replace(".", ",")),
                          (1900, "kota ograde  +1,90"),
-                         (top, "gornja ivica panela  +3,74")):
+                         (top, f"gornja ivica panela  +{top / 1000:.2f}".replace(".", ","))):
             msp.add_line((GX - 1100, GY + lvl), (fx + 1900, GY + lvl),
                          dxfattribs={"layer": "Sakriveno", "color": 8})
             _txt(msp, lab, fx + 2000, GY + lvl - 50, 2.0 * SC,
@@ -179,14 +183,18 @@ def register(B):
              layer="Tekst", color=8)
 
         note_block(msp, GX - 1300, GY + top + 2900, SC, "OBJAŠNJENJA:", [
-            "1  Polje FN panela: 2 reda × 3 modula 585 Wp u portretu — širina polja 3476 mm,",
-            "    dužina po nagibu 4576 mm (2 × 2278 mm), horizontalna projekcija 3236 mm pri 45°.",
-            "    ISPRAVLJENO: raniji nacrt je projekciju izvodio iz uzdužne grede 3656 mm",
-            "    (2590 mm), što nije dužina polja modula. Gornja ivica je stoga na +3,74 m.",
-            "2  Dvije temeljne trake po nosaču, 450 × 3300 mm, dubina 900 mm, razmak 2600 mm,",
+            "1  Polje FN panela: 2 reda × 2 modula 585 Wp u portretu — širina polja 2305 mm,",
+            "    dužina po nagibu 4576 mm (2 × 2278 mm), horizontalna projekcija 3236 mm pri 45°",
+            "    (nepromijenjeno — isti broj redova po nagibu kao ranija izvedba 2×3).",
+            "    ISPRAVLJENO (istorija): raniji nacrt je projekciju izvodio iz uzdužne grede",
+            "    3656 mm (2590 mm), što nije dužina polja modula — vidjeti F.2 u proračunu.",
+            "2  Dvije temeljne trake po nosaču, 450 × 3300 mm, dubina 900 mm, razmak 1600 mm,",
             "    beton C25 na podlozi C10; dubina i armatura prema ovjerenom proračunu.",
-            "3  Gornja (sjeverna) ivica panela je 1,84 m iznad kote ograde h=1,90 m.",
-            "4  MJERODAVNO: qp ≥ 1,20 kN/m² — vidjeti napomenu na listu S-02.",
+            "3  Donja ivica podignuta na +1,50 m (bilo +0,50 m uz 2×6 izvedbu) — iskorišten",
+            "    prostor dobijen manjim opterećenjem vjetra po nosaču (3×4 umjesto 2×6,",
+            "    v. F.6). Gornja ivica +4,74 m, 2,84 m iznad kote ograde h=1,90 m.",
+            "4  CUSTOM IZRADA prema qp ≥ 1,20 kN/m² (sail 10,55 m²/nosaču, ULS uzgon",
+            "    18,1 kN, moment 62,8 kNm) — vidjeti napomenu na listu S-02 i proračun F.6.",
         ])
         return doc
 
@@ -307,15 +315,23 @@ def register(B):
                                                 "lineweight": 35})
 
         Y = 10200
-        pv1r, _ = box(1600, Y, 2900, 1300, "FN POLJE PV-1", "6 × 585 Wp = 3,51 kWp", 5)
+        pv1r, _ = box(1600, Y, 2900, 1300, "FN POLJE PV-1", "4 × 585 Wp = 2,34 kWp", 5)
         pv2r, _ = box(1600, Y - 2200, 2900, 1300, "FN POLJE PV-2",
-                      "6 × 585 Wp = 3,51 kWp", 5)
-        spdr, spdl = box(5500, Y - 1100, 1900, 1300, "SPD DC", "tip 2 / string", 1)
-        pvdbr, pvdbl = box(8400, Y - 1100, 2500, 1300, "PVDB", "500-15-2B · IP55", 5)
-        issur, issul = box(11900, Y - 1100, 2600, 1300, "iSSU", "S4875G2 · MPPT", 30)
-        wire(pv1r, (spdl[0], spdl[1]), 5)
-        wire(pv2r, (spdl[0], spdl[1]), 5)
-        wire(spdr, pvdbl, 5)
+                      "4 × 585 Wp = 2,34 kWp", 5)
+        pv3r, _ = box(1600, Y - 4400, 2900, 1300, "FN POLJE PV-3",
+                      "4 × 585 Wp = 2,34 kWp", 5)
+        spd1r, spd1l = box(5500, Y - 1100, 1900, 1300, "SPD DC",
+                           "tip 2/string · PV1+PV2", 1)
+        spd2r, spd2l = box(5500, Y - 4400, 1900, 1300, "SPD DC",
+                           "tip 2/string · PV3", 1)
+        pvdbr, pvdbl = box(8400, Y - 2750, 2500, 1300, "PVDB",
+                           "500-15-2B · IP55 · 2 rute", 5)
+        issur, issul = box(11900, Y - 2750, 2600, 1300, "iSSU", "S4875G2 · MPPT", 30)
+        wire(pv1r, (spd1l[0], spd1l[1] + 200), 5)
+        wire(pv2r, (spd1l[0], spd1l[1] - 200), 5)
+        wire(pv3r, spd2l, 5)
+        wire(spd1r, (pvdbl[0], pvdbl[1] + 300), 5)
+        wire(spd2r, (pvdbl[0], pvdbl[1] - 300), 5)
         wire(pvdbr, issul, 5)
 
         gr, _ = box(1600, Y - 6200, 2900, 1300, "DEA 22 kVA", "17,6 kW · skid", 30)
@@ -359,6 +375,9 @@ def register(B):
             "4  Zaštitni uređaj u GRO mora obezbijediti automatsko isključenje prema",
             "    IEC 60364-4-41 pri struji kvara ograničenoj SHUNT pobudom generatora.",
             "5  FN polja su unutar zone zaštite antenskog stuba h=38 m prema EN 62305.",
+            "6  3 nosača × 4 modula (v. S-02/S-03, F.6): svaki string kompletan po nosaču",
+            "    (bez dijeljenja stringa preko dva nosača). PVDB ima 2 rute — PV-1+PV-2",
+            "    paralelno na rutu 1, PV-3 samostalno na rutu 2.",
         ])
         return doc
 

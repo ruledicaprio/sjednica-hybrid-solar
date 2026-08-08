@@ -38,6 +38,8 @@ Radiance_*_Windows.zip
 # Regenerable Radiance simulation artifacts
 rural-star-sjednica/output/radiance_results/
 rural-star-sjednica/output/radiance_scene/
+rural-star-sjednica/scripts/radiance_scene/
+rural-star-sjednica/src/radiance_scene/
 *.oct
 *.hdr
 *.smx
@@ -58,3 +60,8 @@ bht-sjednica-final-review/TD-OUTPUT-BASELINE-20260807/
 # render previews and scratch CAD
 bht-sjednica-final-review/cad/_*.png
 bht-sjednica-final-review/cad/_frame_test.dxf
+# 9 MB combined, different site (Mlinište, not Sjednica) EPLAN electrical-schematic
+# DWGs pulled in as a drafting reference on 2026-08-08; not cleanly separable from
+# their genset/container content (see KONTEJNER.oxps for the useful part instead)
+bht-sjednica-final-review/reference/P13_5_FG_Wilson_hybrid MLINISTE.dwg
+bht-sjednica-final-review/reference/P13_5_FG_Wilson_hybrid MLINISTE_2.dwg
