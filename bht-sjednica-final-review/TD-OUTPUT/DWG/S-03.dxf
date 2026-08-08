@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461260.8758796295
+2461261.180324074
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461260.8758796295
+2461261.180324074
   9
 $TDUUPDATE
  40
@@ -549,7 +549,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-133
+137
   9
 $SURFTAB1
  70
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{D78A7D96-1DAC-4186-B7F7-3D90E9EA768C}
+{8D3FBB75-DA0C-4C11-AFC1-D578A956491B}
   9
 $VERSIONGUID
   2
-{623E5763-1B96-406E-858D-4657C8F8E7E5}
+{CA53B327-FB81-40FD-9040-DBFE096A14DD}
   9
 $EXTNAMES
 290
@@ -1323,9 +1323,9 @@ ISM
   0
 CLASS
   1
-LAYOUT
+ACDBPLACEHOLDER
   2
-AcDbLayout
+AcDbPlaceHolder
   3
 ObjectDBX Classes
  90
@@ -1339,9 +1339,9 @@ ObjectDBX Classes
   0
 CLASS
   1
-ACDBPLACEHOLDER
+LAYOUT
   2
-AcDbPlaceHolder
+AcDbLayout
   3
 ObjectDBX Classes
  90
@@ -3721,7 +3721,7 @@ ACAD
   0
 APPID
   5
-130
+134
 330
 3
 100
@@ -3735,7 +3735,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-131
+135
 330
 3
 100
@@ -6905,13 +6905,13 @@ AcDbLine
  10
 2100.0
  20
-8936.0
+9936.0
  30
 0.0
  11
 1240.0
  21
-8936.0
+9936.0
  31
 0.0
   0
@@ -6957,7 +6957,7 @@ _ARCHTICK
  10
 1300.0
  20
-8936.0
+9936.0
  30
 0.0
  41
@@ -6987,7 +6987,7 @@ AcDbLine
  11
 1300.0
  21
-6918.0
+7418.0
  31
 0.0
   0
@@ -7005,13 +7005,13 @@ AcDbLine
  10
 1300.0
  20
-7218.0
+7718.0
  30
 0.0
  11
 1300.0
  21
-8936.0
+9936.0
  31
 0.0
   0
@@ -7029,7 +7029,7 @@ AcDbMText
  10
 1300.0
  20
-7068.0
+7568.0
  30
 0.0
  40
@@ -7037,7 +7037,7 @@ AcDbMText
  71
 5
   1
-3736
+4736
  50
 90.0
   0
@@ -7091,7 +7091,7 @@ AcDbPoint
  10
 2100.0
  20
-8936.0
+9936.0
  30
 0.0
   0
@@ -14453,11 +14453,11 @@ AcDbPolyline
  10
 3700.0
  20
-5700.0
+6700.0
  10
 6936.0
  20
-8936.0
+9936.0
   0
 LWPOLYLINE
   5
@@ -14479,11 +14479,11 @@ AcDbPolyline
  10
 3700.0
  20
-5620.0
+6620.0
  10
 6936.0
  20
-8856.0
+9856.0
   0
 LINE
   5
@@ -14501,7 +14501,7 @@ AcDbLine
  10
 3700.0
  20
-5700.0
+6700.0
  30
 0.0
  11
@@ -14527,7 +14527,7 @@ AcDbLine
  10
 6936.0
  20
-8936.0
+9936.0
  30
 0.0
  11
@@ -14553,7 +14553,7 @@ AcDbLine
  10
 3700.0
  20
-5700.0
+6700.0
  30
 0.0
  11
@@ -14851,13 +14851,13 @@ AcDbLine
  10
 2100.0
  20
-5700.0
+6700.0
  30
 0.0
  11
 9636.0
  21
-5700.0
+6700.0
  31
 0.0
   0
@@ -14877,19 +14877,19 @@ AcDbText
  10
 9736.0
  20
-5650.0
+6650.0
  30
 0.0
  40
 60.0
   1
-donja ivica panela  +0,50
+donja ivica panela  +1,50
   7
 20
  11
 9736.0
  21
-5650.0
+6650.0
  31
 0.0
 100
@@ -14971,13 +14971,13 @@ AcDbLine
  10
 2100.0
  20
-8936.0
+9936.0
  30
 0.0
  11
 9636.0
  21
-8936.0
+9936.0
  31
 0.0
   0
@@ -14997,19 +14997,19 @@ AcDbText
  10
 9736.0
  20
-8886.0
+9886.0
  30
 0.0
  40
 60.0
   1
-gornja ivica panela  +3,74
+gornja ivica panela  +4,74
   7
 20
  11
 9736.0
  21
-8886.0
+9886.0
  31
 0.0
 100
@@ -15095,7 +15095,7 @@ M 30
  11
 1300.0
  21
-7068.0
+7568.0
  31
 0.0
  70
@@ -15115,7 +15115,7 @@ AcDbAlignedDimension
  14
 2100.0
  24
-8936.0
+9936.0
  34
 0.0
  50
@@ -15139,7 +15139,7 @@ AcDbText
  10
 4400.0
  20
-6200.0
+7200.0
  30
 0.0
  40
@@ -15151,7 +15151,7 @@ AcDbText
  11
 4400.0
  21
-6200.0
+7200.0
  31
 0.0
 100
@@ -15275,7 +15275,7 @@ AcDbText
  10
 1900.0
  20
-11836.0
+12836.0
  30
 0.0
  40
@@ -15287,7 +15287,7 @@ OBJAŠNJENJA:
  11
 1900.0
  21
-11836.0
+12836.0
  31
 0.0
 100
@@ -15309,19 +15309,19 @@ AcDbText
  10
 1900.0
  20
-11764.0
+12764.0
  30
 0.0
  40
 63.0
   1
-1  Polje FN panela: 2 reda × 3 modula 585 Wp u portretu — širina polja 3476 mm,
+1  Polje FN panela: 2 reda × 2 modula 585 Wp u portretu — širina polja 2305 mm,
   7
 20
  11
 1900.0
  21
-11764.0
+12764.0
  31
 0.0
 100
@@ -15343,19 +15343,19 @@ AcDbText
  10
 1900.0
  20
-11672.65
+12672.65
  30
 0.0
  40
 63.0
   1
-    dužina po nagibu 4576 mm (2 × 2278 mm), horizontalna projekcija 3236 mm pri 45°.
+    dužina po nagibu 4576 mm (2 × 2278 mm), horizontalna projekcija 3236 mm pri 45°
   7
 20
  11
 1900.0
  21
-11672.65
+12672.65
  31
 0.0
 100
@@ -15377,19 +15377,19 @@ AcDbText
  10
 1900.0
  20
-11581.3
+12581.3
  30
 0.0
  40
 63.0
   1
-    ISPRAVLJENO: raniji nacrt je projekciju izvodio iz uzdužne grede 3656 mm
+    (nepromijenjeno — isti broj redova po nagibu kao ranija izvedba 2×3).
   7
 20
  11
 1900.0
  21
-11581.3
+12581.3
  31
 0.0
 100
@@ -15411,19 +15411,19 @@ AcDbText
  10
 1900.0
  20
-11489.949999999999
+12489.949999999999
  30
 0.0
  40
 63.0
   1
-    (2590 mm), što nije dužina polja modula. Gornja ivica je stoga na +3,74 m.
+    ISPRAVLJENO (istorija): raniji nacrt je projekciju izvodio iz uzdužne grede
   7
 20
  11
 1900.0
  21
-11489.949999999999
+12489.949999999999
  31
 0.0
 100
@@ -15445,19 +15445,19 @@ AcDbText
  10
 1900.0
  20
-11398.599999999999
+12398.599999999999
  30
 0.0
  40
 63.0
   1
-2  Dvije temeljne trake po nosaču, 450 × 3300 mm, dubina 900 mm, razmak 2600 mm,
+    3656 mm (2590 mm), što nije dužina polja modula — vidjeti F.2 u proračunu.
   7
 20
  11
 1900.0
  21
-11398.599999999999
+12398.599999999999
  31
 0.0
 100
@@ -15479,19 +15479,19 @@ AcDbText
  10
 1900.0
  20
-11307.249999999998
+12307.249999999998
  30
 0.0
  40
 63.0
   1
-    beton C25 na podlozi C10; dubina i armatura prema ovjerenom proračunu.
+2  Dvije temeljne trake po nosaču, 450 × 3300 mm, dubina 900 mm, razmak 1600 mm,
   7
 20
  11
 1900.0
  21
-11307.249999999998
+12307.249999999998
  31
 0.0
 100
@@ -15513,19 +15513,19 @@ AcDbText
  10
 1900.0
  20
-11215.899999999998
+12215.899999999998
  30
 0.0
  40
 63.0
   1
-3  Gornja (sjeverna) ivica panela je 1,84 m iznad kote ograde h=1,90 m.
+    beton C25 na podlozi C10; dubina i armatura prema ovjerenom proračunu.
   7
 20
  11
 1900.0
  21
-11215.899999999998
+12215.899999999998
  31
 0.0
 100
@@ -15547,19 +15547,155 @@ AcDbText
  10
 1900.0
  20
-11124.549999999997
+12124.549999999997
  30
 0.0
  40
 63.0
   1
-4  MJERODAVNO: qp ≥ 1,20 kN/m² — vidjeti napomenu na listu S-02.
+3  Donja ivica podignuta na +1,50 m (bilo +0,50 m uz 2×6 izvedbu) — iskorišten
   7
 20
  11
 1900.0
  21
-11124.549999999997
+12124.549999999997
+ 31
+0.0
+100
+AcDbText
+  0
+TEXT
+  5
+130
+330
+17
+100
+AcDbEntity
+  8
+Tekst
+ 62
+8
+100
+AcDbText
+ 10
+1900.0
+ 20
+12033.199999999997
+ 30
+0.0
+ 40
+63.0
+  1
+    prostor dobijen manjim opterećenjem vjetra po nosaču (3×4 umjesto 2×6,
+  7
+20
+ 11
+1900.0
+ 21
+12033.199999999997
+ 31
+0.0
+100
+AcDbText
+  0
+TEXT
+  5
+131
+330
+17
+100
+AcDbEntity
+  8
+Tekst
+ 62
+8
+100
+AcDbText
+ 10
+1900.0
+ 20
+11941.849999999997
+ 30
+0.0
+ 40
+63.0
+  1
+    v. F.6). Gornja ivica +4,74 m, 2,84 m iznad kote ograde h=1,90 m.
+  7
+20
+ 11
+1900.0
+ 21
+11941.849999999997
+ 31
+0.0
+100
+AcDbText
+  0
+TEXT
+  5
+132
+330
+17
+100
+AcDbEntity
+  8
+Tekst
+ 62
+8
+100
+AcDbText
+ 10
+1900.0
+ 20
+11850.499999999996
+ 30
+0.0
+ 40
+63.0
+  1
+4  CUSTOM IZRADA prema qp ≥ 1,20 kN/m² (sail 10,55 m²/nosaču, ULS uzgon
+  7
+20
+ 11
+1900.0
+ 21
+11850.499999999996
+ 31
+0.0
+100
+AcDbText
+  0
+TEXT
+  5
+133
+330
+17
+100
+AcDbEntity
+  8
+Tekst
+ 62
+8
+100
+AcDbText
+ 10
+1900.0
+ 20
+11759.149999999996
+ 30
+0.0
+ 40
+63.0
+  1
+    18,1 kN, moment 62,8 kNm) — vidjeti napomenu na listu S-02 i proračun F.6.
+  7
+20
+ 11
+1900.0
+ 21
+11759.149999999996
  31
 0.0
 100
@@ -16655,7 +16791,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-132
+136
   0
 DICTIONARYVAR
   5
@@ -16667,7 +16803,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-08-07T19:01:16.746885+00:00
+1.4.4 @ 2026-08-08T02:19:40.827145+00:00
   0
 VISUALSTYLE
   5
@@ -17371,7 +17507,7 @@ X-Ray
   0
 DICTIONARYVAR
   5
-132
+136
 330
 2D
 100
@@ -17379,7 +17515,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-08-07T19:01:16.764981+00:00
+1.4.4 @ 2026-08-08T02:19:40.836673+00:00
   0
 ENDSEC
   0

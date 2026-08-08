@@ -11,33 +11,33 @@
   "source": "PVM p.43 Table 3-5"
  },
  "support": {
-  "bom": "21540481 (Standard A-shaped 3.0, LOW)",
-  "anchor_bom": "21540482",
-  "crossbeam": 4089,
+  "bom": "custom-fabricated (off-catalogue on wind grounds, see wind.verdict) — Huawei Standard A-shaped 3.0 geometry conventions reused for margins/overhang only",
+  "anchor_bom": "M16-M20 resin anchor, site-specific (karst limestone), not a Huawei part",
+  "crossbeam": 2918,
   "long_margin": 306.5,
   "overhang": 558.5,
-  "modules_each": 6,
-  "arrangement": "2 rows x 3 columns, portrait",
-  "field_w": 3476.0,
+  "modules_each": 4,
+  "arrangement": "2 rows x 2 columns, portrait",
+  "field_w": 2305.0,
   "field_slope": 4576,
-  "strip_spacing": 2600,
-  "anchor_group_spacing": 1800,
-  "weight_kg": 154,
-  "source": "PVM p.80 Table 3-29, p.171 Table 4-18, p.180 Table 4-20",
+  "strip_spacing": 1600,
+  "anchor_group_spacing": 1200,
+  "weight_kg": 110,
+  "source": "review/07-calculations.md F.6 (2026-08-08) — rederived from PVM p.80 Table 3-29 / p.180 Table 4-20 conventions for a custom 2-column crossbeam; frame mass is an estimate pending the fabricator's calc",
   "proj": 3236,
   "rise": 3236,
   "strip_l": 3300,
   "strip_w": 450
  },
  "array": {
-  "count": 2,
+  "count": 3,
   "modules_total": 12,
   "kWp": 7.02,
   "tilt_deg": 45,
   "azimuth_deg": 180,
-  "bottom_edge": 500,
-  "top_edge": 3736,
-  "above_fence": 1836
+  "bottom_edge": 1500,
+  "top_edge": 4736,
+  "above_fence": 2836
  },
  "wind": {
   "site_qp_kNm2": 1.2,
@@ -54,7 +54,11 @@
    "35": 0.67,
    "45": 0.52
   },
-  "verdict": "No catalogue tilt is compliant; tender requires certified site-specific static calculation pre-award."
+  "verdict": "No catalogue tilt is compliant; tender requires certified site-specific static calculation pre-award.",
+  "sail_area_m2_per_support": 10.55,
+  "uls_uplift_kN_per_support": 18.1,
+  "overturning_kNm_per_support": 62.8,
+  "note": "3x4 (2 rows x 2 columns) adopted 2026-08-08 in place of 2x6: sail area per support drops from 15.91 to 10.55 m2 (-34%, not the -50% the BOQ OPCIJA text assumed). The freed wind budget was spent raising bottom_edge from 500 to 1500 mm so overturning per support (62.8 kNm) stays at/below the old 2x6 design's 64.3 kNm; uplift (18.1 kN) is well under the old 27.3 kN since it is height-independent."
  },
  "foundation": {
   "strip_w_top": 450,
@@ -64,7 +68,9 @@
   "concrete": "C25 on C10",
   "rebar": "O10 / 335 MPa",
   "cover": 50,
-  "note": "Depth and reinforcement to be confirmed by the bidder's certified calculation for qp >= 1.20 kN/m2."
+  "supports": 3,
+  "strips_total": 6,
+  "note": "Depth and reinforcement to be confirmed by the bidder's certified calculation for qp >= 1.20 kN/m2. 3 supports (was 2) = 6 strips total, one extra foundation pair + anchor set vs the 2x6 design."
  },
  "genset": {
   "model": "FG Wilson P22-6 (Skid) ili ekvivalent",

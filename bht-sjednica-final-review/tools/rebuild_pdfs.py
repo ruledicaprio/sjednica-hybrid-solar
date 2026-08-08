@@ -22,9 +22,24 @@ DWG = os.path.join(TD, "DWG")
 PRILOG = os.path.join(TD, "Prilog_III_situacija_sjednica_bileca.pdf")
 SITUACIJA = os.path.join(TD, "Situacija_BS_Sjednica.pdf")
 
-# 1-based pages in Prilog III that the corrected sheets supersede
-REPLACE = {3: "S-01", 4: "S-02", 5: "S-03"}
-APPEND = ["M-01", "E-01"]
+# 1-based pages in Prilog III that the corrected sheets supersede. Covers all 5 sheet
+# slots (3-7) as a single replace-in-place set so reruns are idempotent -- a prior
+# version only replaced 3-5 and unconditionally re-inserted M-01/E-01 after page 5,
+# which duplicated stale copies of them on every second run (found 2026-08-08: pages
+# 8-9 were a leftover pre-redesign M-01/E-01 pair from before the 3x4 support change).
+REPLACE = {3: "S-01", 4: "S-02", 5: "S-03", 6: "M-01", 7: "E-01"}
+
+# Pages identified by content, not position, so detection survives page-count drift.
+# The Huawei "Standard A-Shaped Support 3.0" catalogue quick-guide (FN-01..FN-06,
+# originally pp.27-32) describes the 6-module/4089mm product the design moved away
+# from (site wind load exceeds its rating; see review/07-calculations.md F.6) --
+# keeping it in the annex now misrepresents what is actually being tendered.
+DROP_IF_CONTAINS = ["Nosač fotonaponskih panela (ground support) — LOW Support"]
+
+
+def _should_drop(page):
+    t = page.get_text().replace("\xa0", " ")   # PDF text uses NBSP between words
+    return any(marker in t for marker in DROP_IF_CONTAINS)
 
 
 def sheet(name):
@@ -55,15 +70,17 @@ def build_prilog():
     before = os.path.getsize(PRILOG)
     src = fitz.open(PRILOG)
     out = fitz.open()
+    dropped = 0
     for i in range(src.page_count):
         pno = i + 1
         if pno in REPLACE:
             out.insert_pdf(sheet(REPLACE[pno]))
+        elif _should_drop(src[i]):
+            dropped += 1
         else:
             out.insert_pdf(src, from_page=i, to_page=i)
-        if pno == 5:                       # keep the new sheets with the situation set
-            for n in APPEND:
-                out.insert_pdf(sheet(n))
+    if dropped:
+        print(f"  dropped {dropped} superseded reference page(s)")
     meta = src.metadata or {}
     meta.update({"creator": "Rusmir Skopljak, dipl. ing. el."})
     out.set_metadata(meta)

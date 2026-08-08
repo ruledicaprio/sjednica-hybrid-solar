@@ -6,7 +6,7 @@
     "altitude": 1076.0,
     "albedo": 0.40,
     "bifaciality_factor": 0.80,
-    "module_clearance_height": 0.5,
+    "module_clearance_height": 1.5,
     "tilt_angle": 45.0,
     "azimuth_angle": 180.0,
     "temperature_coefficient": -0.0035
@@ -22,6 +22,17 @@
       "bifaciality": 0.80,
       "voc": 41.75,
       "imp": 12.94
+    },
+    "Huawei_IPV585-M2A": {
+      "model": "iPV585-M2A",
+      "manufacturer": "Huawei",
+      "power_wp": 585,
+      "area_m2": 2.58,
+      "efficiency": 0.227,
+      "dimensions_mm": [2278, 1134, 30],
+      "bifaciality": 0.80,
+      "voc": 51.55,
+      "imp": 13.67
     }
   },
   "inverters": {
@@ -76,7 +87,18 @@
       "fuel_consumption_l_kwh_50_load": 0.35,
       "fuel_consumption_l_kwh_75_load": 0.30,
       "start_delay_min": 2,
-      "min_run_time_min": 15
+      "min_run_time_min": 15,
+      "_note": "reference unit from a different site (Mlinište), not the Sjednica genset"
+    },
+    "FG_Wilson_P22-6": {
+      "model": "P22-6 (Skid)",
+      "manufacturer": "FG Wilson",
+      "standby_power_kw": 17.6,
+      "prime_power_kw": 16.0,
+      "fuel_consumption_l_kwh_50_load": 0.335,
+      "start_delay_min": 2,
+      "min_run_time_min": 15,
+      "_note": "fuel_consumption_l_kwh_50_load derived from the only verified datasheet point (5,9 l/h at 100% standby / 17,6 kW = 0,335 l/kWh) - not an actual 50%-load-specific figure, real partial-load consumption is typically worse (higher l/kWh). See bht-sjednica-final-review/review/06-genset-datasheet.md."
     }
   }
 }

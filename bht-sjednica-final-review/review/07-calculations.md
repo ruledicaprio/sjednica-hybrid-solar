@@ -499,13 +499,93 @@ because Huawei's own drawing says *"in some particular scene, such as island and
 peak, site designer should recheck the foundation design"* — **written manufacturer
 confirmation for this specific site** if a catalogue product is offered.
 
-### F.6 Optional: reduce the sail per structure
+### F.6 Adopted: 3 supports × 4 modules (2 rows × 2 columns), raised
 
-Not required, but worth pricing as an alternative: **3 supports × 4 modules** instead of
-2 × 6 halves the sail per structure (15,91 → 7,95 m²) and roughly halves the uplift and
-overturning per foundation, for the same 12 modules and 7,02 kWp. Three smaller
-structures are markedly easier and cheaper to make compliant at 45°, and the plot has
-room. Cost: one extra foundation pair and anchor set.
+**Superseded 2026-08-08 — this is now the primary design**, not an alternative. Was
+priced as an OPCIJA in the BOQ text (`tools/fix_boq2.py`, `fix_boq_all.py`,
+`tools/make_prilog1.py`) using a rough "halves the sail" approximation
+(15,91 → 7,95 m²); rederived rigorously below, the reduction is **−34 %, not −50 %**,
+because sail area scales with the module envelope (4/6 of the modules, same portrait
+2-row stacking), not with support count. The BOQ's OPCIJA text should be corrected or
+removed — see review note on `tools/fix_boq2.py`/`fix_boq_all.py`.
+
+**Geometry (2 rows × 2 columns portrait, custom-fabricated frame — this design was
+already off the Huawei catalogue on wind grounds, §B.2/§F, so shrinking the crossbeam
+to fit 2 columns instead of reusing the 4089 mm catalogue beam is free efficiency):**
+
+| | |
+|---|---|
+| Field slope length (2 rows, unchanged) | 2 × 2278 + 20 = **4576 mm** |
+| Field width (2 columns) | 2 × 1134 + 37 (1 inter-module gap) = **2305 mm** |
+| Custom crossbeam (2305 + 2 × 306,5 margin) | **2918 mm** |
+| Horizontal projection / rise at 45° (unchanged — same 2-row slope) | **3236 mm** each |
+| **Sail area per support** | 2,305 × 4,576 = **10,55 m²** (was 15,91 m²; **−34 %**, not the OPCIJA's claimed −50 %) |
+
+**Wind actions per support (EN 1991-1-4 §7.3, c_f = 1,5, same method as §B.5), at the
+raised height below:**
+
+```
+F  = 1,5 × 1,20 × 10,55                         = 19,0 kN normal to the panel
+Fv = F · cos45                                   = 13,4 kN  (uplift)
+Fh = F · sin45                                   = 13,4 kN  (horizontal)
+G  = (≈110 kg custom frame + 4 × 32 kg modules) · 9,81 = 2,3 kN  (favourable, estimate —
+                                                   frame mass to be confirmed by the
+                                                   fabricator's calc)
+
+ULS uplift  = 1,5 · Fv − 0,9 · G = 20,2 − 2,1     = 18,1 kN per support  (was 27,3 kN)
+```
+
+**Height — spending the freed-up wind budget, per the Investor's instruction to raise
+the array now that each support carries less sail:** uplift is height-independent (it
+scales with area, not elevation), so the only lever is overturning moment via the
+centroid arm. Solving for the bottom-edge height that brings overturning back up to
+(not past) the *previous 2×6 design's* per-support value (64,3 kNm) uses the entire
+freed margin as height instead of banking it as unused capacity:
+
+```
+centroid(b) = b + (4,576/2)·sin45 = b + 1,618 m
+overturning = 1,5 · Fh · centroid(b)
+
+Solving 1,5 × 13,4 × centroid = 64,3 kNm  →  centroid = 3,19 m  →  b = 1,57 m
+```
+
+Rounded down to a clean, conservative **bottom edge +1,50 m** (+1,00 m over the 2×6
+design's +0,50 m):
+
+| | |
+|---|---|
+| Bottom edge | **+1,50 m** |
+| **Top edge** | **+4,74 m** |
+| Above fence (was 1,84 m) | **2,84 m** |
+| Overturning at +1,50 m | 1,5 × 13,4 × (1,50+1,618) = **62,8 kNm** (≤ old 64,3 kNm ✔) |
+| Strip spacing (transverse, was 2600 mm) | narrower field (2305 mm) no longer fits a 2600 mm strip spacing without the strips overhanging past the module edges into the 500 mm inter-support gap — reduced to **1600 mm**, still comfortably inside the field width (352,5 mm margin each side) |
+| Couple over 1,60 m strip spacing | 62,8 / 1,60 = **39,3 kN/strip** (was 24,7 kN/strip at the old 2600 mm spacing — **+59 %**, the strip-spacing reduction costs back part of the sail-area saving) |
+
+**Site fit re-check (§B.4 method):** run from bottom edge to fence height =
+(1900 − 1500)/tan45 = **400 mm** (was 1400 mm) — foundations sit even further inside
+the 1950 mm south strip (1550 mm spare, up from 550 mm). Panel-underside clearance over
+the container roof only improves at the greater height; re-confirm the exact figure
+once support siting is finalised, same as the existing container-clearance caveat.
+
+**Foundations, 3 supports (was 2):** same 2 strips/support, 450 × 3300 × 900 mm,
+C25/C10, M16–M20 resin anchors in karst limestone, 2 per strip / 4 per support — at
+39,3 kN/strip demand against the same 30–60 kN characteristic pull-out per anchor used
+in §B.6 (2 anchors/strip ⇒ ≥60 kN capacity), utilisation rises from ~41 % (old design)
+to ~65 %, still adequate but tighter — **anchor capacity must be proven by site
+pull-out test**, as already required. Net cost: **one extra foundation pair + anchor
+set** versus the 2×6 design (6 strips total instead of 4), as the OPCIJA text
+already noted — that part of the estimate was correct even though the sail-area
+fraction wasn't.
+
+**Electrical (E-01):** the PVDB500-15-2B has **2 routes / max 2 inputs** (§ table
+above), so 3 independent supports cannot each get their own PVDB route. Adopted
+topology: each support keeps its own complete 4-module series string (own DC SPD, type
+2, per string — extending the existing "SPD tip 2 po stringu" note to 3 strings);
+PV-1 and PV-2 strings are paralleled ahead of PVDB **Route 1** (8 modules, 4,68 kWp);
+PV-3 runs alone into PVDB **Route 2** (4 modules, 2,34 kWp). Total unchanged at
+12 modules / 7,02 kWp. This keeps every physical support electrically self-contained
+(no string split across two supports) and stays inside the 3–12-modules-per-string iSSU
+limit on each leg.
 
 ---
 
