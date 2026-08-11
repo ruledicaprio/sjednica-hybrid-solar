@@ -148,8 +148,9 @@
    2885,
    2180
   ],
-  "height": 2400,
-  "_height_note": "Per the container type sheet; 02-construction Y-05 lists conflicting heights (2.40/2.80/2.89 m) - confirm on the mandatory site visit.",
+  "height": 2630,
+  "height_high_eave": 2890,
+  "_height_note": "Settled from the certified K2 facade drawing (SITE-PROJECT .../463 Graficki dio OBJEKAT/04 Fasade.dwg), which carries levels +2.63 and +2.89 with a 10 % mono-pitch roof. This closes 02-construction Y-05, which listed four conflicting heights; 2.40 m was an assumption and is wrong. The lower eave 2.63 m governs internal clearances.",
   "empty": true,
   "door": [
    900,

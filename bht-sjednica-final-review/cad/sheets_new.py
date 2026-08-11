@@ -347,7 +347,7 @@ def register(B):
             _txt(msp, label, lx, ly, 2.0 * SC, layer="Orijentacija", color=1,
                  align=al)
 
-        sxo, syo = 6600, 4300
+        sxo, syo = 6600, 4000
         H = C["height"]
         rect(msp, sxo, syo, CW, H, "Objekat", color=6, lw=50)
         _txt(msp, "PRESJEK 1–1  (pogled prema SJEVERU — ZAPAD lijevo)", sxo,
