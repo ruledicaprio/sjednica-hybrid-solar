@@ -1,6 +1,13 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "dxf-agent-workbench"
+version = "0.1.0"
+description = "Agent-oriented CAD drawing processing"
+readme = "README.md"
+requires-python = ">=3.10"
+
 [tool.setuptools.packages.find]
-where = ["src", "scripts"]
-include = ["src*", "scripts"]
+where = ["src"]
