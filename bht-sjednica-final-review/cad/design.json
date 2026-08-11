@@ -37,7 +37,7 @@
   "azimuth_deg": 180,
   "bottom_edge": 1500,
   "top_edge": 4736,
-  "above_fence": 2836
+  "above_fence": 2636
  },
  "wind": {
   "site_qp_kNm2": 1.2,
@@ -97,11 +97,11 @@
   "mass_full_kg": 590,
   "_source": "FG Wilson 500 l indoor tank data supplied by the Investor 2026-08-11: 1050L x 600W x 1310H, 170 kg. Supersedes the earlier unverified 1200x700x800 estimate; full mass = 170 kg + 500 l diesel @ ~0.84 = ~590 kg over 0.63 m2 = 9.2 kN/m2.",
   "bund": {
-   "L": 1600,
-   "W": 1060,
+   "L": 2885,
+   "W": 800,
    "upstand_mm": 330,
-   "volume_l": 560,
-   "basis": ">=110 % of 500 l = 550 l; 1.70 m2 x 0.33 m = 560 l (BOQ 4.3, 03-electrical Y-14). Tank 1050x600 sits inside with 275/230 mm margins."
+   "volume_l": 762,
+   "basis": ">=110 % of 500 l = 550 l; 2.885 x 0.80 x 0.33 m = 762 l (BOQ 4.3, 03-electrical Y-14). Runs the FULL internal length of the south wall (Investor 2026-08-11): at 800 mm deep instead of 1060 it frees 260 mm of aisle, and the internal width is the binding constraint - bund 800 + skid with its spreading frame 740 + GRO 200 against 2180 mm leaves a 370 mm aisle. Tank 1050x600 sits in the east half with 100 mm margins across; its footprint is not fixed since the tank is to be fabricated."
   }
  },
  "ventilation": {

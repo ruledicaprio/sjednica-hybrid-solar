@@ -539,3 +539,71 @@ They are the 2018 as-built set and show the container with RBS cabinets and
 (Investor's site visit, `05-site-corrections.md` C-1). That is not a contradiction to
 fix in the drawings — they are a historical annex — and the precedence clause in
 Prilog I §0 settles which document governs.
+
+## 22. Rev 6 — Investor's mark-up on the Situacija set (2026-08-11)
+
+Scope was deliberately confined to `cad/`: the drawing sources, `design.json` and
+`site_geometry.json`. No BOQ, no TD, no Prilog I.
+
+**Three real geometry errors, not preferences.**
+
+- **The footings were drawn too short.** `design.json`, the S-02 leader and the
+  S-02 legend all said 450 × 3300; `sheets_new.py` drew **450 × 1500**. On S-03 the
+  pair was drawn as two 450-wide pads under the panel ends, which is the wrong
+  projection — the strips run NORTH–SOUTH at 1600 mm centres EAST–WEST, so section
+  A–A sees **one** 3300 mm strip spanning the whole 3236 mm panel projection and the
+  other directly behind the section plane. Both now come from `support.strip_l` /
+  `strip_w` rather than from literals, which is what let them drift apart.
+- **The fence was a single hairline.** It is now drawn to the certified elevation in
+  `461 Graficki dio TEMELJ i OGRADA/04 Ograda.dwg`, which had never been opened:
+  posts 50×50×3 at 1335 mm, ram 30×30×2, infill Ø4 50×50 woven mesh, gate posts
+  70×70×3, Č.0361 hot-dip galvanised, post footing to −1,50 m. That drawing also
+  settles the height: **+2,10**, not the 1,90 carried through the package with no
+  source. `site_geometry.json` records the measurement and its provenance. Infill
+  starts +0,20 per the Investor.
+- **M-01 overflowed the frame.** The west-duct leader tail sat at y = 7400 against a
+  frame top of 7175 — outside the frame but inside the paper, which is why
+  `check_extents` (paper-only) passed it while the plot clipped it. Plan and section
+  moved down 700 units. The bund's spreading frame also started 20 mm *inside* the
+  60 mm south wall.
+
+**Two defects found while measuring.**
+
+- **S-03 printed the wrong bottom-panel level.** `b` held `bottom_edge` (1500); the
+  tower bracing loop `for a, b in zip(lvl, lvl[1:])` then rebound it to 4600, so the
+  sheet read *"donja ivica panela +4,60"* and drew that line 3,1 m too high. `lvl`
+  was clobbered the same way. Third instance of this class in this package (after
+  `tx` on M-01) — loop variables in these sheet functions now get local names.
+- **Array-to-fence distance disagreed three ways**: Prilog I and the S-02 note both
+  say 400 mm, S-02 drew 150, S-03 drew 800. Prilog I cannot be regenerated, so 400
+  governs and both sheets now use it.
+
+**Investor's layout decisions.** The bund now runs the **full internal length of the
+south wall**: 2885 × 800 with a 330 mm upstand = **762 l**, comfortably over the
+550 l (110 %) required and 260 mm shallower than 1600 × 1060. That is what makes the
+container usable — the 2180 mm internal depth is otherwise fully committed
+(bund + skid with its spreading frame + GRO), and the aisle was 50 mm. It is now
+**370 mm**, and M-01 note 8 says so, so no bidder rearranges it casually. The tank
+is drawn in the east half of the bund; its footprint is not binding, since the tank
+is to be fabricated.
+
+Also: the bund was dropped from S-02 (it is an M-01 detail, not a 1:50 site plan),
+the S-02 note block moved under the legend bottom-left, three leaders that ran off
+the sheet edge were shortened or re-aimed, and *"postojeći"* was dropped from the
+S-01 outdoor-cabinet callout.
+
+### Open — the prose was deliberately left behind
+
+Carrying 2,10 m into the drawings makes the derived overhang **2,64 m**, not 2,84.
+By the Investor's instruction the correction stopped at `cad/`, so four lines still
+carry the old figures and need hand editing (Prilog I is hand-maintained):
+
+| document | line |
+|---|---|
+| Prilog I (and `_K`) §1 | *"AB ploča 5,40 × 5,40 m, ograda h = 1,90 m, kapija 1,00 m"* → h = 2,10 m |
+| Prilog I (and `_K`) | *"Nadvišenje ograde — 2,84 m iznad kote ograde h = 1,90 m"* → 2,64 m / h = 2,10 m |
+| Prilog I (and `_K`) §4.2 | *"referentno 1600 × 1060 mm"* → 2885 × 800 mm, 762 l |
+| TD §lokacija | *"metalna ograda visine 1,90 m"* → 2,10 m |
+
+`check_consistency.py` still reports 0 failures **only because Prilog III is
+image-only** — it cannot read the drawings' text. Do not read that as agreement.

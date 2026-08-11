@@ -19,7 +19,16 @@
   "fence": {
     "size": [5500, 5500],
     "origin": [13201, 28338],
-    "height": 1900,
+    "height": 2100,
+    "height_source": "Measured off the certified fence elevation '461 Graficki dio TEMELJ i OGRADA/04 Ograda.dwg' (POGLED - OGRADA BAZNE STANICE): posts +0.10..+2.10, plinth top +0.30, footings -1.50. Supersedes the earlier 1900, which had no source. Infill starts 200 mm above ground per the Investor 2026-08-11.",
+    "detail": {
+      "posts": "kv. cijev 50x50x3 mm na 1335 mm",
+      "gate_posts": "kv. cijev 70x70x3 mm",
+      "frame": "kv. cijev 30x30x2 mm",
+      "infill": "talasasto celicno pletivo O4 x 50 x 50 mm",
+      "steel": "C.0361, antikoroziona zastita vrucim cincanjem",
+      "infill_bottom_mm": 200
+    },
     "offset_outside_slab": 50,
     "gate": {
       "leaf": 1000,

@@ -265,7 +265,7 @@ def sheet_s01():
     leader(msp, (cx + CW + 350, cy + CH / 2 + 250),
            "ULAZNA VRATA 900 × 2000 mm (ISTOČNA strana)", 2100, 1250, SC)
     leader(msp, (cx + 700, cy + CH + 480),
-           "postojeći vanjski ormari (SJEVER): Huawei ICC330-H1 + MTS9302",
+           "vanjski ormari (SJEVER): Huawei ICC330-H1 + MTS9302",
            -3400, 1750, SC)
     leader(msp, (k["tower_c"][0] - 2100, k["tower_c"][1] - 2100),
            "noge rešetkastog antenskog stuba h=38 m,", -3050, -1450, SC)
@@ -285,7 +285,7 @@ def sheet_s01():
     scale_bar(msp, 1300, 3700, SC, total_m=5, step_m=1)
 
     legend(msp, 1300, 3050, SC, [
-        (8,   "postojeća ograda h=1,90 m sa kapijom (svijetla širina 1,00 m)"),
+        (8,   "postojeća ograda h=2,10 m sa kapijom (svijetla širina 1,00 m)"),
         (254, "postojeća AB temeljna ploča 5,40 × 5,40 m"),
         (6,   "postojeći kontejner za TK opremu — vrata na ISTOK"),
         (5,   "noge antenskog stuba, baza 4,20 × 4,20 m"),
