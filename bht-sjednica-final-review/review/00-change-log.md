@@ -497,3 +497,45 @@ measured obstruction-light load), plus:
   K2 set — which exists, in `2 - ARHITEKTONSKO GRADJEVINSKI DIO` — would be the clean fix.
 - Container height 2400 mm is from the type sheet; `02-construction.md` Y-05 lists four
   conflicting heights. To be confirmed on the site visit.
+
+## 20. Prilog III rebuilt from parts (Rev 3, second pass)
+
+The annex was previously maintained by splicing corrected sheets into an inherited
+30-page PDF. It is now **assembled from sources** by `tools/build_prilog3.py`, which
+made the Investor's restructure possible:
+
+| Was | Now |
+|---|---|
+| 8 K3 container drawings (G-01..G-08) | **6 K2 drawings** from the certified project of this object: osnova, presjek 1-1, presjek 2-2, fasade, detalji, osnova temelja |
+| 9 K3 electrical drawings (E-01..E-09) | **1 K2 drawing**: 3.5.2 Jednopolna šema GRO. The PMO sheets go with the rest — the PMO no longer has a supply, and sheet E-01 of this package shows the new GRO |
+| INFO-03 (RFI block diagram), INFO-04 (named PowerCube), closing REFERENTNA DOKUMENTACIJA page | removed |
+| INFO-01 at page 25 | moved directly behind the cover |
+| inherited cover | rebuilt in the style of the TD title page |
+
+**30 pages → 16**, 10,0 MB → 7,3 MB, and the K3 container — which was never the
+container on this site — no longer appears anywhere in the package.
+
+Three things the vendor DWGs needed:
+
+- **Fonts.** The cover is generated with PyMuPDF, whose base-14 fonts have no
+  š/ć/č/ž/đ; Bosnian text came out as question marks. The system Arial is embedded.
+- **Text normalisation.** The inherited pages set words with non-breaking spaces and
+  soft hyphens, so `"OPŠTI PODACI O LOKACIJI"` and `"INFO-01"` could not be found by
+  substring search — the same class of bug as the docx reader in §12.
+- **Cropping.** The GRO single-line parks a duplicate load table outside its sheet
+  frame; plotted fit-to-page that padding shrank the drawing into a corner. Cropping
+  is **opt-in per sheet**, after a heuristic applied to all of them threw away real
+  content on the plans. The bounding boxes come from `ezdxf.bbox` — a hand-rolled
+  version ignored block INSERTs, and the stray table is a block, so it survived
+  every crop until that was fixed.
+
+Also in this pass: **the container is drawn on S-03**, on the existing slab north of
+the fence, so the section shows what the panel actually oversails.
+
+## 21. Note on the K2 architectural drawings
+
+They are the 2018 as-built set and show the container with RBS cabinets and
+"UREĐAJI ZA NAPAJANJE" in place. The package states the container is now **PRAZAN**
+(Investor's site visit, `05-site-corrections.md` C-1). That is not a contradiction to
+fix in the drawings — they are a historical annex — and the precedence clause in
+Prilog I §0 settles which document governs.

@@ -147,6 +147,7 @@ def register(B):
                    razmjera="1:30")
 
         sup, arr = D["support"], D["array"]
+        C_H = D["container"]["height"]
         proj = sup["proj"]
         b, top = arr["bottom_edge"], arr["top_edge"]
         # A3 window at 1:30 is 600..12300 x 300..8610, title block x>6900 below
@@ -177,6 +178,21 @@ def register(B):
         fx = x1 + 800
         msp.add_line((fx, GY), (fx, GY + 1900),
                      dxfattribs={"layer": "Ograda", "color": 8, "lineweight": 50})
+
+        # existing slab and container north of the fence, so the section shows what
+        # the panel actually oversails
+        S_, CW_, CH_ = 5400, 3005, 2300
+        sx_ = fx + 50
+        rect(msp, sx_, GY - 300, S_, 300, "Objekat", color=254, lw=35)
+        hatch_rect(msp, sx_, GY - 300, S_, 300, "Objekat", "ANSI31", SC * 0.5, 8)
+        cx_ = sx_ + (S_ - CH_) / 2
+        rect(msp, cx_, GY, CH_, C_H, "Objekat", color=6, lw=50)
+        _txt(msp, "postojeći kontejner", cx_ + CH_ / 2, GY + C_H / 2, 2.0 * SC,
+             layer="Tekst", color=7, align=TA.MIDDLE_CENTER)
+        _txt(msp, f"{CH_} × {C_H} mm", cx_ + CH_ / 2, GY + C_H / 2 - 350,
+             1.7 * SC, layer="Tekst", color=8, align=TA.CENTER)
+        _txt(msp, "postojeća AB ploča 5,40 × 5,40 m", sx_ + S_ / 2, GY - 620,
+             1.7 * SC, layer="Tekst", color=8, align=TA.CENTER)
 
         for lvl, lab in ((b, f"donja ivica panela  +{b / 1000:.2f}".replace(".", ",")),
                          (1900, "kota ograde  +1,90"),
