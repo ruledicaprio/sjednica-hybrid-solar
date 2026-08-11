@@ -42,14 +42,11 @@ def register(B):
 
         sup = D["support"]
         fw, proj = sup["field_w"], sup["proj"]
-        # The foundations sit OUTSIDE the fence, south of it; the upper (north) part
-        # of the panel oversails the fence.  At 45 deg the panel plane reaches the
-        # 1.90 m fence height north of its lower edge, so that run lies south of the
-        # fence (south strip is 1950 mm) and the rest oversails.  See
-        # review/07-calculations.md F.6 and review/05-site-corrections.md.
-        run_to_fence = (1900.0 - D["array"]["bottom_edge"]) / math.tan(
-            math.radians(D["array"]["tilt_deg"]))
-        ay = oy - run_to_fence
+        # The array is set as far SOUTH as the leased parcel allows: its lower edge
+        # sits just inside the southern boundary, so both foundation strips fall in
+        # the 1950 mm band outside the fence and the panels clear the container
+        # instead of oversailing it. See review/07-calculations.md F.6.
+        ay = py + 100
         mid = ox + F / 2
         gap = 500
         total_w = 3 * fw + 2 * gap
@@ -65,14 +62,14 @@ def register(B):
                          dxfattribs={"layer": "Panel", "color": 8})
             msp.add_line((ax + fw / 2, ay), (ax + fw / 2, ay + proj),
                          dxfattribs={"layer": "Panel", "color": 8})
-            # strips sit in the 1950 mm band south of the fence, below the panel's
-            # lower edge - they used to be drawn running north into the compound
+            # strips run north from the panel's lower edge, staying inside the
+            # 1950 mm band between the parcel boundary and the fence
             for so in (fw / 2 - sup["strip_spacing"] / 2,
                        fw / 2 + sup["strip_spacing"] / 2):
-                rect(msp, ax + so - 225, ay - 1450, 450, 1500,
+                rect(msp, ax + so - 225, ay, 450, 1500,
                      "Temelj", color=32, lw=35)
             _txt(msp, f"PV-{i}  ·  4 × 585 Wp  ·  45°  JUG", ax + fw / 2,
-                 ay - 1800, 2.2 * SC, layer="Tekst", color=7, align=TA.CENTER)
+                 ay - 800, 2.2 * SC, layer="Tekst", color=7, align=TA.CENTER)
 
         msp.add_lwpolyline([(mid, ay + proj), (mid, cy + 150)],
                            dxfattribs={"layer": "Kabal", "color": 2, "lineweight": 35})
@@ -123,14 +120,14 @@ def register(B):
         scale_bar(msp, 1200, 4500, SC, total_m=5, step_m=1)
         # below the parcel dimension line (py - 1400 = 4000), which used to run
         # straight through the second line of the notes
-        legend(msp, 1200, 3750, SC, [
+        legend(msp, 1200, 3400, SC, [
             (110, "LOT 1 — nosači FN panela PV-1..PV-3 (po 4 × 585 Wp, 45°, JUG) — 2 stringa × 6"),
             (32,  "LOT 1 — AB temeljne trake 450 × 3300 mm, razmak 1600 mm"),
             (2,   "LOT 1 — DC trasa u PEHD Ø50 do PVDB"),
             (30,  "LOT 2 — DEA 22 kVA u skid izvedbi i spremnik 500 l"),
             (4,   "LOT 2 — usisna žaluzina (JUG); kanal, žaluzina i izduv (ZAPAD); ventilator (ISTOK)"),
         ])
-        note_block(msp, 7900, 3750, SC, "NAPOMENA — PRORAČUNSKO OPTEREĆENJE:", [
+        note_block(msp, 7900, 3400, SC, "NAPOMENA — PRORAČUNSKO OPTEREĆENJE:", [
             "Vjetar qp ≥ 1,20 kN/m² (udar 3 s ≈ 45 m/s) — iznad kapaciteta kataloškog",
             "nosača tipa A, stoga CUSTOM IZRADA: sail 10,55 m²/nosaču, ULS uzgon 18,1 kN,",
             "moment prevrtanja 62,8 kNm; ovjerava ponuđač (Prilog II, 1.3).",
