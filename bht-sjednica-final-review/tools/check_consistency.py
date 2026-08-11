@@ -148,9 +148,14 @@ CONFLICTS = {
     # Rev 2 (2026-08-11): the airflow relayout and the section-G closures below.
     # Each corrected value is quoted once more in Prilog I's "Ranije navedeno"
     # column, so the superseded variants carry the same lookahead as above.
+    # The certified project of this K2 object ("04 AG dio.docx" 4.4.2.3) dimensions
+    # the floor for a total (g+p) UDL of 10,00 kN/m². The 2,00 kN/m² in the same
+    # project is the pedestrian live load on the walkable strip, so it may only
+    # appear where it is named as such - hence the lookahead rather than a ban.
     "container floor capacity": {
-        "10,00 kN/m² (WRONG - K3 type sheet)": r"10[,.]00\s*kN/m²",
-        "2,00 kN/m² (correct - K2, project brief)": r"2[,.]00\s*kN/m²",
+        "10,00 kN/m² (correct - K2 project 4.4.2.3)": r"10[,.]00\s*kN/m²",
+        "2,00 kN/m² (WRONG - that is the walkable-strip live load)":
+            r"2[,.]00\s*kN/m²(?![^§]{0,160}(pokretn|prohodn|walkable))",
     },
     "foundation concrete class": {
         "C25 (WRONG - no exposure class)": r"\bC25\b(?![^§]{0,90}C30/37)",
@@ -207,8 +212,6 @@ BANNED = {
     # Rev 2: the blanket placement that put intake, discharge and the 505 °C
     # exhaust on the same wall, next to the outdoor power cabinets (EL RED-03)
     "all openings on the north wall": r"sve\s+na\s+SJEVERNOJ\s+strani",
-    # the K3 floor calculation belongs to a different container type
-    "K3 container static calculation": r"tipskog\s+kontejnera\s+K3",
 }
 
 
@@ -224,15 +227,6 @@ CORRECTION_MARKERS = re.compile(
     r"\branij[aeiou]\w*|ISPRAVLJENO|IZMJENA|NIJE\s+mjerodav|nisu\s+mjerodav|"
     r"umjesto|razli[čc]ito\s+u\s+dokumentima|REDOSLIJED\s+MJERODAVNOSTI", re.I)
 CONTEXT = 240
-
-
-# Prilog III carries pages taken over from earlier documentation (the K3 container
-# type drawings and their notes). We do not author them, and Prilog I's
-# "REDOSLIJED MJERODAVNOSTI" clause states that they do not govern - so a
-# superseded value quoted there is not a package conflict. Rules that would
-# otherwise trip on those inherited pages name them here explicitly.
-INHERITED_ANNEX = "Prilog_III_situacija_sjednica_bileca.pdf"
-ANNEX_EXEMPT = {"container floor capacity"}
 
 
 def scan(docs, pattern, live_only=False, skip=()):
@@ -263,9 +257,8 @@ def main():
 
     print("\n=== CONFLICTS (exactly one variant allowed) ===")
     for topic, variants in CONFLICTS.items():
-        skip = (INHERITED_ANNEX,) if topic in ANNEX_EXEMPT else ()
         found = {label: scan(docs, pat, live_only="WRONG" in label or
-                             "superseded" in label, skip=skip)
+                             "superseded" in label)
                  for label, pat in variants.items()}
         found = {k: v for k, v in found.items() if v}
         if len(found) > 1:

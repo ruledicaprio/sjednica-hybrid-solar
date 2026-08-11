@@ -17,9 +17,17 @@ translate formulas when rows move:
      (tools/check_boq_recalc.py).
 
 Closes: G-2 (concrete class stated twice, inconsistently), G-3 (floor capacity
-claimed from a K3 container), G-5 (fire elaborate / fuel shut-off / ventilation
-interlock unpriced), G-6 (AC SPD only type 2, no data-line SPD), G-7 (three
-different power systems named), G-9 (obstruction lighting absent).
+unsourced), G-5 (fire elaborate / fuel shut-off / ventilation interlock
+unpriced), G-6 (AC SPD only type 2, no data-line SPD), G-7 (three different
+power systems named), G-9 (obstruction lighting absent).
+
+Rev 3: the floor figure is 10,00 kN/m² and it comes from the certified project
+of THIS K2 object — SITE-PROJECT-.../"04 AG dio.docx" 4.4.2.3, which dimensions
+the floor for a total (g+p) of 10,00 kN/m². The 2,00 kN/m² in the same project
+is the pedestrian live load on the walkable strip only. The spreading frame is
+still required, but because the equipment loads are concentrated on secondary
+beams while 10,00 kN/m² is a uniformly distributed load - not because they
+exceed anything.
 """
 import os
 import sys
@@ -84,14 +92,17 @@ DATA_SPD = (
 
 # --------------------------------------------------------------- text edits
 FLOOR_NOTE = (
-    "Opšte napomene  NOSIVOST PODA KONTEJNERA: mjerodavna projektna vrijednost je "
-    "2,00 kN/m² prema Projektnom zadatku. Ranije navedenih 10,00 kN/m² preuzeto je "
-    "iz statičkog proračuna tipskog kontejnera K3, a na ovoj lokaciji ugrađen je "
-    "kontejner tipa K2, pa ta vrijednost NIJE mjerodavna. Agregat (385 kg mokro na "
-    "0,96 m² = 3,93 kN/m²) i pun spremnik (≈590 kg na 0,63 m² = 9,2 kN/m²) oba "
-    "prekoračuju projektnu nosivost, zbog čega je OBAVEZAN čelični ram/roštilj za "
-    "raznošenje opterećenja ispod skida I ispod tankvane, sa prenosom opterećenja "
-    "na temeljnu konstrukciju, dokazan statičkim proračunom iz Tačke 4.4."
+    "Opšte napomene  NOSIVOST PODA KONTEJNERA: podna konstrukcija je dimenzionisana "
+    "na ukupno opterećenje (g+p) 10,00 kN/m², prema ovjerenom projektu lokacije "
+    "(SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m, „04 AG dio\", tačka 4.4.2.3 PODNA "
+    "KONSTRUKCIJA; sekundarni nosači 5,10 kN/m', primarni 15,00 kN/m'). Vrijednost "
+    "2,00 kN/m² iz istog projekta odnosi se SAMO na pokretno opterećenje prohodnog "
+    "dijela poda i nije mjerodavna za oslanjanje opreme. Agregat (385 kg mokro na "
+    "0,96 m² = 3,93 kN/m²) i pun spremnik (≈590 kg na 0,63 m² = 9,2 kN/m²) ostaju "
+    "unutar 10,00 kN/m², ali su KONCENTRISANA opterećenja na malom broju sekundarnih "
+    "nosača, dok je 10,00 kN/m² ravnomjerno raspodijeljeno opterećenje. Zbog toga je "
+    "OBAVEZAN čelični ram/roštilj za raznošenje opterećenja ispod skida I ispod "
+    "tankvane, sa prenosom na primarne nosače, dokazan proračunom iz Tačke 4.4."
     "Napomena uz Tačku 4: DEA se ugrađuje u postojeći kontejner na lokaciji, u "
     "\"inside skid\" izvedbi (agregat na zajedničkom nosivom skid-okviru, bez "
     "vlastitog vanjskog kućišta, jer funkciju kućišta preuzima kontejner). "
@@ -148,18 +159,39 @@ POWER_SYSTEM_NEW = "Huawei ICC330-H1 + MTS9302 ili kompatibilan"
 
 FLOOR_ITEM = (
     "OBAVEZAN statički proračun nosivosti podne konstrukcije postojećeg "
-    "kontejnera, ovjeren od strane ovlaštenog inženjera, te izvođenje OJAČANJA "
-    "poda. Ojačanje obuhvata izradu i ugradnju čeličnog roštilja/rama za "
-    "raznošenje opterećenja ISPOD SKIDA AGREGATA I ISPOD TANKVANE SA SPREMNIKOM, "
-    "sa prenosom opterećenja na temeljnu konstrukciju kontejnera, uključujući "
-    "antikorozivnu zaštitu i sav spojni materijal." + NL +
-    "OBRAZLOŽENJE: mjerodavna projektna nosivost poda je 2,00 kN/m² prema "
-    "Projektnom zadatku. Agregat daje 3,93 kN/m² (385 kg mokro na 0,96 m²), a pun "
-    "spremnik 9,2 kN/m² (≈590 kg na 0,63 m²) — oba prekoračuju projektnu "
-    "vrijednost, pa je ojačanje NEOPHODNO, a ne uslovno. Ranija formulacija se "
-    "pozivala na proračun tipskog kontejnera K3 (10,00 kN/m²), koji NIJE "
-    "mjerodavan jer je na ovoj lokaciji ugrađen kontejner tipa K2." + NL +
+    "kontejnera, ovjeren od strane ovlaštenog inženjera, te izrada i ugradnja "
+    "čeličnog roštilja/rama za RAZNOŠENJE OPTEREĆENJA ispod skida agregata I "
+    "ispod tankvane sa spremnikom, sa prenosom opterećenja na primarne nosače "
+    "podne konstrukcije, uključujući antikorozivnu zaštitu i sav spojni materijal."
+    + NL +
+    "OBRAZLOŽENJE: pod je dimenzionisan na 10,00 kN/m² ukupnog RAVNOMJERNO "
+    "RASPODIJELJENOG opterećenja (ovjereni projekat lokacije, „04 AG dio\", tačka "
+    "4.4.2.3). Agregat (3,93 kN/m²) i pun spremnik (9,2 kN/m²) su ispod te "
+    "vrijednosti po površini, ali djeluju koncentrisano na malom broju sekundarnih "
+    "nosača (HOP 100×50×3 na razmaku 0,51 m), zbog čega se opterećenje mora "
+    "raznijeti na primarne nosače. Ponuđač proračunom dokazuje raspodjelu i "
+    "dimenzije rama." + NL +
     "Zapremina spremnika se ne umanjuje.")
+
+# --------------------------------------------------------------- 2 strings
+# 12 modules on 3 supports, wired as 2 strings of 6 rather than 3 of 4: the
+# priced PVDB500-15-2B has two outputs, and 6 x 51,55 V = 309 V Voc sits inside
+# the iSSU's 85-435 V window. A string therefore spans two supports.
+STRING_ROUTING = (
+    " - uključeno ožičenje i povezivanje panela do PVDB distribucije preko "
+    "po-string DC odvodnika prenapona (v. Tačku 1.6a i crtež E-01): 12 modula "
+    "se povezuje u DVA STRINGA po 6 modula (string 1 — nosači PV-1 i PV-2; "
+    "string 2 — nosači PV-2 i PV-3), po jedan string na svaku od dvije rute "
+    "PVDB ormara")
+
+CABLE_QTY_TEXT = ("2 stringa × 2 × 25,00 m", "3 nosača × 2 × 25,00 m")
+
+SPD_DC = (
+    "Isporuka i ugradnja odvodnika prenapona DC, tip 2 (Iimp ≥5 kA, Ucpv ≥425 V), "
+    "ZA SVAKI STRING, sa pripadajućim rastavnim osiguračima, u PVDB ormaru iz "
+    "Tačke 1.6 ili u zasebnom kućištu min. IP55. Po jedan komplet po stringu "
+    "(2 stringa × 6 modula, v. Tačku 1.1 i crtež E-01), zbog dužine DC trase "
+    "od 25 m.")
 
 CONCRETE_FIX = (
     "Nabavka materijala, transport i betoniranje DVIJE temeljne trake po nosaču, "
@@ -235,12 +267,39 @@ def main():
     log.append(("LOT 1 item 2.2b", "C10 -> C12/15 blinding",
                 "G-2 — C10 is not a BAS EN 206 class for this exposure"))
 
+    # ---------------- 2 strings of 6 (Rev 3) --------------------------------
+    r11 = rx(l1, 1, "1.1")
+    old11 = str(l1.cell(r11, 2).value)
+    keep11 = old11[:old11.index(" - uključeno ožičenje")]
+    l1.cell(r11, 2).value = keep11 + STRING_ROUTING
+    wrap(l1, r11)
+    log.append(("LOT 1 item 1.1", "3 fields onto 2 routes -> 2 strings of 6",
+                "PVDB500-15-2B has 2 outputs; Voc 6 x 51,55 = 309 V"))
+
+    r15 = rx(l1, 1, "1.5")
+    new_txt, old_txt = CABLE_QTY_TEXT
+    l1.cell(r15, 2).value = str(l1.cell(r15, 2).value).replace(old_txt, new_txt)
+    l1.cell(r15, 4).value = 100
+    wrap(l1, r15)
+    log.append(("LOT 1 item 1.5", "DC cable 150 m -> 100 m (2 runs, not 3)",
+                "2 strings x 2 conductors x 25 m"))
+
+    r16a = rx(l1, 1, "1.6a")
+    l1.cell(r16a, 2).value = SPD_DC
+    l1.cell(r16a, 4).value = 2
+    wrap(l1, r16a)
+    log.append(("LOT 1 item 1.6a", "DC SPD 3 kpl -> 2 kpl, one per string",
+                "also fixes 3 priced vs 2 drawn on E-01"))
+
     # ---------------- G-3: floor capacity ----------------------------------
-    r58 = rc(l2, 2, "Nosivost poda kontejnera je 10,00")
+    # Anchor on the section-4 note's stable opening, not on the figure it quotes:
+    # the figure is exactly what this script rewrites, so anchoring on it made the
+    # script fail on its own output.
+    r58 = rc(l2, 2, "Opšte napomene")
     l2.cell(r58, 2).value = FLOOR_NOTE
     wrap(l2, r58)
-    log.append(("LOT 2 section 4 note", "10,00 kN/m² (K3) -> 2,00 kN/m² (K2)",
-                "G-3 / CON R-08 — the quoted figure came from another container type"))
+    log.append(("LOT 2 section 4 note", "sourced to 04 AG dio 4.4.2.3; UDL vs point load",
+                "G-3 — 10,00 kN/m² is the K2 project's own design load"))
 
     # ---------------- layout per drawing M-01 -------------------------------
     append(l2, rc(l2, 2, "dvoplašnog spremnika dizel goriva"), TANK_DIMS, log,
@@ -285,8 +344,8 @@ def main():
     r44 = rx(l2, 1, "4.4")
     l2.cell(r44, 2).value = FLOOR_ITEM
     wrap(l2, r44)
-    log.append(("LOT 2 item 4.4", "'ojačanje se NE očekuje' -> strengthening required",
-                "G-3 — both loads exceed the 2,00 kN/m² brief value"))
+    log.append(("LOT 2 item 4.4", "'ojačanje se NE očekuje' -> spreading frame required",
+                "G-3 — concentrated loads on a floor designed for a UDL"))
 
     # ---------------- G-5 / G-6 / G-9: new priced items ---------------------
     add_item(l2, "UKUPNO 4 —", "4.19", FIRE_ELABORAT, "kpl", 1, log,

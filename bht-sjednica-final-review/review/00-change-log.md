@@ -407,3 +407,93 @@ their 10,00 kN/m² floor figure) do not govern.
   explicitly non-governing, but replacing them with K2 drawings would be the cleaner fix.
 - Container height 2400 mm is taken from the type sheet; `02-construction.md` Y-05 lists
   four conflicting heights. To be confirmed on the mandatory site visit.
+
+---
+
+# Revision 3 · 2026-08-11
+
+Investor review of Rev 2. One item reverses a Rev-2 change, and the Investor is
+right on the evidence.
+
+## 14. Floor capacity is 10,00 kN/m² — Rev-2 change RETRACTED
+
+`SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m\2 - ARHITEKTONSKO GRADJEVINSKI DIO\04 AG dio.docx`
+is the certified project of **this K2 object**, and its §4.4.2.3 PODNA KONSTRUKCIJA
+dimensions the floor for *"ukupno opterećenje (g+p) **10.00 kN/m2**"* — secondary beams
+HOP 100×50×3 at 0,51 m carrying 5,10 kN/m′, primary beams 15,00 kN/m′. The 2,00 kN/m²
+that appears in §POD of the same document is the **pedestrian live load on the walkable
+strip**, not the structural capacity.
+
+So Rev 2 §G-3 was wrong twice over: it took the walkable-strip figure for the design
+load, and it argued the 10,00 kN/m² came from a K3 type sheet. It did not — it is in the
+K2 project. **`02-construction.md` R-08's claim that no such document is in the pack is
+hereby retracted**; the document was in the site project folder all along.
+
+The load-spreading frame **stays required**, but for the correct reason: 10,00 kN/m² is a
+uniformly distributed load, while the genset (3,93 kN/m²) and the full tank (9,2 kN/m²)
+bear concentrated on a few secondary beams. The frame distributes onto the primary beams.
+Item 4.4 and the section-4 note now say that; neither claims capacity is exceeded.
+
+## 15. Sheets S-03 and M-01 were not true A3
+
+Measured content extents against the frame: **M-01** ran to x=14705 against a 10500-unit
+frame (the section 1–1 sat beside the sheet), **S-03** to y=12836 against 8910 (the note
+block sat above it). `export.py` plots with `fit_page=True`, so the overflow was absorbed
+by shrinking the whole sheet — it printed smaller than A3 and the scales in the title
+blocks (1:25, 1:30) were false. These are Situacija pages 3–4 = Prilog III pages 5–6.
+
+Fixed by moving the section and the note blocks inside the frame and compacting every
+note block (M-01 22 lines → 10, S-03 13 → 7, E-01 12 → 6, S-02 8 → 5, S-01 5 → 3). All
+five sheets now plot with the frame **at the page edge**.
+
+`build_drawings.py` gained `check_extents()`, which refuses to write a sheet whose content
+leaves the A3 area. It immediately caught two more: S-02's parcel boundary overran the
+top edge by 150 units, and E-01's notes ran 495 units off the bottom. It also caught a
+loop variable in `sheet_m01` (`for label, tx, ty ...`) that was shadowing the tank origin
+`tx`, which put the section's dashed tank 3 m off its true position.
+
+## 16. Two strings of six
+
+12 modules on 3 supports are wired as **2 strings × 6**, not 3 × 4. The binding constraint
+is the priced **PVDB500-15-2B, which has two outputs**; 6 × 51,55 V = 309 V Voc sits inside
+the iSSU's 85–435 V window and Imp 13,67 A is under the 15 A per output. A string therefore
+spans two supports, so E-01's "svaki string kompletan po nosaču" rule is gone.
+
+BOQ: item 1.1 routing text rewritten, **1.5 DC cable 150 → 100 m**, **1.6a DC SPD 3 → 2 kpl**.
+The last also settles a Rev-2 inconsistency — 3 SPD sets were priced against 2 drawn on
+E-01. LOT 1 falls by 5.100 KM at the 100 KM/unit test rate.
+
+## 17. Other Investor corrections
+
+- **Fuel tank moved east** along the north wall, onto more secondary beams and clear of
+  the radiator duct penetration; its own spreading frame is now drawn under the bund.
+- **PV panels hatched** on S-02 with a cross-hatch mesh (ANSI37). `NET` was tried first
+  and came out as a solid fill through the plot backend.
+- **Prilog I section 0 deleted** — a 17-row corrigendum against internal working versions
+  that no bidder ever saw. The REDOSLIJED MJERODAVNOSTI precedence clause is kept, moved
+  to the top and stripped of its now-wrong floor-load sentence.
+- **PV foundation unchanged** — confirmed by the Investor, together with the earthworks
+  and strip-footing items in BOQ section 2.
+- TD, NZ and Odluka still said **LOT 1 = 2 kom/kpl** supports, stale since the 3×4
+  redesign; corrected to 3 in all three.
+
+## 18. Checker
+
+`check_consistency.py`: the floor-capacity rule flipped polarity — 10,00 kN/m² is now the
+correct variant, and 2,00 kN/m² is only tolerated where it is named as the walkable-strip
+load. The `INHERITED_ANNEX` / `ANNEX_EXEMPT` machinery is deleted: with 10,00 kN/m²
+correct, the inherited Prilog III pages agree with the package instead of contradicting it.
+
+**Gate: 0 failures across 13 documents.** BOQ recalculated through LibreOffice:
+LOT 1 14.908 + LOT 2 65.300 = 80.208, with VAT 93.843,36.
+
+## 19. Still open
+
+Unchanged from Rev 2 (§G 1 static calculation, §G 8 certified electrical project revision,
+measured obstruction-light load), plus:
+
+- Prilog III pages 8–15 are still the **K3** container drawings while the site is K2. They
+  are now explicitly non-governing under the precedence clause, but replacing them with the
+  K2 set — which exists, in `2 - ARHITEKTONSKO GRADJEVINSKI DIO` — would be the clean fix.
+- Container height 2400 mm is from the type sheet; `02-construction.md` Y-05 lists four
+  conflicting heights. To be confirmed on the site visit.

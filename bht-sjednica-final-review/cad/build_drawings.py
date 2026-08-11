@@ -289,11 +289,9 @@ def sheet_s01():
     ])
 
     note_block(msp, 6400, 3950, SC, "NAPOMENA:", [
-        "Geometrija postojećeg stanja preuzeta je iz ovjerenog",
-        "projekta lokacije (SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m,",
-        "crtež 01 Situacija 1_200).  Kontejner 3005 × 2300 mm",
-        "vanjski, zidni paneli 60 mm — unutrašnja površina 6,29 m²",
-        "i obim 10,13 m, kako je označeno na izvornom crtežu.",
+        "Geometrija preuzeta iz ovjerenog projekta lokacije",
+        "(SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m, 01 Situacija 1_200).",
+        "Kontejner 3005 × 2300 mm vanjski, paneli 60 mm — 6,29 m², obim 10,13 m.",
     ])
     return doc
 
@@ -306,11 +304,50 @@ import sheets_new                                                   # noqa: E402
 SHEETS.update(sheets_new.register(sys.modules[__name__]))
 
 
+def check_extents(doc, name, scale):
+    """Nothing may be drawn outside the A3 sheet.
+
+    export.py plots with fit_page=True, so content beyond the frame does not spill
+    off the page - it silently shrinks the whole sheet instead, and the drawing
+    then prints at some scale other than the one in the title block. That is how
+    M-01 and S-03 stopped being true A3 without anyone noticing, so it is checked
+    here rather than left to the eye.
+    """
+    w, h = A3_W * scale, A3_H * scale
+    xs, ys = [], []
+    for e in doc.modelspace():
+        t = e.dxftype()
+        if t == "LWPOLYLINE":
+            pts = [(p[0], p[1]) for p in e.get_points()]
+        elif t == "LINE":
+            pts = [(e.dxf.start.x, e.dxf.start.y), (e.dxf.end.x, e.dxf.end.y)]
+        elif t in ("TEXT", "CIRCLE"):
+            a = e.dxf.insert if t == "TEXT" else e.dxf.center
+            pts = [(a.x, a.y)]
+        else:
+            continue
+        xs += [p[0] for p in pts]
+        ys += [p[1] for p in pts]
+    if not xs:
+        return
+    bad = []
+    if min(xs) < -1 or max(xs) > w + 1:
+        bad.append(f"x {min(xs):.0f}..{max(xs):.0f} vs 0..{w:.0f}")
+    if min(ys) < -1 or max(ys) > h + 1:
+        bad.append(f"y {min(ys):.0f}..{max(ys):.0f} vs 0..{h:.0f}")
+    if bad:
+        raise SystemExit(f"{name}: content outside the A3 sheet — " + "; ".join(bad))
+
+
+SHEET_SCALE = {"S-01": 50, "S-02": 50, "S-03": 30, "M-01": 25, "E-01": 50}
+
+
 def build(names=None):
     os.makedirs(OUT, exist_ok=True)
     made = []
     for name in (names or SHEETS):
         doc = SHEETS[name]()
+        check_extents(doc, name, SHEET_SCALE[name])
         p = os.path.join(OUT, f"{name}.dxf")
         doc.saveas(p)
         made.append(p)

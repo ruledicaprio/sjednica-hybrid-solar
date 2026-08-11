@@ -7,9 +7,8 @@ python-docx in BH Telecom's house style (Arial, orange headings, the corporate
 mark in the header).
 
 Content follows the structure the Investor supplied, corrected against the
-verified data in review/07-calculations.md. Where the supplied draft conflicted
-with measured values it is corrected here and the correction is listed in
-section 0 so the change is visible rather than silent.
+verified data in review/07-calculations.md. What governs when documents
+disagree is stated once, in the precedence clause at the top.
 """
 import os
 import sys
@@ -243,82 +242,16 @@ def build():
               "Prilog se čita zajedno sa Prilogom II (Obrazac za cijenu ponude) i "
               "Prilogom III (Situacija, dispozicija i grafički prilozi).", size=9.5)
 
-    # ---------------- 0. corrections ---------------------------------------
-    doc.add_heading("0. Napomena o ispravkama u odnosu na raniju verziju", 1)
-    para(doc, "Sljedeće vrijednosti su ispravljene u odnosu na ranije radne verzije "
-              "tehničkog opisa. Ispravke su zasnovane na ovjerenom projektu lokacije, "
-              "tehničkim listovima proizvođača i mjerenjima na licu mjesta.")
+    # The precedence clause replaces what used to be a 17-row corrigendum table
+    # against internal working versions - a bidder never saw those, so listing
+    # them was noise. What governs is stated once, here.
     warning(doc, "REDOSLIJED MJERODAVNOSTI. U slučaju neslaganja između dokumenata "
               "tenderske dokumentacije mjerodavni su, tim redom: (1) Tenderska "
               "dokumentacija (TD), (2) ovaj Prilog I, (3) Prilog II (Predmjer), "
               "(4) Prilog III (grafički prilozi i referentna dokumentacija). "
-              "Prilog III sadrži i preuzete stranice ranije dokumentacije (npr. "
-              "nacrte i podatke tipskog kontejnera K3, sa nosivošću poda 10,00 "
-              "kN/m²) koje NISU mjerodavne za ovu nabavku — mjerodavna nosivost "
-              "poda je 2,00 kN/m² prema Projektnom zadatku, a mjerodavni raspored "
-              "opreme i otvora je onaj sa crteža M-01.")
-    # every superseded value is prefixed "ranije:" so it is legible as a record
-    # rather than a specification - both to a reader skimming one row out of
-    # context and to tools/check_consistency.py, which exempts documented
-    # corrections from its conflict rules
-    corrections = [["Geometrija PV polja",
-            "projekcija 2590 mm, gornja ivica +3,09 m",
-            "projekcija 3236 mm, gornja ivica +3,74 m (v. red niže — sada +4,74 m "
-            "uz 3×4 konfiguraciju)",
-            "Huawei PVM Tab. 4-20; izvedeno iz polja modula, a ne iz uzdužne grede"],
-           ["Visina ograde", "1,80 m", "1,90 m", "ovjereni projekat lokacije"],
-           ["Kontejner",
-            "3,08 × 2,20 × 2,80 m / 3,00 × 2,10 m",
-            "3,005 × 2,30 m vanjski, zid 60 mm, PRAZAN",
-            "ovjereni projekat (unutra 6,29 m², obim 10,13 m)"],
-           ["Zrak hladnjaka DEA", "≈4250 m³/h (procjena)", "1980 m³/h",
-            "FG Wilson P22-6 TDS, 2019-08-14"],
-           ["Usisna žaluzina", "≥0,43 m² (1200 × 800 mm)",
-            "500 × 700 mm zadovoljava (Δp≈16 Pa)",
-            "proračun prema max. vanjskom otporu 125 Pa"],
-           ["Ventilator prostora", "≥2400 m³/h", "1200 m³/h (dopunska ventilacija)",
-            "hlađenje ostvaruje vlastiti ventilator hladnjaka"],
-           ["Izduv", "DN 65 minimum", "DN 50 zadovoljava; DN 65 preporučeno",
-            "protutlak ≈2,6 kPa pri granici 10,2 kPa"],
-           ["Donja ivica panela", "≥1,20 m zbog snijega", "+0,50 m",
-            "snijeg nije mjerodavan — vjetrom raznošena lokacija (bura)"],
-           ["Snijeg", "s_k = 3,00 kN/m² mjerodavno",
-            "provjera obavezna, ali nije mjerodavna",
-            "iskustvo Investitora na lokaciji"],
-           ["Konfiguracija nosača",
-            "2 nosača, 6 modula (2×3), +0,50/+3,74 m, 15,91 m² izloženosti/nosaču",
-            "3 nosača, 4 modula (2×2), +1,50/+4,74 m, 10,55 m² izloženosti/nosaču — "
-            "manji presjek dozvoljava veću visinu bez povećanja opterećenja",
-            "review/07-calculations.md F.6 — custom izrada, kataloški nosač ne "
-            "zadovoljava ni pri ranijoj ni pri ovoj konfiguraciji"],
-           ["Raspored otvora ventilacije",
-            "sve na SJEVERNOJ strani kontejnera",
-            "ukrsni tok: usis JUG, kanal i izduv ZAPAD, oduška SJEVER, "
-            "ventilator ISTOK (Tačka 4.3)",
-            "usis, izlaz i izduv na istom zidu na 1,4 m recirkulišu i griju "
-            "postojeće vanjske ormare (nalaz EL RED-03)"],
-           ["Spremnik goriva",
-            "1200 × 700 × 800 mm (procjena)",
-            "1050 × 600 × 1310 mm, 170 kg prazan / ≈590 kg pun",
-            "podaci Investitora, 2026-08-11"],
-           ["Nosivost poda kontejnera",
-            "10,00 kN/m² prema tipskom proračunu kontejnera K3",
-            "2,00 kN/m² prema Projektnom zadatku — ram za raznošenje "
-            "opterećenja OBAVEZAN",
-            "lokacija je kontejner tipa K2; K3 proračun nije mjerodavan"],
-           ["Sistem napajanja",
-            "MTS9302 / PowerCube 1000 (različito u dokumentima)",
-            "Huawei ICC330-H1 + MTS9302 (postojeći vanjski ormari)",
-            "ovjereni projekat lokacije i crteži S-01/S-02"],
-           ["Beton temelja", "C25 na podlozi C10",
-            "C30/37, XC4 + XF3, aerant 4–6 % na podlozi C12/15; armatura B500B",
-            "izloženost mrazu i solima na 1076 m n.v., BAS EN 206"],
-           ["Prvo punjenje gorivom", "najmanje 200 l",
-            "500 l (pun spremnik)", "usklađeno sa Predmjerom, stavka 4.16"]]
-    for row in corrections:
-        row[1] = "ranije: " + row[1]
-    table(doc, ["Stavka", "Ranije navedeno", "Ispravno (mjerodavno)", "Izvor"],
-          corrections, widths=[3.2, 4.0, 4.4, 5.0])
+              "Prilog III sadrži i preuzete stranice ranije dokumentacije, koje "
+              "služe samo kao podloga; mjerodavan raspored opreme i otvora u "
+              "kontejneru je onaj sa crteža M-01.")
 
     # ---------------- 1. site ----------------------------------------------
     doc.add_heading("1. Osnovni podaci o lokaciji", 1)
@@ -333,8 +266,11 @@ def build():
            ["Antenski stub", "rešetkasti, h = 38 m, baza 4,20 × 4,20 m"],
            ["Kontejner", "3,005 × 2,30 m vanjski, zidni paneli 60 mm, PRAZAN; "
                          "ulazna vrata 900 × 2000 mm na ISTOČNOM zidu"],
-           ["Nosivost poda kontejnera", "2,00 kN/m² prema Projektnom zadatku — "
-                                        "mjerodavno za dimenzionisanje rama"],
+           ["Nosivost poda kontejnera", "10,00 kN/m² ukupno (g+p), ravnomjerno "
+                                        "raspodijeljeno — ovjereni projekat lokacije, "
+                                        "„04 AG dio\", tačka 4.4.2.3 (2,00 kN/m² iz "
+                                        "istog projekta je pokretno opterećenje "
+                                        "prohodnog dijela poda)"],
            ["Postojeći sistem napajanja",
             "Huawei ICC330-H1 + MTS9302, vanjski ormari uz SJEVERNI zid kontejnera"],
            ["Uzemljenje", "postojeći prstenasti uzemljivač Fe/Zn 25 × 4 mm"]],
@@ -381,6 +317,9 @@ def build():
     doc.add_heading("3.1 Konfiguracija", 2)
     table(doc, ["Parametar", "Zahtjev"],
           [["Broj nosača", "3 kom"],
+           ["Broj stringova", "2 stringa × 6 modula (Voc ≈309 V, Imp 13,67 A) — "
+                              "po jedan string na svaku od dvije rute PVDB ormara; "
+                              "string se prostire preko dva nosača (v. crtež E-01)"],
            ["Moduli", "12 × 585 Wp = 7,02 kWp; 4 modula po nosaču, 2 reda × 2 stupca, portret"],
            ["Tip modula", "Huawei iPV585-M2A (2278 × 1134 × 30 mm) ili ekvivalent"],
            ["Nagib", "fiksno 45° — ZADRŽAN zbog decembarskog prinosa"],
@@ -511,9 +450,10 @@ def build():
     doc.add_heading("4.2 Spremnik goriva", 2)
     for b in ["dvoplašni, zapremine 500 l, sa sondom za detekciju curenja",
               "referentne dimenzije 1050 × 600 × 1310 mm, masa prazan 170 kg — "
-              "pun ≈590 kg na 0,63 m² = 9,2 kN/m², što prekoračuje projektnu "
-              "nosivost poda 2,00 kN/m²: OBAVEZAN je čelični ram/roštilj za "
-              "raznošenje opterećenja i pod tankvanom, dokazan statičkim proračunom",
+              "pun ≈590 kg na 0,63 m² = 9,2 kN/m²; unutar projektnih 10,00 kN/m², "
+              "ali koncentrisano na mali broj sekundarnih nosača, pa je OBAVEZAN "
+              "čelični ram/roštilj za raznošenje opterećenja i pod tankvanom "
+              "(v. Tačku 4.8)",
               "tankvana / sekundarna zaštita zapremine ≥110 % (550 l), "
               "referentno 1600 × 1060 mm, visina ruba 330 mm",
               "vanjski priključak za punjenje sa zaštitom od statičkog elektriciteta i "

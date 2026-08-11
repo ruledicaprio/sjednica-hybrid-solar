@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461264.505289352
+2461264.539849537
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461264.505289352
+2461264.539849537
   9
 $TDUUPDATE
  40
@@ -549,7 +549,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-199
+197
   9
 $SURFTAB1
  70
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{BBCD55D6-B5B9-465B-8078-54B8B4629DFB}
+{7B3C5A5F-840F-4237-914C-7DBF0B7CE0B7}
   9
 $VERSIONGUID
   2
-{C62AE3DD-596D-4F5A-84E5-64098D517FE4}
+{53C000DA-AEC7-4746-96B8-7B108A70D0E9}
   9
 $EXTNAMES
 290
@@ -3745,7 +3745,7 @@ ACAD
   0
 APPID
   5
-196
+194
 330
 3
 100
@@ -3759,7 +3759,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-197
+195
 330
 3
 100
@@ -18761,7 +18761,7 @@ AcDbText
  40
 105.0
   1
-Geometrija postojećeg stanja preuzeta je iz ovjerenog
+Geometrija preuzeta iz ovjerenog projekta lokacije
   7
 20
  11
@@ -18795,7 +18795,7 @@ AcDbText
  40
 105.0
   1
-projekta lokacije (SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m,
+(SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m, 01 Situacija 1_200).
   7
 20
  11
@@ -18829,81 +18829,13 @@ AcDbText
  40
 105.0
   1
-crtež 01 Situacija 1_200).  Kontejner 3005 × 2300 mm
+Kontejner 3005 × 2300 mm vanjski, paneli 60 mm — 6,29 m², obim 10,13 m.
   7
 20
  11
 6400.0
  21
 3525.5
- 31
-0.0
-100
-AcDbText
-  0
-TEXT
-  5
-194
-330
-17
-100
-AcDbEntity
-  8
-Tekst
- 62
-8
-100
-AcDbText
- 10
-6400.0
- 20
-3373.25
- 30
-0.0
- 40
-105.0
-  1
-vanjski, zidni paneli 60 mm — unutrašnja površina 6,29 m²
-  7
-20
- 11
-6400.0
- 21
-3373.25
- 31
-0.0
-100
-AcDbText
-  0
-TEXT
-  5
-195
-330
-17
-100
-AcDbEntity
-  8
-Tekst
- 62
-8
-100
-AcDbText
- 10
-6400.0
- 20
-3221.0
- 30
-0.0
- 40
-105.0
-  1
-i obim 10,13 m, kako je označeno na izvornom crtežu.
-  7
-20
- 11
-6400.0
- 21
-3221.0
  31
 0.0
 100
@@ -19999,7 +19931,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-198
+196
   0
 DICTIONARYVAR
   5
@@ -20011,7 +19943,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-08-11T10:07:37.560506+00:00
+1.4.4 @ 2026-08-11T10:57:23.712492+00:00
   0
 VISUALSTYLE
   5
@@ -20715,7 +20647,7 @@ X-Ray
   0
 DICTIONARYVAR
   5
-198
+196
 330
 2D
 100
@@ -20723,7 +20655,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-08-11T10:07:37.583780+00:00
+1.4.4 @ 2026-08-11T10:57:23.739538+00:00
   0
 ENDSEC
   0
