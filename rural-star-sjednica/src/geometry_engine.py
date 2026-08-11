@@ -1,7 +1,28 @@
 import os
 import math
+import subprocess
 from typing import Dict, Any, cast, List
 from logger import log_info, log_success
+
+
+def _gen_box(material: str, name: str, x0: float, y0: float, z0: float,
+             sx: float, sy: float, sz: float) -> str:
+    """
+    Build an axis-aligned box via Radiance's own genbox + xform, rather than a
+    hand-written 'box' primitive - Radiance has no built-in box primitive, only
+    polygon/sphere/cylinder/etc, so 'material box name ...' is invalid syntax and
+    fails at oconv (found 2026-08-08 running this for the first time with Radiance
+    actually installed). genbox emits real polygons from (0,0,0) to (sx,sy,sz);
+    xform -t translates it to the box's origin corner.
+    """
+    box = subprocess.run(
+        ["genbox", material, name, f"{sx}", f"{sy}", f"{sz}"],
+        capture_output=True, text=True, check=True).stdout
+    placed = subprocess.run(
+        ["xform", "-t", f"{x0}", f"{y0}", f"{z0}"],
+        input=box, capture_output=True, text=True, check=True).stdout
+    return placed
+
 
 def generate_geometry_files(config: Dict[str, Any], equipment: Dict[str, Any]):
     """
@@ -17,22 +38,25 @@ def generate_geometry_files(config: Dict[str, Any], equipment: Dict[str, Any]):
     scene_path = os.path.join(base_path, 'radiance_scene')
     os.makedirs(scene_path, exist_ok=True)
 
-    # Dimenzije Huawei 540W panela
-    panel_dims = equipment['panels']['Huawei_IPV540-M1A']['dimensions_mm']
+    # Dimenzije Huawei 585W panela (iPV585-M2A) - stvarni modul u ovoj izvedbi;
+    # blok od 12 panela (2 reda x 6 kolona) je pojednostavljena reprezentacija za
+    # proračun samozasjenjenja, nezavisna od stvarnog broja nosača (3 x 4 modula,
+    # svi u istom nizu bez preklapanja sjever-jug) - v. cad/design.json.
+    panel_dims = equipment['panels']['Huawei_IPV585-M2A']['dimensions_mm']
     pw = float(panel_dims[1]) / 1000.0  # Širina (~1.134m)
-    ph = float(panel_dims[0]) / 1000.0  # Visina (~2.279m)
-    
+    ph = float(panel_dims[0]) / 1000.0  # Visina (~2.278m)
+
     tilt = float(config.get('site_config', config).get('tilt_angle', 45.0))
     tilt_rad = math.radians(tilt)
-    
+
     # Projekcija JEDNOG panela
-    dy = ph * math.cos(tilt_rad) 
+    dy = ph * math.cos(tilt_rad)
     dz = ph * math.sin(tilt_rad)
-    
+
     # Projekcija CIJELOG sistema (2 panela po visini)
     total_dy = 2 * dy
     total_dz = 2 * dz
-    clearance = 0.8 # Najniža tačka na jugu
+    clearance = 1.5 # Donja ivica panela - v. review/07-calculations.md F.6 (3x4 redizajn)
 
     rad_content = [
         "# Materijali",
@@ -42,9 +66,12 @@ def generate_geometry_files(config: Dict[str, Any], equipment: Dict[str, Any]):
     ]
 
     # 1. SJEVERNI OBJEKTI (Temelj, Stub, Kontejner)
-    rad_content.append("\n# Temelj\nconcrete_mat box foundation\n0 0 15\n  -2.9 -2.9 0\n  5.8 5.8 0.2")
-    rad_content.append("\n# Stub\nsteel_mat box tower_base\n0 0 15\n  -2.835 -2.835 0.2\n  5.67 5.67 5.0")
-    rad_content.append("\n# Kontejner\nconcrete_mat box container\n0 0 15\n  -1.5 -1.1 0.2\n  3.0 2.2 2.4")
+    rad_content.append("\n# Temelj")
+    rad_content.append(_gen_box("concrete_mat", "foundation", -2.9, -2.9, 0, 5.8, 5.8, 0.2))
+    rad_content.append("\n# Stub")
+    rad_content.append(_gen_box("steel_mat", "tower_base", -2.835, -2.835, 0.2, 5.67, 5.67, 5.0))
+    rad_content.append("\n# Kontejner")
+    rad_content.append(_gen_box("concrete_mat", "container", -1.5, -1.1, 0.2, 3.0, 2.2, 2.4))
 
     # 2. KOMPAKTNI SISTEM PANELA (2 reda po 6)
     panels_per_row = 6
@@ -60,8 +87,8 @@ def generate_geometry_files(config: Dict[str, Any], equipment: Dict[str, Any]):
     for rail_pos in [0.1, 1.0, 1.9]: # Pozicije u odnosu na visinu panela
         ry = y_bottom_limit + (rail_pos * dy)
         rz = clearance + (rail_pos * dz)
-        rad_content.append(f"\nsteel_mat box rail_{rail_pos}\n0 0 15")
-        rad_content.append(f"  {start_x:.3f} {ry:.3f} {rz - 0.05:.3f}\n  {row_width:.3f} 0.06 0.06")
+        rad_content.append(_gen_box("steel_mat", f"rail_{rail_pos}".replace(".", "_"),
+                                     start_x, ry, rz - 0.05, row_width, 0.06, 0.06))
 
     # Paneli: r=0 je donji (južni), r=1 je gornji (sjeverni)
     for r in range(2):
@@ -82,9 +109,16 @@ def generate_geometry_files(config: Dict[str, Any], equipment: Dict[str, Any]):
     output_file = os.path.join(scene_path, 'objects.rad')
     with open(output_file, 'w') as f:
         f.write("\n".join(rad_content))
-    
+
+    # Center point and outward normal of the panel field, for the caller's sensor
+    # placement - computed from the same geometry as the panels themselves, not a
+    # separately hardcoded guess (found 2026-08-08: the previous hardcoded sensor
+    # at z=0.5m sat below the entire panel field once clearance was raised to 1.5m).
+    center = (0.0, y_top_limit - total_dy / 2.0, clearance + total_dz / 2.0)
+    normal = (0.0, -math.sin(tilt_rad), math.cos(tilt_rad))
+
     log_success(f"✅ Geometrija završena: 2x6 panela u kompaktnom bloku južno od stuba.")
-    return output_file
+    return output_file, {"center": center, "normal": normal}
 
 def generate_sensor_points(panels_geostats: List[Dict[str, Any]]) -> str:
     """

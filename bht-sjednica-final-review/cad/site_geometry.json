@@ -1,0 +1,78 @@
+{
+  "_source": "Measured from the certified site project SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m, drawing '2 - ARHITEKTONSKO GRADJEVINSKI DIO/6 Graficki dio/461 Graficki dio TEMELJ i OGRADA/01 Situacija 1_200.dwg', converted to DXF with ODA File Converter and read with ezdxf. All dimensions in millimetres. This file is the geometric ground truth for drawings S-01/S-02/S-03 and supersedes the figures quoted in the TD and in Prilog III where they disagree.",
+  "_verification": "Container internal area from these numbers is (2300-2*60) x (3005-2*60) = 2180 x 2885 = 6.29 m2, which matches the 'P = 6.29 m2' annotation carried on the drawing itself, and the internal perimeter 2*(2.180+2.885) = 10.13 m matches its 'O = 10.13 m'. The external footprint is confirmed twice over by the drawing's own dimension entities (measurements 3005, 2300, 5400, 5400, 1550, 1550, 1197, 1197).",
+
+  "parcel": {
+    "cadastral": "dio parcele k.č. broj 1/1, k.o. Granica 2, opština Bileća",
+    "leased_area_m2": 150,
+    "altitude_m": 1076,
+    "lat": 42.944810,
+    "lon": 18.323640
+  },
+
+  "slab": {
+    "size": [5400, 5400],
+    "origin": [13251, 28388],
+    "note": "Existing reinforced concrete foundation slab. ALREADY BUILT - see change log finding I regarding BOQ LOT 1 item 2.7."
+  },
+
+  "fence": {
+    "size": [5500, 5500],
+    "origin": [13201, 28338],
+    "height": 1900,
+    "offset_outside_slab": 50,
+    "gate": {
+      "leaf": 1000,
+      "clear_width": 1000,
+      "centre": [16451, 28338],
+      "wall": "same face as the container door"
+    }
+  },
+
+  "container": {
+    "external": [2300, 3005],
+    "internal": [2180, 2885],
+    "wall_panel_thickness": 60,
+    "wall_panel_module": 1170,
+    "origin": [14801, 29585],
+    "centred_on_slab": true,
+    "offsets_to_slab_edge": {"across_2300": 1550, "across_3005": 1197},
+    "floor": "antistatic",
+    "door": {
+      "leaf": 1006,
+      "swing_radius": 990,
+      "hinge": [15456, 29585],
+      "opens": "outward",
+      "wall": "the 2300 mm face at the low end of the 3005 mm axis"
+    },
+    "internal_equipment_status": "HISTORICAL ONLY - the Investor's site visit (05-site-corrections.md C-1) found the container EMPTY. The footprints below are what the 2018 certified drawing showed; do not draw them and do not use them for layout.",
+    "internal_equipment_footprints": [
+      {"what": "RBS cabinet 1", "size": [600, 800], "origin": [14921, 30850]},
+      {"what": "RBS cabinet 2", "size": [600, 800], "origin": [14921, 31670]},
+      {"what": "cabinet", "size": [450, 600], "origin": [16531, 31250]},
+      {"what": "cabinet", "size": [450, 600], "origin": [16531, 31870]},
+      {"what": "unit over door wall", "size": [900, 620], "origin": [15501, 32590]}
+    ]
+  },
+
+  "tower": {
+    "height": 38000,
+    "base": [4200, 4200],
+    "top": [1200, 1200],
+    "type": "slobodnostojeća prostorna rešetkasta konstrukcija, 8 segmenata",
+    "note": "Cross-section varies linearly from ground to 24.60 m per the Idejni projekat technical description, p46."
+  },
+
+  "orientation": {
+    "container_door": "EAST",
+    "gate": "EAST",
+    "outdoor_cabinets": "NORTH",
+    "pv_arrays": "SOUTH of the compound, facing SOUTH (azimuth 180 deg)",
+    "note": "Orientation is taken from Prilog III S-01/S-02. The certified drawing corroborates that the container door and the compound gate are on the SAME face, which is consistent. The certified drawing carries no north arrow, so the cardinal assignment itself rests on Prilog III and should be confirmed on the site visit required by TD 3.2."
+  },
+
+  "earthing": {
+    "ring": "postojeći prstenasti uzemljivač Fe/Zn 25x4 mm",
+    "note": "Existing ring earth around the compound; new PV supports bond to it - see BOQ LOT 1 item 1.4."
+  }
+}
