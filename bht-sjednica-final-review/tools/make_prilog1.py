@@ -26,6 +26,7 @@ from docx.shared import Cm, Pt, RGBColor
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(BASE, "TD-OUTPUT", "3. Prilog I TD - Specifikacija zahtjeva.docx")
 LOGO_SRC = os.path.join(BASE, "TD-OUTPUT", "3. TD JN Hibridni sistem napajanja BS Sjednica.docx")
+FIG = os.path.join(BASE, "EQUIPEMENT", "GENSET", "render")  # tools/render_equipment.py
 
 ORANGE = RGBColor(0xF5, 0x82, 0x1F)
 GREY = RGBColor(0x59, 0x59, 0x59)
@@ -166,6 +167,25 @@ def add_field(paragraph, instr, font_size=None, color=None):
     fe = OxmlElement("w:fldChar")
     fe.set(qn("w:fldCharType"), "end")
     r3._r.append(fe)
+
+
+def figures(doc, items):
+    """Side-by-side figures in a borderless table row: items is a list of
+    (png_path, width_cm, caption). Captions are centred italic 8.5 pt."""
+    t = doc.add_table(rows=1, cols=len(items))
+    t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for cell, (path, width_cm, caption) in zip(t.rows[0].cells, items):
+        p = cell.paragraphs[0]
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run().add_picture(path, width=Cm(width_cm))
+        cp = cell.add_paragraph()
+        cp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        cp.paragraph_format.space_before = Pt(2)
+        r = cp.add_run(caption)
+        r.italic = True
+        r.font.size = Pt(8.5)
+    doc.add_paragraph()
+    return t
 
 
 def bullet(doc, text, size=9.5):
@@ -437,6 +457,13 @@ def build():
            ["Antivibracioni elementi", "sopstvena frekvencija ≤8 Hz; fleksibilni priključci"],
            ["Potrošnja goriva", "5,9 l/h pri 100 % standby → autonomija ≈85 h na 500 l"]],
           widths=[4.6, 12.0])
+    figures(doc, [
+        (os.path.join(FIG, "genset_side.png"), 9.2,
+         "Slika 1 — Dizel električni agregat 22 kVA u skid izvedbi, "
+         "bočni izgled (ilustrativno)"),
+        (os.path.join(FIG, "genset_front.png"), 4.8,
+         "Slika 2 — Agregat, čeoni izgled sa strane "
+         "hladnjaka (ilustrativno)")])
 
     doc.add_heading("4.2 Spremnik goriva", 2)
     for b in ["dvoplašni, zapremine 500 l, sa sondom za detekciju curenja",
@@ -449,6 +476,13 @@ def build():
               "solenoid), aktiviran požarom i E-STOP-om",
               "sifon protiv povratnog toka"]:
         bullet(doc, b)
+    figures(doc, [
+        (os.path.join(FIG, "tank_side.png"), 7.4,
+         "Slika 3 — Spremnik goriva 500 l, bočni izgled sa pretakačkom "
+         "opremom (ilustrativno)"),
+        (os.path.join(FIG, "tank_top.png"), 8.6,
+         "Slika 4 — Spremnik goriva 500 l, izgled odozgo sa priključcima "
+         "(ilustrativno)")])
 
     doc.add_heading("4.3 Ventilacija i hlađenje", 2)
     para(doc, "Dimenzionisano prema tehničkom listu proizvođača. Mjerodavno ograničenje "
