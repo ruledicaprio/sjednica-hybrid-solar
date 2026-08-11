@@ -94,7 +94,7 @@ def dim_v(msp, y1, y2, x, scale, text=None, off=None):
     return d
 
 
-def leader(msp, tip, text, dx, dy, scale, layer="Tekst", h=2.2):
+def leader(msp, tip, text, dx, dy, scale, layer="Izvod", h=2.2):
     """Simple leader: tip -> elbow -> horizontal tail, text at the tail end."""
     ex, ey = tip[0] + dx, tip[1] + dy
     tail = 2.0 * scale * (1 if dx >= 0 else -1)

@@ -41,7 +41,11 @@ def read_docx(path):
         if part not in z.namelist():
             continue
         xml = z.read(part).decode("utf-8", "replace")
-        xml = re.sub(r"</w:p>", "\n", xml)
+        # Paragraph breaks have to survive as text: the run collector below keeps
+        # only <w:t> contents, so a bare "\n" substitution here was discarded and
+        # adjacent table cells came out glued together ("gorivomranije:"), which
+        # silently defeated every \b-anchored pattern.
+        xml = re.sub(r"</w:p>", "<w:t>\n</w:t>", xml)
         out.append("".join(re.findall(r"<w:t[^>]*>([^<]*)</w:t>", xml)))
         out.append("\n")
     return "".join(out)
@@ -141,6 +145,32 @@ CONFLICTS = {
         "+3,74 (superseded - was correct for 2x6)": r"\+?3[,.]74(?![^§]{0,90}4[,.]74)",
         "+4,74 (correct - 3x4 raised)": r"\+?4[,.]74",
     },
+    # Rev 2 (2026-08-11): the airflow relayout and the section-G closures below.
+    # Each corrected value is quoted once more in Prilog I's "Ranije navedeno"
+    # column, so the superseded variants carry the same lookahead as above.
+    "container floor capacity": {
+        "10,00 kN/m² (WRONG - K3 type sheet)": r"10[,.]00\s*kN/m²",
+        "2,00 kN/m² (correct - K2, project brief)": r"2[,.]00\s*kN/m²",
+    },
+    "foundation concrete class": {
+        "C25 (WRONG - no exposure class)": r"\bC25\b(?![^§]{0,90}C30/37)",
+        "C30/37 XF3 (correct)": r"C30/37",
+    },
+    "fuel tank footprint": {
+        "1200 x 700 (WRONG - estimate)":
+            r"1200\s*[x×]\s*700(?![^§]{0,90}1050\s*[x×]\s*600)",
+        "1050 x 600 x 1310 (correct - vendor data)":
+            r"1050\s*[x×]\s*600",
+    },
+    "first fuel fill": {
+        "200 l (WRONG - contradicts the priced 500 l)":
+            r"najmanje\s*200\s*l|≥\s*200\s*l",
+        "500 l (correct - matches BOQ 4.16)": r"500\s*l\s*\(pun spremnik\)|500\s*l\b",
+    },
+    "power system named": {
+        "PowerCube 1000 (WRONG - not installed here)": r"PowerCube\s*1000",
+        "ICC330-H1 + MTS9302 (correct)": r"ICC330-H1",
+    },
     "fence overhang": {
         "0,17 m (WRONG)": r"0[,.]17\s*m",
         "0,20 m (WRONG)": r"nadvi[šs]uje ogradu[^.]{0,20}0[,.]20\s*m",
@@ -157,6 +187,13 @@ SINGLE_VALUE = {
     "total estimate": r"50\.000,00",
     "fuel tank": r"500\s*l\b",
     "site altitude": r"1076\s*m",
+    # closed in Rev 2 - each was specified nowhere or in only one document
+    "tower obstruction lighting (G-9)": r"rasvjet[ae]\s+prepreke",
+    "type 1+2 AC SPD (G-6)": r"[Tt]ip\s*1\s*\+\s*2|TIP\s*1\s*\+\s*2",
+    "signal-line SPD (G-6)": r"61643-21",
+    "fire elaborate priced (G-5)": r"elaborat[a]?\s+za[šs]tite\s+od\s+po[žz]ara",
+    "intake on the south wall": r"JU[ŽZ]NI\s*zid|JU[ŽZ]NOM\s*zidu",
+    "discharge on the west wall": r"ZAPADNI\s*zid|ZAPADNOM\s*zidu",
 }
 
 # text that must not survive from the 46-generator template
@@ -167,13 +204,51 @@ BANNED = {
     "unresolved reference site": r"Brlo[šsž]ki\s+Potok",
     "empty numbered clause": r"\n\s*1\.5\s*\n\s*1\.6",
     "placeholder": r"\bTBD\b|\bXXX\b|<<[^>]+>>",
+    # Rev 2: the blanket placement that put intake, discharge and the 505 °C
+    # exhaust on the same wall, next to the outdoor power cabinets (EL RED-03)
+    "all openings on the north wall": r"sve\s+na\s+SJEVERNOJ\s+strani",
+    # the K3 floor calculation belongs to a different container type
+    "K3 container static calculation": r"tipskog\s+kontejnera\s+K3",
 }
 
 
-def scan(docs, pattern):
+# A superseded value quoted inside a documented correction is a record, not a live
+# specification. Prilog I's corrigendum table and the drawings' design-history notes
+# both do this deliberately, so a hit whose neighbourhood carries one of these
+# markers does not count. Keep the list short - it is an exemption, not a loophole.
+# Stems, not whole words: Bosnian inflects these ("mjerodavan / mjerodavna /
+# mjerodavni", "ranije / ranija / raniji"), and an over-specific ending silently
+# turns the exemption off - which is exactly how the first version of this list
+# let a documented correction be reported as a live conflict.
+CORRECTION_MARKERS = re.compile(
+    r"\branij[aeiou]\w*|ISPRAVLJENO|IZMJENA|NIJE\s+mjerodav|nisu\s+mjerodav|"
+    r"umjesto|razli[čc]ito\s+u\s+dokumentima|REDOSLIJED\s+MJERODAVNOSTI", re.I)
+CONTEXT = 240
+
+
+# Prilog III carries pages taken over from earlier documentation (the K3 container
+# type drawings and their notes). We do not author them, and Prilog I's
+# "REDOSLIJED MJERODAVNOSTI" clause states that they do not govern - so a
+# superseded value quoted there is not a package conflict. Rules that would
+# otherwise trip on those inherited pages name them here explicitly.
+INHERITED_ANNEX = "Prilog_III_situacija_sjednica_bileca.pdf"
+ANNEX_EXEMPT = {"container floor capacity"}
+
+
+def scan(docs, pattern, live_only=False, skip=()):
+    """Count matches per document. With live_only, ignore matches that sit inside
+    a documented correction."""
     hits = {}
     for name, text in docs.items():
-        n = len(re.findall(pattern, text, re.I))
+        if name in skip:
+            continue
+        n = 0
+        for m in re.finditer(pattern, text, re.I):
+            if live_only:
+                near = text[max(0, m.start() - CONTEXT):m.end() + CONTEXT]
+                if CORRECTION_MARKERS.search(near):
+                    continue
+            n += 1
         if n:
             hits[name] = n
     return hits
@@ -188,7 +263,10 @@ def main():
 
     print("\n=== CONFLICTS (exactly one variant allowed) ===")
     for topic, variants in CONFLICTS.items():
-        found = {label: scan(docs, pat) for label, pat in variants.items()}
+        skip = (INHERITED_ANNEX,) if topic in ANNEX_EXEMPT else ()
+        found = {label: scan(docs, pat, live_only="WRONG" in label or
+                             "superseded" in label, skip=skip)
+                 for label, pat in variants.items()}
         found = {k: v for k, v in found.items() if v}
         if len(found) > 1:
             fails += 1
@@ -215,7 +293,7 @@ def main():
 
     print("\n=== BANNED TEXT (template leftovers) ===")
     for topic, pat in BANNED.items():
-        hits = scan(docs, pat)
+        hits = scan(docs, pat, live_only=True)
         if hits:
             fails += 1
             print(f"  FAIL  {topic}: " +

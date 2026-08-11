@@ -248,9 +248,20 @@ def build():
     para(doc, "Sljedeće vrijednosti su ispravljene u odnosu na ranije radne verzije "
               "tehničkog opisa. Ispravke su zasnovane na ovjerenom projektu lokacije, "
               "tehničkim listovima proizvođača i mjerenjima na licu mjesta.")
-    table(doc,
-          ["Stavka", "Ranije navedeno", "Ispravno (mjerodavno)", "Izvor"],
-          [["Geometrija PV polja",
+    warning(doc, "REDOSLIJED MJERODAVNOSTI. U slučaju neslaganja između dokumenata "
+              "tenderske dokumentacije mjerodavni su, tim redom: (1) Tenderska "
+              "dokumentacija (TD), (2) ovaj Prilog I, (3) Prilog II (Predmjer), "
+              "(4) Prilog III (grafički prilozi i referentna dokumentacija). "
+              "Prilog III sadrži i preuzete stranice ranije dokumentacije (npr. "
+              "nacrte i podatke tipskog kontejnera K3, sa nosivošću poda 10,00 "
+              "kN/m²) koje NISU mjerodavne za ovu nabavku — mjerodavna nosivost "
+              "poda je 2,00 kN/m² prema Projektnom zadatku, a mjerodavni raspored "
+              "opreme i otvora je onaj sa crteža M-01.")
+    # every superseded value is prefixed "ranije:" so it is legible as a record
+    # rather than a specification - both to a reader skimming one row out of
+    # context and to tools/check_consistency.py, which exempts documented
+    # corrections from its conflict rules
+    corrections = [["Geometrija PV polja",
             "projekcija 2590 mm, gornja ivica +3,09 m",
             "projekcija 3236 mm, gornja ivica +3,74 m (v. red niže — sada +4,74 m "
             "uz 3×4 konfiguraciju)",
@@ -279,8 +290,35 @@ def build():
             "3 nosača, 4 modula (2×2), +1,50/+4,74 m, 10,55 m² izloženosti/nosaču — "
             "manji presjek dozvoljava veću visinu bez povećanja opterećenja",
             "review/07-calculations.md F.6 — custom izrada, kataloški nosač ne "
-            "zadovoljava ni pri ranijoj ni pri ovoj konfiguraciji"]],
-          widths=[3.2, 4.0, 4.4, 5.0])
+            "zadovoljava ni pri ranijoj ni pri ovoj konfiguraciji"],
+           ["Raspored otvora ventilacije",
+            "sve na SJEVERNOJ strani kontejnera",
+            "ukrsni tok: usis JUG, kanal i izduv ZAPAD, oduška SJEVER, "
+            "ventilator ISTOK (Tačka 4.3)",
+            "usis, izlaz i izduv na istom zidu na 1,4 m recirkulišu i griju "
+            "postojeće vanjske ormare (nalaz EL RED-03)"],
+           ["Spremnik goriva",
+            "1200 × 700 × 800 mm (procjena)",
+            "1050 × 600 × 1310 mm, 170 kg prazan / ≈590 kg pun",
+            "podaci Investitora, 2026-08-11"],
+           ["Nosivost poda kontejnera",
+            "10,00 kN/m² prema tipskom proračunu kontejnera K3",
+            "2,00 kN/m² prema Projektnom zadatku — ram za raznošenje "
+            "opterećenja OBAVEZAN",
+            "lokacija je kontejner tipa K2; K3 proračun nije mjerodavan"],
+           ["Sistem napajanja",
+            "MTS9302 / PowerCube 1000 (različito u dokumentima)",
+            "Huawei ICC330-H1 + MTS9302 (postojeći vanjski ormari)",
+            "ovjereni projekat lokacije i crteži S-01/S-02"],
+           ["Beton temelja", "C25 na podlozi C10",
+            "C30/37, XC4 + XF3, aerant 4–6 % na podlozi C12/15; armatura B500B",
+            "izloženost mrazu i solima na 1076 m n.v., BAS EN 206"],
+           ["Prvo punjenje gorivom", "najmanje 200 l",
+            "500 l (pun spremnik)", "usklađeno sa Predmjerom, stavka 4.16"]]
+    for row in corrections:
+        row[1] = "ranije: " + row[1]
+    table(doc, ["Stavka", "Ranije navedeno", "Ispravno (mjerodavno)", "Izvor"],
+          corrections, widths=[3.2, 4.0, 4.4, 5.0])
 
     # ---------------- 1. site ----------------------------------------------
     doc.add_heading("1. Osnovni podaci o lokaciji", 1)
@@ -293,7 +331,12 @@ def build():
            ["Zakupljena parcela", "≈150 m² (16,00 × 9,40 m)"],
            ["Postojeći plato", "AB ploča 5,40 × 5,40 m, ograda h = 1,90 m, kapija 1,00 m"],
            ["Antenski stub", "rešetkasti, h = 38 m, baza 4,20 × 4,20 m"],
-           ["Kontejner", "3,005 × 2,30 m vanjski, zidni paneli 60 mm, PRAZAN"],
+           ["Kontejner", "3,005 × 2,30 m vanjski, zidni paneli 60 mm, PRAZAN; "
+                         "ulazna vrata 900 × 2000 mm na ISTOČNOM zidu"],
+           ["Nosivost poda kontejnera", "2,00 kN/m² prema Projektnom zadatku — "
+                                        "mjerodavno za dimenzionisanje rama"],
+           ["Postojeći sistem napajanja",
+            "Huawei ICC330-H1 + MTS9302, vanjski ormari uz SJEVERNI zid kontejnera"],
            ["Uzemljenje", "postojeći prstenasti uzemljivač Fe/Zn 25 × 4 mm"]],
           widths=[5.0, 11.6])
 
@@ -467,7 +510,12 @@ def build():
 
     doc.add_heading("4.2 Spremnik goriva", 2)
     for b in ["dvoplašni, zapremine 500 l, sa sondom za detekciju curenja",
-              "tankvana / sekundarna zaštita zapremine ≥110 % (550 l)",
+              "referentne dimenzije 1050 × 600 × 1310 mm, masa prazan 170 kg — "
+              "pun ≈590 kg na 0,63 m² = 9,2 kN/m², što prekoračuje projektnu "
+              "nosivost poda 2,00 kN/m²: OBAVEZAN je čelični ram/roštilj za "
+              "raznošenje opterećenja i pod tankvanom, dokazan statičkim proračunom",
+              "tankvana / sekundarna zaštita zapremine ≥110 % (550 l), "
+              "referentno 1600 × 1060 mm, visina ruba 330 mm",
               "vanjski priključak za punjenje sa zaštitom od statičkog elektriciteta i "
               "sprječavanjem prelijevanja",
               "odušna cijev izvan kontejnera, sa plamenobranom, udaljena ≥3 m od izduva "
@@ -499,15 +547,45 @@ def build():
            ["Ventilator prostora", "1200 m³/h, Ø315, termostat, blokiran sa radom agregata"],
            ["Provjera", "Ponuđač dostavlja proračun pada pritiska ukupne putanje"]],
           widths=[4.6, 12.0])
+    para(doc, "Raspored otvora (OBAVEZNO — prema crtežu M-01, Prilog III)", bold=True,
+         size=9.5)
+    table(doc, ["Element", "Zid i položaj"],
+          [["Usisna žaluzina 500 × 700", "JUŽNI zid, istočni kraj; donja ivica "
+                                         "+0,30 m od poda"],
+           ["Kanal hladnjaka + izlazna žaluzina 600 × 600",
+            "ZAPADNI zid, na osi radijatora agregata; kanal najkraćim putem od "
+            "radijatora kroz zid"],
+           ["Izduvni sistem", "uz ZAPADNI zid, završetak iznad krova (Tačka 4.4)"],
+           ["Odušna cijev spremnika", "SJEVERNI zid, istočni kraj"],
+           ["Ventilator prostora Ø315", "ISTOČNI zid, gore (donja ivica ≈+1,75 m), "
+                                        "sjeverno od ulaznih vrata"],
+           ["Minimalna razdaljina", "≥3 m prostorno između usisa zraka, izduva i "
+                                    "odušne cijevi"]],
+          widths=[5.6, 11.0])
+    figures(doc, [
+        (os.path.join(FIG, "layout_m01.png"), 16.0,
+         "Slika 5 — Raspored opreme i otvora u kontejneru: ukrsni tok zraka "
+         "(usis JUG → agregat → izlaz ZAPAD). Izvod iz crteža M-01, Prilog III")])
+    warning(doc, "Otvori se izvode kroz ZIDNE PANELE kontejnera, a NE kroz ulazna "
+              "vrata. Raspored je ukrsni (usis JUG → agregat → izlaz ZAPAD) i "
+              "obavezujući: nije dozvoljeno izvesti usis, izlaz i izduv na istom "
+              "zidu, niti usmjeriti izlaz toplog zraka ili izduv prema SJEVERNOJ "
+              "strani, gdje se nalaze postojeći vanjski ormari ICC330-H1 i "
+              "MTS9302. Svaki drugačiji raspored Ponuđač mora dokazati proračunom "
+              "recirkulacije i temperaturnog uticaja i dobiti pisanu saglasnost "
+              "Kupca.")
 
     doc.add_heading("4.4 Izduvni sistem", 2)
     table(doc, ["Parametar", "Vrijednost"],
           [["Protok izduvnih gasova", "234 m³/h (3,9 m³/min) pri 505 °C"],
            ["Maks. dozvoljeni protutlak", "10,2 kPa"],
-           ["Prečnik", "DN 50 zadovoljava (≈2,6 kPa); DN 65 PREPORUČENO (brzina 33 → 20 m/s)"],
+           ["Prečnik", "DN 65 — USVOJENO (Predmjer, stavka 4.11). DN 50 zadovoljava "
+                       "protutlak (≈2,6 kPa prema granici 10,2 kPa), ali radi pri "
+                       "33 m/s, iznad uobičajenih 30 m/s"],
            ["Prigušivač", "industrijski; hvatač iskri obavezan"],
            ["Fleksibilni priključak", "neposredno iza motora"],
            ["Izolacija", "kamena vuna d = 50 mm + Al lim; boja otporna na 600 °C"],
+           ["Trasa", "uspon uz ZAPADNI zid kontejnera (v. Tačku 4.3 i crtež M-01)"],
            ["Završetak", "iznad krova, usmjeren naviše, ≥3 m od usisa zraka i odušne cijevi"],
            ["Provjera", "Ponuđač dostavlja proračun protutlaka"]],
           widths=[4.6, 12.0])
@@ -534,6 +612,11 @@ def build():
            ["SPD, AC strana", "tip 1 + 2 (Iimp ≥12,5 kA) — objekat ima vanjski LPS"],
            ["SPD, DC strana", "tip 2 po stringu (Iimp ≥5 kA, Ucpv ≥425 V), na PVDB i na polju"],
            ["SPD, signalni vodovi", "prema EN 61643-21 — OBAVEZNO (stub h = 38 m)"],
+           ["Postojeći strujni krugovi",
+            "snimiti stanje i prevezati svih 7 postojećih krugova u novi GRO; "
+            "signalna rasvjeta prepreke antenskog stuba (K7) na zasebnom "
+            "nadziranom krugu, sa signalizacijom ispada u sistem daljinskog "
+            "nadzora"],
            ["AC kablovi", "bezhalogeni, CPR ≥ Cca-s1b,d1,a1"],
            ["DC kablovi", "H1Z2Z2-K 6 mm²; priključak na iSSU presjekom 4 mm²"],
            ["Otpor uzemljenja", "≤10 Ω"]],
@@ -557,6 +640,10 @@ def build():
               "oznake opasnosti, zabrana pušenja, oznaka kapaciteta goriva",
               "najmanje dva aparata za gašenje odgovarajuće klase"]:
         bullet(doc, b)
+    para(doc, "Elaborat zaštite od požara, protupožarni ventil na spremniku i "
+              "blokada ventilacije pri aktivaciji gašenja zasebno su iskazani u "
+              "Predmjeru (Prilog II, LOT 2) i ulaze u cijenu ponude.",
+         italic=True, size=9)
 
     # ---------------- 5. proofs --------------------------------------------
     doc.add_heading("5. Dokazi koji se dostavljaju UZ PONUDU (uslov kvalifikacije)", 1)

@@ -54,6 +54,7 @@ LAYERS = {
     "Ventilacija":    (4,   "Continuous"),   # louvres, ducts, exhaust
     "Sema":           (7,   "Continuous"),   # single line diagram
     "Legenda":        (7,   "Continuous"),
+    "Izvod":          (253, "Continuous"),   # leader callouts (line + label)
     "Kota_tekst":     (7,   "Continuous"),
     "Sakriveno":      (15,  "ACAD_ISO03W100"),
 }
