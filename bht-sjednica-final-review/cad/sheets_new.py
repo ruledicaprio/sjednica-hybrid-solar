@@ -65,12 +65,14 @@ def register(B):
                          dxfattribs={"layer": "Panel", "color": 8})
             msp.add_line((ax + fw / 2, ay), (ax + fw / 2, ay + proj),
                          dxfattribs={"layer": "Panel", "color": 8})
+            # strips sit in the 1950 mm band south of the fence, below the panel's
+            # lower edge - they used to be drawn running north into the compound
             for so in (fw / 2 - sup["strip_spacing"] / 2,
                        fw / 2 + sup["strip_spacing"] / 2):
-                rect(msp, ax + so - 225, ay - 250, 450, 1500,
+                rect(msp, ax + so - 225, ay - 1450, 450, 1500,
                      "Temelj", color=32, lw=35)
             _txt(msp, f"PV-{i}  ·  4 × 585 Wp  ·  45°  JUG", ax + fw / 2,
-                 ay - 900, 2.2 * SC, layer="Tekst", color=7, align=TA.CENTER)
+                 ay - 1800, 2.2 * SC, layer="Tekst", color=7, align=TA.CENTER)
 
         msp.add_lwpolyline([(mid, ay + proj), (mid, cy + 150)],
                            dxfattribs={"layer": "Kabal", "color": 2, "lineweight": 35})
