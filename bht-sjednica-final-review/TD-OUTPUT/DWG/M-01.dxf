@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461264.690787037
+2461264.696712963
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461264.690787037
+2461264.696724537
   9
 $TDUUPDATE
  40
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{B2D4B1F3-FAB3-406E-9FDA-FFF8B1E48D17}
+{7214D608-09CB-4554-B1C6-849145CDD41B}
   9
 $VERSIONGUID
   2
-{A065A4C9-DCF7-401C-8401-E071E2E8BBF8}
+{40EFA94B-F3A7-46D2-8DD8-58C3AC412598}
   9
 $EXTNAMES
 290
@@ -17459,7 +17459,7 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
@@ -17493,7 +17493,7 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
@@ -17527,7 +17527,7 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
@@ -17561,7 +17561,7 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
@@ -17595,7 +17595,7 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
@@ -17629,7 +17629,7 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
@@ -17663,7 +17663,7 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
@@ -17697,7 +17697,7 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
@@ -17731,7 +17731,7 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
@@ -17765,7 +17765,7 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
@@ -18891,7 +18891,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-08-11T14:34:44.695189+00:00
+1.4.4 @ 2026-08-11T14:43:16.996510+00:00
   0
 VISUALSTYLE
   5
@@ -19603,7 +19603,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-08-11T14:34:44.718566+00:00
+1.4.4 @ 2026-08-11T14:43:17.034907+00:00
   0
 ENDSEC
   0

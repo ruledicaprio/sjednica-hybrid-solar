@@ -124,10 +124,12 @@ def legend(msp, x, y, scale, rows, title="LEGENDA", cols=1, col_w=None):
 
 
 def note_block(msp, x, y, scale, title, lines, h=2.1):
+    # colour 7, not the grey 8 it used to be: at note size the grey printed too
+    # faint to read on a plotted A3 sheet
     _txt(msp, title, x, y, 2.6 * scale, layer="Tekst", color=7)
     yy = y - 2.4 * scale
     for ln in lines:
-        _txt(msp, ln, x, yy, h * scale, layer="Tekst", color=8)
+        _txt(msp, ln, x, yy, h * scale, layer="Tekst", color=7)
         yy -= h * 1.45 * scale
     return yy
 

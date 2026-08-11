@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461264.690787037
+2461264.696724537
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461264.690787037
+2461264.696724537
   9
 $TDUUPDATE
  40
@@ -549,7 +549,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-11D
+11E
   9
 $SURFTAB1
  70
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{99DD077B-B487-4F8E-8C51-D5E5C84A5008}
+{E8D97ACD-CDD6-4FCB-A25F-55F74CAD0BE3}
   9
 $VERSIONGUID
   2
-{CB95660F-2A25-411C-9488-5774B62EBBFE}
+{DEFB2857-83E1-4AA4-92AA-468D7F608FE5}
   9
 $EXTNAMES
 290
@@ -3745,7 +3745,7 @@ ACAD
   0
 APPID
   5
-11A
+11B
 330
 3
 100
@@ -3759,7 +3759,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-11B
+11C
 330
 3
 100
@@ -15039,11 +15039,11 @@ AcDbPolyline
  10
 1600.0
  20
-2600.0
+3200.0
  10
 18400.0
  20
-2600.0
+3200.0
   0
 LWPOLYLINE
   5
@@ -15055,7 +15055,9 @@ AcDbEntity
   8
 Uzemljenje
  62
-2
+3
+370
+70
 100
 AcDbPolyline
  90
@@ -15063,13 +15065,13 @@ AcDbPolyline
  70
 0
  10
-3050.0
+1600.0
  20
-2600.0
+3110.0
  10
-3050.0
+18400.0
  20
-3100.0
+3110.0
   0
 LWPOLYLINE
   5
@@ -15082,6 +15084,8 @@ AcDbEntity
 Uzemljenje
  62
 2
+370
+50
 100
 AcDbPolyline
  90
@@ -15089,13 +15093,13 @@ AcDbPolyline
  70
 0
  10
-9650.0
+3050.0
  20
-2600.0
+3200.0
  10
-9650.0
+3050.0
  20
-3100.0
+4000.0
   0
 LWPOLYLINE
   5
@@ -15108,6 +15112,8 @@ AcDbEntity
 Uzemljenje
  62
 2
+370
+50
 100
 AcDbPolyline
  90
@@ -15115,13 +15121,13 @@ AcDbPolyline
  70
 0
  10
-13200.0
+9650.0
  20
-2600.0
+3200.0
  10
-13200.0
+9650.0
  20
-3100.0
+4000.0
   0
 LWPOLYLINE
   5
@@ -15134,6 +15140,36 @@ AcDbEntity
 Uzemljenje
  62
 2
+370
+50
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+13200.0
+ 20
+3200.0
+ 10
+13200.0
+ 20
+4000.0
+  0
+LWPOLYLINE
+  5
+112
+330
+17
+100
+AcDbEntity
+  8
+Uzemljenje
+ 62
+2
+370
+50
 100
 AcDbPolyline
  90
@@ -15143,45 +15179,11 @@ AcDbPolyline
  10
 17150.0
  20
-2600.0
+3200.0
  10
 17150.0
  20
-3100.0
-  0
-TEXT
-  5
-112
-330
-17
-100
-AcDbEntity
-  8
-Tekst
- 62
-8
-100
-AcDbText
- 10
-1600.0
- 20
-2100.0
- 30
-0.0
- 40
-100.0
-  1
-postojeći prstenasti uzemljivač Fe/Zn 25×4 · R ≤ 10 Ω · nosači FN vezani bakrenim užetom 50 mm² preko bimetalnih spojeva
-  7
-20
- 11
-1600.0
- 21
-2100.0
- 31
-0.0
-100
-AcDbText
+4000.0
   0
 TEXT
   5
@@ -15199,19 +15201,19 @@ AcDbText
  10
 1600.0
  20
-1300.0
+2580.0
  30
 0.0
  40
-130.0
+114.99999999999999
   1
-NAPOMENE:
+postojeći prstenasti uzemljivač Fe/Zn 25×4 · R ≤ 10 Ω · nosači FN vezani bakrenim užetom 50 mm² preko bimetalnih spojeva
   7
 20
  11
 1600.0
  21
-1300.0
+2580.0
  31
 0.0
 100
@@ -15227,25 +15229,25 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
 1600.0
  20
-1180.0
+2100.0
  30
 0.0
  40
-105.0
+130.0
   1
-1  Lokacija NIJE na mreži — DEA je jedini AC izvor; KOA/ATS je sklopka izvora, ne prebacivanje sa mreže.
+NAPOMENE:
   7
 20
  11
 1600.0
  21
-1180.0
+2100.0
  31
 0.0
 100
@@ -15261,25 +15263,25 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
 1600.0
  20
-1027.75
+1980.0
  30
 0.0
  40
-105.0
+114.99999999999999
   1
-2  Uzemljenje otočnog izvora TN-S: tačka spajanja N-PE u novom GRO, ne u postojećem PMO.
+1  Lokacija NIJE na mreži — DEA je jedini AC izvor; KOA/ATS je sklopka izvora, ne prebacivanje sa mreže.
   7
 20
  11
 1600.0
  21
-1027.75
+1980.0
  31
 0.0
 100
@@ -15295,25 +15297,25 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
 1600.0
  20
-875.5
+1813.25
  30
 0.0
  40
-105.0
+114.99999999999999
   1
-3  Prenaponska zaštita: AC tip 1+2 (objekat ima LPS), DC tip 2 po stringu, signalni vodovi EN 61643-21.
+2  Uzemljenje otočnog izvora TN-S: tačka spajanja N-PE u novom GRO, ne u postojećem PMO.
   7
 20
  11
 1600.0
  21
-875.5
+1813.25
  31
 0.0
 100
@@ -15329,25 +15331,25 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
 1600.0
  20
-723.25
+1646.5
  30
 0.0
  40
-105.0
+114.99999999999999
   1
-4  Zaštita u GRO mora isključiti prema IEC 60364-4-41 pri struji kvara ograničenoj pobudom generatora.
+3  Prenaponska zaštita: AC tip 1+2 (objekat ima LPS), DC tip 2 po stringu, signalni vodovi EN 61643-21.
   7
 20
  11
 1600.0
  21
-723.25
+1646.5
  31
 0.0
 100
@@ -15363,25 +15365,25 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
 1600.0
  20
-571.0
+1479.75
  30
 0.0
  40
-105.0
+114.99999999999999
   1
-5  FN polja su unutar zone zaštite antenskog stuba h=38 m (EN 62305).
+4  Zaštita u GRO mora isključiti prema IEC 60364-4-41 pri struji kvara ograničenoj pobudom generatora.
   7
 20
  11
 1600.0
  21
-571.0
+1479.75
  31
 0.0
 100
@@ -15397,17 +15399,51 @@ AcDbEntity
   8
 Tekst
  62
-8
+7
 100
 AcDbText
  10
 1600.0
  20
-418.75
+1313.0
  30
 0.0
  40
-105.0
+114.99999999999999
+  1
+5  FN polja su unutar zone zaštite antenskog stuba h=38 m (EN 62305).
+  7
+20
+ 11
+1600.0
+ 21
+1313.0
+ 31
+0.0
+100
+AcDbText
+  0
+TEXT
+  5
+11A
+330
+17
+100
+AcDbEntity
+  8
+Tekst
+ 62
+7
+100
+AcDbText
+ 10
+1600.0
+ 20
+1146.25
+ 30
+0.0
+ 40
+114.99999999999999
   1
 6  12 modula = 2 stringa × 6 (na 3 nosača × 4); PVDB ima 2 rute, po jedan DC odvodnik po stringu.
   7
@@ -15415,7 +15451,7 @@ AcDbText
  11
 1600.0
  21
-418.75
+1146.25
  31
 0.0
 100
@@ -16511,7 +16547,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-11C
+11D
   0
 DICTIONARYVAR
   5
@@ -16523,7 +16559,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-08-11T14:34:44.750148+00:00
+1.4.4 @ 2026-08-11T14:43:17.073766+00:00
   0
 VISUALSTYLE
   5
@@ -17227,7 +17263,7 @@ X-Ray
   0
 DICTIONARYVAR
   5
-11C
+11D
 330
 2D
 100
@@ -17235,7 +17271,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-08-11T14:34:44.757915+00:00
+1.4.4 @ 2026-08-11T14:43:17.094682+00:00
   0
 ENDSEC
   0

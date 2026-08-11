@@ -180,26 +180,45 @@ def register(B):
 
         # existing slab and container north of the fence, so the section shows what
         # the panel actually oversails
-        S_, CW_, CH_ = 5400, 3005, 2300
+        S_, CH_ = 5400, 2300
+        H_LO, H_HI = C_H, D["container"]["height_high_eave"]
         sx_ = fx + 50
         rect(msp, sx_, GY - 300, S_, 300, "Objekat", color=254, lw=35)
         hatch_rect(msp, sx_, GY - 300, S_, 300, "Objekat", "ANSI31", SC * 0.5, 8)
+
+        # true elevation rather than a box: the certified K2 facade gives a 10 %
+        # mono-pitch roof, +2,63 at one eave and +2,89 at the other, and the slope
+        # runs across the 2300 mm face that this section looks at
         cx_ = sx_ + (S_ - CH_) / 2
-        rect(msp, cx_, GY, CH_, C_H, "Objekat", color=6, lw=50)
-        _txt(msp, "postojeći kontejner", cx_ + CH_ / 2, GY + C_H / 2, 2.0 * SC,
-             layer="Tekst", color=7, align=TA.MIDDLE_CENTER)
-        _txt(msp, f"{CH_} × {C_H} mm", cx_ + CH_ / 2, GY + C_H / 2 - 350,
-             1.7 * SC, layer="Tekst", color=8, align=TA.CENTER)
+        ov = 120                                        # roof overhang, both eaves
+        msp.add_lwpolyline([(cx_, GY), (cx_ + CH_, GY),
+                            (cx_ + CH_, GY + H_HI), (cx_, GY + H_LO)],
+                           close=True,
+                           dxfattribs={"layer": "Objekat", "color": 6,
+                                       "lineweight": 50})
+        msp.add_lwpolyline([(cx_ - ov, GY + H_LO - 40), (cx_ + CH_ + ov, GY + H_HI - 40),
+                            (cx_ + CH_ + ov, GY + H_HI + 60), (cx_ - ov, GY + H_LO + 60)],
+                           close=True,
+                           dxfattribs={"layer": "Objekat", "color": 6,
+                                       "lineweight": 50})
+        _txt(msp, "postojeći kontejner", cx_ + CH_ / 2, GY + H_LO / 2 + 120,
+             2.0 * SC, layer="Tekst", color=7, align=TA.CENTER)
+        _txt(msp, f"{CH_} mm · krov u nagibu 10 %", cx_ + CH_ / 2,
+             GY + H_LO / 2 - 260, 1.7 * SC, layer="Tekst", color=8, align=TA.CENTER)
+        for lvl, lab, xx in ((H_LO, "+2,63", cx_ - ov), (H_HI, "+2,89", cx_ + CH_ + ov)):
+            _txt(msp, lab, xx, GY + lvl + 130, 1.7 * SC, layer="Kota_tekst",
+                 color=8, align=TA.CENTER)
         _txt(msp, "postojeća AB ploča 5,40 × 5,40 m", sx_ + S_ / 2, GY - 620,
              1.7 * SC, layer="Tekst", color=8, align=TA.CENTER)
 
         for lvl, lab in ((b, f"donja ivica panela  +{b / 1000:.2f}".replace(".", ",")),
                          (1900, "kota ograde  +1,90"),
                          (top, f"gornja ivica panela  +{top / 1000:.2f}".replace(".", ","))):
-            msp.add_line((GX - 1100, GY + lvl), (fx + 1900, GY + lvl),
+            # stop short of the container so the level captions do not land on it
+            msp.add_line((GX - 1100, GY + lvl), (cx_ - 320, GY + lvl),
                          dxfattribs={"layer": "Sakriveno", "color": 8})
-            _txt(msp, lab, fx + 2000, GY + lvl - 50, 2.0 * SC,
-                 layer="Kota_tekst", color=7)
+            _txt(msp, lab, cx_ - 380, GY + lvl - 50, 2.0 * SC,
+                 layer="Kota_tekst", color=7, align=TA.RIGHT)
 
         dim_h(msp, x0, x1, GY - 900, SC, off=-1300)
         dim_v(msp, GY, GY + top, GX - 1100, SC, off=-800)
@@ -477,17 +496,25 @@ def register(B):
         msp.add_lwpolyline([(17150, Y - 4900), (17150, Y - 1100)],
                            dxfattribs={"layer": L, "color": 7, "lineweight": 50})
 
-        msp.add_lwpolyline([(1600, Y - 7600), (18400, Y - 7600)],
+        # Earth bar raised so the bonding stubs actually reach the equipment they
+        # bond, and drawn as a yellow-green pair - the PE colour convention, and
+        # it separates the bar from every other line on the sheet at a glance.
+        EB = Y - 7000
+        msp.add_lwpolyline([(1600, EB), (18400, EB)],
                            dxfattribs={"layer": "Uzemljenje", "color": 2,
                                        "lineweight": 70})
+        msp.add_lwpolyline([(1600, EB - 90), (18400, EB - 90)],
+                           dxfattribs={"layer": "Uzemljenje", "color": 3,
+                                       "lineweight": 70})
         for x in (3050, 9650, 13200, 17150):
-            msp.add_lwpolyline([(x, Y - 7600), (x, Y - 7100)],
-                               dxfattribs={"layer": "Uzemljenje", "color": 2})
+            msp.add_lwpolyline([(x, EB), (x, Y - 6200)],
+                               dxfattribs={"layer": "Uzemljenje", "color": 2,
+                                           "lineweight": 50})
         _txt(msp, "postojeći prstenasti uzemljivač Fe/Zn 25×4 · R ≤ 10 Ω · nosači FN "
                   "vezani bakrenim užetom 50 mm² preko bimetalnih spojeva",
-             1600, Y - 8100, 2.0 * SC, layer="Tekst", color=8)
+             1600, EB - 620, 2.3 * SC, layer="Tekst", color=7)
 
-        note_block(msp, 1600, Y - 8900, SC, "NAPOMENE:", [
+        note_block(msp, 1600, Y - 8100, SC, "NAPOMENE:", h=2.3, lines=[
             "1  Lokacija NIJE na mreži — DEA je jedini AC izvor; KOA/ATS je sklopka izvora, ne prebacivanje sa mreže.",
             "2  Uzemljenje otočnog izvora TN-S: tačka spajanja N-PE u novom GRO, ne u postojećem PMO.",
             "3  Prenaponska zaštita: AC tip 1+2 (objekat ima LPS), DC tip 2 po stringu, signalni vodovi EN 61643-21.",
