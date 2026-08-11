@@ -24,6 +24,8 @@ TD = os.path.join(BASE, "TD-OUTPUT",
                   "3. TD JN Hibridni sistem napajanja BS Sjednica.docx")
 ODLUKA = os.path.join(BASE, "TD-OUTPUT",
                       "2. Prijedlog Odluke Hibridni sistem napajanja BS Sjednica.docx")
+NZ = os.path.join(BASE, "TD-OUTPUT",
+                  "1. NZ hibridni sistem napajanja BS Sjednica.docx")
 
 EDITS = [
     # Y-16 + placement: de-garble and replace the blanket north-wall statement
@@ -61,6 +63,10 @@ EDITS = [
      "zaseban nadzirani strujni krug (v. Predmjer, LOT 2). Lokacija nije "
      "priključena",
      1),
+    # stale since the 3x4 redesign
+    ("Nosači za fotonaponske panele (ground support), 2 kom",
+     "Nosači za fotonaponske panele (ground support), 3 kom",
+     1),
 ]
 
 
@@ -68,6 +74,16 @@ ODLUKA_EDITS = [
     # sec-G #7 again: the decision paper named a third power system
     ("ispravljačima Huawei PowerCube 1000, tip ICC360-HA1-C1",
      "ispravljačima Huawei ICC330-H1 + MTS9302 ili kompatibilnim sistemom",
+     1),
+    # stale since the 3x4 redesign - the BOQ, Prilog I and the drawings all say 3
+    ("nosača za fotonaponske panele (gound mount support) - 2 kpl",
+     "nosača za fotonaponske panele (ground mount support) - 3 kpl",
+     2),
+]
+
+NZ_EDITS = [
+    ("nosača za fotonaponske panele (gound mount support) - 2 kpl",
+     "nosača za fotonaponske panele (ground mount support) - 3 kpl",
      1),
 ]
 
@@ -91,7 +107,7 @@ def pending(path, edits):
 
 
 def main():
-    for path, edits in ((TD, EDITS), (ODLUKA, ODLUKA_EDITS)):
+    for path, edits in ((TD, EDITS), (ODLUKA, ODLUKA_EDITS), (NZ, NZ_EDITS)):
         todo = pending(path, edits)
         print(os.path.basename(path))
         if not todo:
