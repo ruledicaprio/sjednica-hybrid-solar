@@ -1,0 +1,30 @@
+# Sky for 1978-01-02 15:00:00+01:00
+# gendaylit 1 2 15.00 -W 532.0 49.0 -g 0.2
+# Local solar time: 14.79
+# Solar altitude and azimuth: 17.6 40.2
+# epsilon, delta, atmospheric precipitable water content : 4.5029 0.1133 2.0000 
+
+void light solar
+0
+0
+3 4.004e+06 4.004e+06 4.004e+06
+
+solar source sun
+0
+0
+4 -0.615196 -0.728014 0.302540 0.533000
+
+void brightfunc skyfunc
+2 skybright perezlum.cal
+0
+10 2.485e+01 6.647e+00 -0.989680 -0.211121 12.550436 -3.886868 0.500250 -0.615196 -0.728014 0.302540 
+
+skyfunc glow ground_glow
+0
+0
+4 1 1 1 0
+
+ground_glow source ground
+0
+0
+4 0 0 -1 180
