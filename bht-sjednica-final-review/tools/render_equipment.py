@@ -70,6 +70,24 @@ def invert_reference(path: Path) -> Image.Image:
     return img.convert("RGB")
 
 
+def render_layout() -> None:
+    """Lift the container layout out of drawing M-01 so Prilog I 4.3 shows the
+    same arrangement the tender drawing does."""
+    import sys
+    sys.path.insert(0, str(ROOT / "cad"))
+    import render as cad_render
+
+    dxf = ROOT / "TD-OUTPUT" / "DWG" / "M-01.dxf"
+    if not dxf.exists():
+        print("skip layout figure: build the drawings first (cad/build_drawings.py)")
+        return
+    dst = OUT / "layout_m01.png"
+    cad_render.render_window(str(dxf), str(dst), (1750, 5550, 8350, 9120),
+                             dpi=200, pad=0, skip_layers=("Okvir", "Kote"),
+                             drop_leaders=True, text_scale=1.7, in_colour=True)
+    print(f"{dst.name} <- M-01.dxf")
+
+
 def main() -> None:
     OUT.mkdir(exist_ok=True)
     for name, (src, kind) in SOURCES.items():
@@ -78,6 +96,7 @@ def main() -> None:
         dst = OUT / f"{name}.png"
         img.save(dst, optimize=True)
         print(f"{dst.name}: {img.width}x{img.height} <- {src.name}")
+    render_layout()
 
 
 if __name__ == "__main__":

@@ -1,9 +1,13 @@
 # Change log — BS Sjednica (Bileća) tender package
 
 Revision 1 · 2026-08-07 · Rusmir Skopljak, dipl. ing. el.
+Revision 2 · 2026-08-11 · airflow relayout and closure of the open items in
+`07-calculations.md` §G — see the Revision 2 section at the end of this file.
 
 Baseline of the pre-change state: `bht-sjednica-final-review/TD-OUTPUT-BASELINE-20260807/`
 (byte-for-byte copy of TD-OUTPUT as of 2026-08-07, before any edit).
+**Note:** since Rev 2 this folder is kept in sync with TD-OUTPUT as the delivery
+copy; the pre-change state is the git history of Rev 1, not this folder.
 
 Format: **file** · location · before → after · reason · source.
 
@@ -300,3 +304,106 @@ value, so a lookahead distinguishes it from a live specification. Without this t
 corrections table would have failed the very check it exists to satisfy.
 
 **Final gate: 0 failures across 10 documents.**
+
+---
+
+# Revision 2 · 2026-08-11
+
+Two things drove this revision: the Investor asked for the genset air intake to be
+taken through the **container walls** with the equipment positioned properly, and the
+items left open in `07-calculations.md` §G had to be closed in the documents that are
+actually issued.
+
+## 9. Airflow relayout — closes EL RED-03
+
+### 9.1 What was wrong
+
+Rev 1 put the intake louvre (500 × 700), the radiator discharge louvre (600 × 600) **and**
+the 505 °C exhaust on the **north** wall, 1,4 m apart, on the same face as the existing
+outdoor cabinets ICC330-H1 and MTS9302. On drawing M-01 the fuel tank stood directly in
+front of the intake (tank x 450–1650 against an intake at x 250–750), and the plan and the
+section disagreed about which wall the openings were on. The room fan and the 110 % bund
+were not drawn at all.
+
+### 9.2 What it is now
+
+Cross-flow, south-east in → west out (`cad/design.json` → `ventilation.layout`, drawing M-01):
+
+| Element | Wall | Position |
+|---|---|---|
+| Intake louvre 500 × 700 | **JUG** | east end, bottom edge +0,30 m |
+| Radiator duct + discharge louvre 600 × 600 | **ZAPAD** | on the radiator axis, shortest route |
+| Exhaust DN 65 | **ZAPAD** | riser, terminating above the roof, spark arrestor |
+| Tank vent | **SJEVER** | east end, ≥3 m from exhaust and intake |
+| Room fan Ø315 | **ISTOK** | high, north of the entrance door |
+
+Nothing discharges toward the cabinet wall, and intake and exhaust are on opposite ends
+of the airflow path. M-01 gained cardinal wall labels, the door leaf and swing, airflow
+arrows, the 110 % bund and the room fan; its plan and section now agree. The louvre and
+duct sizes themselves are **unchanged** — the 125 Pa budget was already satisfied and is
+not affected by moving the openings.
+
+### 9.3 Fuel tank — real data
+
+The Investor supplied the tank data on 2026-08-11: **1050 × 600 × 1310 mm, 170 kg empty**.
+This supersedes the unverified 1200 × 700 × 800 estimate that Rev 1 carried. Full mass is
+now ≈590 kg on 0,63 m² = **9,2 kN/m²**, which changes the floor conclusion below.
+
+## 10. Section G items — closed
+
+| § G | Item | Closure |
+|---|---|---|
+| 2 | Concrete class stated twice, inconsistently | BOQ 2.3 lead text rewritten to C30/37 XC4+XF3 on C12/15, B500B; 2.2b C10 → C12/15; `design.json` and S-03 note synced |
+| 3 | Floor capacity claimed from a K3 type sheet | Governing value is **2,00 kN/m²** (project brief); K2 is what is installed. Both the genset (3,93 kN/m²) and the full tank (9,2 kN/m²) exceed it, so the load-spreading frame under **both** the skid and the bund is now **required**, not conditional (BOQ 4.4 rewritten — it previously argued that strengthening was "not expected") |
+| 4 residual | Reference alternator is shunt-excited by default | BOQ now reads "kao Stamford BCI164C **u izvedbi sa PMG ili AREP/AUX pobudom**" |
+| 5 | Fire elaborate, fuel shut-off valve, ventilation interlock specified but unpriced | New priced items **4.19, 4.20, 4.21** |
+| 6 | AC SPD priced as type 2; no signal-line SPD anywhere | BOQ AC SPD → **type 1+2, Iimp ≥12,5 kA (10/350)**; new priced item **5.11** for EN 61643-21 signal-line protection |
+| 7 | Three different power systems named | Unified on **ICC330-H1 + MTS9302** (Investor's decision) across the TD, the Odluka, the BOQ and Prilog I |
+| 9 | Tower obstruction lighting absent from the whole package | New priced item **5.10**: survey and transfer of all 7 existing circuits, with **K7 obstruction lighting on its own monitored circuit** and the bidder measuring its real load for the energy balance |
+
+Also aligned while in there: first fuel fill 200 l → **500 l** (the BOQ priced 500 l all
+along), exhaust **DN 65 adopted** rather than "recommended", and the garbled LOT-2 scope
+sentence (Y-16, a LOT-1 fragment merged into it) rewritten.
+
+## 11. Prilog I — figures and precedence
+
+Prilog I now carries the equipment figures (Slika 1–4) and a **Slika 5 lifted directly out
+of drawing M-01**, so the specification and the drawing cannot drift apart — the figure is
+rendered from the DXF by `tools/render_equipment.py`, not drawn separately. §4.3 gained a
+binding "Raspored otvora" table and a callout forbidding any arrangement that puts intake,
+discharge and exhaust on one wall or vents toward the cabinets.
+
+A **REDOSLIJED MJERODAVNOSTI** clause was added to §0: TD → Prilog I → Prilog II →
+Prilog III, and it states explicitly that the inherited K3 pages in Prilog III (including
+their 10,00 kN/m² floor figure) do not govern.
+
+## 12. Tooling
+
+- `tools/render_equipment.py` (new) — vendor figures and the M-01 layout extract.
+- `tools/fix_td2.py`, `tools/fix_boq_gaps.py` (new) — the text and BOQ edits above.
+  `fix_td2.py` is idempotent; `fix_boq_gaps.py` carries the same integrity pass as
+  `fix_boq_all.py` plus a **shrink guard** that refuses to save if a priced item's
+  description loses more than half its text (it caught a whole-cell write that had
+  replaced item 5.6's entire GRO specification with a single bullet).
+- `cad/render.py` — `render_window()` for document figures; `cad/bht_frame.py` gained an
+  `Izvod` layer so leader callouts can be separated from labels.
+- `tools/check_consistency.py` — six new conflict rules and six new required values.
+  Two bugs of its own were fixed: the docx reader discarded paragraph breaks, gluing
+  adjacent table cells into fake words ("gorivomranije:") and silently defeating every
+  `\b`-anchored pattern; and the correction-marker list used the ending `mjerodavn`,
+  which does not match the masculine `mjerodavan`.
+
+**Final gate: 0 failures across 13 documents.** BOQ recalculated through LibreOffice with
+100 KM on every item: LOT 1 20.008 + LOT 2 65.300 = 85.308, with VAT 99.810,36.
+
+## 13. Still open
+
+- §G 1 — certified static calculation for 45° at qp ≥ 1,20 kN/m² (bidder, pre-award).
+- §G 8 — revision of the certified electrical project (its PMO source no longer exists).
+- The real power of the obstruction light is measured by the bidder under item 5.10;
+  until then the December energy balance carries an allowance, not a measured figure.
+- Prilog III still contains the **K3** container drawings (pages 8–15) although the site
+  folder identifies the container as **K2**. They are inherited pages and are now
+  explicitly non-governing, but replacing them with K2 drawings would be the cleaner fix.
+- Container height 2400 mm is taken from the type sheet; `02-construction.md` Y-05 lists
+  four conflicting heights. To be confirmed on the mandatory site visit.

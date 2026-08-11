@@ -45,6 +45,7 @@
       "opens": "outward",
       "wall": "the 2300 mm face at the low end of the 3005 mm axis"
     },
+    "internal_equipment_status": "HISTORICAL ONLY - the Investor's site visit (05-site-corrections.md C-1) found the container EMPTY. The footprints below are what the 2018 certified drawing showed; do not draw them and do not use them for layout.",
     "internal_equipment_footprints": [
       {"what": "RBS cabinet 1", "size": [600, 800], "origin": [14921, 30850]},
       {"what": "RBS cabinet 2", "size": [600, 800], "origin": [14921, 31670]},
