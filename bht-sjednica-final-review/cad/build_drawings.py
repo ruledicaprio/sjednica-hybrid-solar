@@ -153,8 +153,11 @@ def site_plan(msp, ox, oy, scale, future=False, d=None):
     cy = sy + (S - CH) / 2.0
 
     # --- parcel boundary (~150 m2 leased) --------------------------------
+    # The plot is not centred on the compound: the compound sits near its north
+    # edge, which is what leaves the open ground to the south (the front area)
+    # for the PV array.
     pw, ph = 16000, 9400
-    px, py = ox + F / 2 - pw / 2, oy + F / 2 - ph / 2
+    px, py = ox + F / 2 - pw / 2, oy + F + 100 - ph
     msp.add_lwpolyline([(px, py), (px + pw, py), (px + pw, py + ph), (px, py + ph)],
                        close=True,
                        dxfattribs={"layer": "Sakriveno", "color": 8})

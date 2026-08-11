@@ -291,13 +291,12 @@ def draw_frame(msp, scale, naziv, broj, razmjera, godina="2026.",
         return _txt(msp, s, tx0 + X(x), ty0 + X(y), X(h),
                     layer="Tekst", color=7)
 
-    # band 38..48 - logo and issuer. Logo widened from 21 to 27 mm so it carries
-    # the band rather than floating in it; the issuer text moves right to suit.
-    draw_logo(msp, tx0 + X(3.5), ty0 + X(38.4), X(27))
-    _txt(msp, "BH TELECOM d.d. SARAJEVO", tx0 + X(34), ty0 + X(43.4), X(3.0),
+    # band 38..48 - logo and issuer
+    draw_logo(msp, tx0 + X(4), ty0 + X(39.6), X(17))
+    _txt(msp, "BH TELECOM d.d. SARAJEVO", tx0 + X(25), ty0 + X(43.4), X(3.0),
          layer="Tekst", color=7)
     _txt(msp, "Izvršna direkcija za tehnologiju i razvoj servisa",
-         tx0 + X(34), ty0 + X(39.6), X(2.2), layer="Okvir", color=8)
+         tx0 + X(25), ty0 + X(39.6), X(2.2), layer="Okvir", color=8)
 
     # bands 30..38, 22..30 - full width
     lbl("Investitor:", 3, 35.4);      val("BH Telecom d.d. Sarajevo, Franca Lehara 7, Sarajevo", 3, 31.6, 2.6)

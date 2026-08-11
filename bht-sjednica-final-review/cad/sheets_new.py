@@ -42,11 +42,11 @@ def register(B):
 
         sup = D["support"]
         fw, proj = sup["field_w"], sup["proj"]
-        # The array is set as far SOUTH as the leased parcel allows: its lower edge
-        # sits just inside the southern boundary, so both foundation strips fall in
-        # the 1950 mm band outside the fence and the panels clear the container
-        # instead of oversailing it. See review/07-calculations.md F.6.
-        ay = py + 100
+        # The array stands clear of the compound in the open ground south of it -
+        # the whole field, not just the footings, so nothing oversails the fence.
+        # The leased plot is positioned to suit (the compound sits toward its north
+        # edge), which is what leaves the front area free. See 07-calculations.md F.6.
+        ay = oy - proj - 150
         mid = ox + F / 2
         gap = 500
         total_w = 3 * fw + 2 * gap
@@ -69,7 +69,7 @@ def register(B):
                 rect(msp, ax + so - 225, ay, 450, 1500,
                      "Temelj", color=32, lw=35)
             _txt(msp, f"PV-{i}  ·  4 × 585 Wp  ·  45°  JUG", ax + fw / 2,
-                 ay - 800, 2.2 * SC, layer="Tekst", color=7, align=TA.CENTER)
+                 ay - 450, 2.2 * SC, layer="Tekst", color=7, align=TA.CENTER)
 
         msp.add_lwpolyline([(mid, ay + proj), (mid, cy + 150)],
                            dxfattribs={"layer": "Kabal", "color": 2, "lineweight": 35})
@@ -99,7 +99,9 @@ def register(B):
 
         dim_h(msp, axs[0], axs[0] + fw, ay, SC, off=-1000)
         dim_v(msp, ay, ay + proj, axs[0], SC, off=-1000)
-        dim_h(msp, px, px + pw, py, SC, off=-1400)
+        # parcel width dimensioned along the top: below the plot there is now the
+        # array, its labels and the legend
+        dim_h(msp, px, px + pw, py + ph, SC, off=700)
         dim_v(msp, py, py + ph, px + pw, SC, off=1400)
 
         leader(msp, (cx + 2400, cy + CH - 30),
@@ -111,21 +113,19 @@ def register(B):
         leader(msp, (mid, oy - 380), "DC trasa u PEHD Ø50 → PVDB (2 stringa, v. E-01)",
                2900, -1250, SC)
         leader(msp, (axs[0] + 400, ay - 100),
-               "2 temeljne trake po nosaču (×3), 450 × 3300, razmak 1600 — IZVAN ograde",
-               -2200, -900, SC)
+               "2 temeljne trake po nosaču (×3), 450 × 3300, razmak 1600",
+               -2200, -300, SC)
 
         north_arrow(msp, 19500, 11700, 1700)
-        scale_bar(msp, 1200, 4500, SC, total_m=5, step_m=1)
-        # below the parcel dimension line (py - 1400 = 4000), which used to run
-        # straight through the second line of the notes
-        legend(msp, 1200, 3400, SC, [
+        scale_bar(msp, 1200, 3150, SC, total_m=5, step_m=1)
+        legend(msp, 1200, 2900, SC, [
             (110, "LOT 1 — nosači FN panela PV-1..PV-3 (po 4 × 585 Wp, 45°, JUG) — 2 stringa × 6"),
             (32,  "LOT 1 — AB temeljne trake 450 × 3300 mm, razmak 1600 mm"),
             (2,   "LOT 1 — DC trasa u PEHD Ø50 do PVDB"),
             (30,  "LOT 2 — DEA 22 kVA u skid izvedbi i spremnik 500 l"),
             (4,   "LOT 2 — usisna žaluzina (SJEVER); kanal, žaluzina i izduv (ZAPAD); ventilator (ISTOK)"),
         ])
-        note_block(msp, 7900, 3400, SC, "NAPOMENA — PRORAČUNSKO OPTEREĆENJE:", [
+        note_block(msp, 7900, 2900, SC, "NAPOMENA — PRORAČUNSKO OPTEREĆENJE:", [
             "Vjetar qp ≥ 1,20 kN/m² (udar 3 s ≈ 45 m/s) — iznad kapaciteta kataloškog",
             "nosača tipa A, stoga CUSTOM IZRADA: sail 10,55 m²/nosaču, ULS uzgon 18,1 kN,",
             "moment prevrtanja 62,8 kNm; ovjerava ponuđač (Prilog II, 1.3).",
@@ -208,6 +208,38 @@ def register(B):
                  color=8, align=TA.CENTER)
         _txt(msp, "postojeća AB ploča 5,40 × 5,40 m", sx_ + S_ / 2, GY - 620,
              1.7 * SC, layer="Tekst", color=8, align=TA.CENTER)
+
+        # Base segment of the 38 m lattice tower, drawn to the certified taper
+        # (4200 mm at grade narrowing linearly to 1200 mm at 24,60 m per
+        # site_geometry.json). The container stands between its legs, so showing
+        # it is what makes the section read as the real structure.
+        TB, TT, TH = GEO["tower"]["base"][0], GEO["tower"]["top"][0], 24600.0
+        tcx_ = sx_ + S_ / 2
+        top_ = 5000.0
+
+        def half(h):
+            return (TB - (TB - TT) * h / TH) / 2.0
+
+        for s in (-1, 1):
+            msp.add_lwpolyline([(tcx_ + s * half(0), GY),
+                                (tcx_ + s * half(top_), GY + top_)],
+                               dxfattribs={"layer": "Konstrukcija", "color": 5,
+                                           "lineweight": 50})
+            solid_rect(msp, tcx_ + s * half(0) - 130, GY - 300, 260, 300,
+                       "Konstrukcija", 5)
+        lvl = [0, 1150, 2300, 3450, 4600]
+        for a, b in zip(lvl, lvl[1:]):
+            msp.add_line((tcx_ - half(a), GY + a), (tcx_ + half(a), GY + a),
+                         dxfattribs={"layer": "Konstrukcija", "color": 5})
+            for s in (-1, 1):                           # bracing, alternating
+                msp.add_line((tcx_ + s * half(a), GY + a),
+                             (tcx_ - s * half(b), GY + b),
+                             dxfattribs={"layer": "Konstrukcija", "color": 5})
+        msp.add_line((tcx_ - half(lvl[-1]), GY + lvl[-1]),
+                     (tcx_ + half(lvl[-1]), GY + lvl[-1]),
+                     dxfattribs={"layer": "Konstrukcija", "color": 5})
+        _txt(msp, "antenski stub h=38 m — baza 4,20 × 4,20 m", tcx_,
+             GY + top_ + 200, 1.8 * SC, layer="Tekst", color=8, align=TA.CENTER)
 
         for lvl, lab in ((b, f"donja ivica panela  +{b / 1000:.2f}".replace(".", ",")),
                          (1900, "kota ograde  +1,90"),
