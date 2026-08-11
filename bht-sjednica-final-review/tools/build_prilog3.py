@@ -317,6 +317,63 @@ def page_text(page):
     return page.get_text().replace("\xa0", " ").replace("­", "-").replace("‑", "-")
 
 
+def portrait_page(out, src, pno, margin=40):
+    """Put the site photo on an A4 portrait sheet, so the front matter (cover,
+    photo, site data) reads as one portrait set before the A3 drawings.
+
+    The source is A3 landscape with a portrait photograph in the middle and the
+    title block bottom right. Fitting the whole sheet would leave the photo tiny,
+    so the photo and the title block are placed separately.
+    """
+    sp = src[pno]
+    page = out.new_page(width=595, height=842)
+    photo = None
+    for im in sp.get_images(full=True):
+        for r in sp.get_image_rects(im[0]):
+            if photo is None or r.get_area() > photo.get_area():
+                photo = r
+    if photo is None:                                   # no image - fit the sheet
+        w = 595 - 2 * margin
+        h = w * sp.rect.height / sp.rect.width
+        page.show_pdf_page(fitz.Rect(margin, (842 - h) / 2, margin + w,
+                                     (842 - h) / 2 + h), src, pno)
+        return page
+
+    w = 595 - 2 * margin
+    h = w * photo.height / photo.width
+    if h > 660:                                         # keep room for the strip
+        h = 660
+        w = h * photo.width / photo.height
+    x0 = (595 - w) / 2
+    page.show_pdf_page(fitz.Rect(x0, margin + 22, x0 + w, margin + 22 + h),
+                       src, pno, clip=photo)
+    # title-block strip from the bottom right of the source sheet
+    strip = fitz.Rect(sp.rect.width * 0.58, sp.rect.height * 0.90,
+                      sp.rect.width - 18, sp.rect.height - 8)
+    sh = w * strip.height / strip.width
+    top = margin + 22 + h + 16
+    page.show_pdf_page(fitz.Rect(x0, top, x0 + w, top + sh), src, pno, clip=strip)
+    return page
+
+
+def strip_entity(page):
+    """Drop the entity from the municipality row - the Investor wants the
+    opština named on its own."""
+    hits = []
+    for word in ("Republika", "Srpska"):
+        hits += page.search_for(word)
+    if not hits:
+        return 0
+    r = hits[0]
+    for h in hits[1:]:
+        r |= h
+    # reach left far enough to take the separator in "Bileća / Republika Srpska"
+    page.add_redact_annot(fitz.Rect(r.x0 - 14, r.y0 - 2, r.x1 + 3, r.y1 + 2),
+                          fill=(1, 1, 1))
+    page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)
+    return len(hits)
+
+
 def old_pages_by_code(src):
     """Map drawing number (INFO-01 ...) to page index in the previous annex."""
     found = {}
@@ -354,8 +411,10 @@ def main():
 
     out = fitz.open()
     cover_page(out)
-    out.insert_pdf(src, from_page=codes["INFO-01"], to_page=codes["INFO-01"])
+    portrait_page(out, src, codes["INFO-01"])
     out.insert_pdf(src, from_page=opsti, to_page=opsti)
+    n = strip_entity(out[-1])
+    print(f"  site-data page: removed {n} entity word(s) from the opština row")
     for n in ("S-01", "S-02", "S-03", "M-01", "E-01"):
         p = os.path.join(DWG, n + ".pdf")
         if not os.path.exists(p):

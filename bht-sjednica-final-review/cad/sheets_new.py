@@ -81,22 +81,20 @@ def register(B):
 
         v = D["ventilation"]
         # cross-flow layout (see M-01 / design.json ventilation.layout):
-        # intake SOUTH wall east end, discharge WEST wall on the radiator axis
-        solid_rect(msp, cx + 2150, cy, v["intake_mm"][0], 60, "Ventilacija", 4)
-        solid_rect(msp, cx, cy + 430, 60, v["discharge_mm"][0], "Ventilacija", 4)
+        # intake NORTH wall east end, discharge WEST wall on the radiator axis
+        solid_rect(msp, cx + 2150, cy + CH - 60, v["intake_mm"][0], 60,
+                   "Ventilacija", 4)
+        solid_rect(msp, cx, cy + 1300, 60, v["discharge_mm"][0], "Ventilacija", 4)
 
         g, tk = D["genset"], D["tank"]
-        gx, gy = cx + 450, cy + 420
+        gx, gy = cx + 450, cy + 1290
         rect(msp, gx, gy, g["skid_L"], g["skid_W"], "Agregat", color=30, lw=50)
         _txt(msp, "DEA 22 kVA", gx + g["skid_L"] / 2, gy + g["skid_W"] / 2,
              1.7 * SC, layer="Tekst", color=7, align=TA.MIDDLE_CENTER)
         bnd = tk["bund"]
-        rect(msp, cx + 350, cy + CH - 60 - bnd["W"], bnd["L"], bnd["W"],
-             "Agregat", color=1)
-        rect(msp, cx + 550, cy + CH - 60 - bnd["W"] + 180, tk["L"], tk["W"],
-             "Agregat", color=30)
-        _txt(msp, "500 l", cx + 550 + tk["L"] / 2,
-             cy + CH - 60 - bnd["W"] + 180 + tk["W"] / 2,
+        rect(msp, cx + 350, cy + 100, bnd["L"], bnd["W"], "Agregat", color=1)
+        rect(msp, cx + 550, cy + 280, tk["L"], tk["W"], "Agregat", color=30)
+        _txt(msp, "500 l", cx + 550 + tk["L"] / 2, cy + 280 + tk["W"] / 2,
              1.7 * SC, layer="Tekst", color=7, align=TA.MIDDLE_CENTER)
 
         dim_h(msp, axs[0], axs[0] + fw, ay, SC, off=-1000)
@@ -104,8 +102,8 @@ def register(B):
         dim_h(msp, px, px + pw, py, SC, off=-1400)
         dim_v(msp, py, py + ph, px + pw, SC, off=1400)
 
-        leader(msp, (cx + 2400, cy + 30),
-               "usisna žaluzina 500 × 700 mm — JUŽNI zid", 2600, -1500, SC)
+        leader(msp, (cx + 2400, cy + CH - 30),
+               "usisna žaluzina 500 × 700 mm — SJEVERNI zid", 2600, 1500, SC)
         leader(msp, (cx + 30, cy + 730),
                "kanal + žaluzina 600 × 600, izduv DN 65 iznad krova — ZAPADNI zid; "
                "ventilator 1200 m³/h — ISTOČNI zid",
@@ -125,7 +123,7 @@ def register(B):
             (32,  "LOT 1 — AB temeljne trake 450 × 3300 mm, razmak 1600 mm"),
             (2,   "LOT 1 — DC trasa u PEHD Ø50 do PVDB"),
             (30,  "LOT 2 — DEA 22 kVA u skid izvedbi i spremnik 500 l"),
-            (4,   "LOT 2 — usisna žaluzina (JUG); kanal, žaluzina i izduv (ZAPAD); ventilator (ISTOK)"),
+            (4,   "LOT 2 — usisna žaluzina (SJEVER); kanal, žaluzina i izduv (ZAPAD); ventilator (ISTOK)"),
         ])
         note_block(msp, 7900, 3400, SC, "NAPOMENA — PRORAČUNSKO OPTEREĆENJE:", [
             "Vjetar qp ≥ 1,20 kN/m² (udar 3 s ≈ 45 m/s) — iznad kapaciteta kataloškog",
@@ -279,11 +277,16 @@ def register(B):
             msp.add_solid([a1, (x1, y1), a2],
                           dxfattribs={"layer": "Ventilacija", "color": color})
 
-        # genset along the SOUTH side, radiator end WEST; skid entry through the
-        # east door, then shifted south.  Cross-flow SE -> W (see design.json
-        # ventilation.layout - closes EL RED-03).
-        gx, gy = ox + 450, oy + 420
-        rect(msp, gx - 120, gy - 120, g["skid_L"] + 240, g["skid_W"] + 240,
+        # Interior mirrored N-S (Rev 4): the intake takes air from the NORTH face,
+        # which is the shaded side and therefore the coolest air available, while
+        # the radiator discharge and the exhaust stay WEST - so nothing is blown at
+        # the outdoor cabinets and EL RED-03 stays closed. Genset in the middle,
+        # radiator end WEST; tank on the SOUTH wall; GRO on the NORTH wall beside
+        # the intake, next to the cabinets it feeds.
+        # 60 mm frame margin, not 120: tank bund, skid and GRO together need more
+        # depth than the 2180 mm internal width has to give
+        gx, gy = ox + 450, oy + 1290
+        rect(msp, gx - 60, gy - 60, g["skid_L"] + 120, g["skid_W"] + 120,
              "Konstrukcija", color=5, lw=35)
         rect(msp, gx, gy, g["skid_L"], g["skid_W"], "Agregat", color=30, lw=50)
         _txt(msp, "DEA 22 kVA / 17,6 kW, skid", gx + g["skid_L"] / 2,
@@ -300,18 +303,26 @@ def register(B):
              lw=35)
         solid_rect(msp, ox, dy_c - 300, t, 600, "Ventilacija", 4)
 
-        # intake louvre 500 wide in the SOUTH wall, east end
-        solid_rect(msp, ox + 2150, oy, v["intake_mm"][0], t, "Ventilacija", 4)
+        # intake louvre 500 wide in the NORTH wall, east end - clear of both the
+        # GRO inside and the outdoor cabinets outside (those sit at x 250..1770)
+        solid_rect(msp, ox + 2150, oy + CH - t, v["intake_mm"][0], t,
+                   "Ventilacija", 4)
 
-        # exhaust DN65 riser at the WEST wall, north of the duct
-        msp.add_circle((ox + t + 90, oy + 1350), 60,
+        # new GRO against the NORTH wall, west of the intake
+        grw, grd = 800, 200
+        rect(msp, ox + 350, oy + CH - t - grd, grw, grd, "Novi1", color=30, lw=50)
+        _txt(msp, "GRO", ox + 350 + grw / 2, oy + CH - t - grd / 2 - 55,
+             1.6 * SC, layer="Tekst", color=7, align=TA.CENTER)
+
+        # exhaust DN65 riser at the WEST wall, south of the duct
+        msp.add_circle((ox + t + 90, oy + 700), 60,
                        dxfattribs={"layer": "Ventilacija", "color": 1})
 
-        # Tank in its 110 % bund against the NORTH wall, set east of the west end so
+        # Tank in its 110 % bund against the SOUTH wall, set east of the west end so
         # its mass lands over more secondary floor beams and clear of the radiator
         # duct penetration. Its own spreading frame is drawn under the bund.
-        bx, by = ox + 1150, oy + CH - t - lay["W"]
-        rect(msp, bx - 120, by - 120, lay["L"] + 240, lay["W"] + 240,
+        bx, by = ox + 1150, oy + 100
+        rect(msp, bx - 60, by - 60, lay["L"] + 120, lay["W"] + 120,
              "Konstrukcija", color=5, lw=35)
         rect(msp, bx, by, lay["L"], lay["W"], "Agregat", color=1, lw=35)
         tx, ty = bx + (lay["L"] - tk["L"]) / 2, by + (lay["W"] - tk["W"]) / 2
@@ -319,8 +330,8 @@ def register(B):
         _txt(msp, "spremnik 500 l", tx + tk["L"] / 2, ty + tk["W"] / 2,
              1.7 * SC, layer="Tekst", color=7, align=TA.MIDDLE_CENTER)
 
-        # tank vent penetration, NORTH wall east end
-        msp.add_circle((ox + 2800, oy + CH - t / 2), 40,
+        # tank vent penetration, SOUTH wall east end
+        msp.add_circle((ox + 2800, oy + t / 2), 40,
                        dxfattribs={"layer": "Ventilacija", "color": 1})
 
         # door in the EAST wall with outward swing; room fan above it to the north
@@ -332,25 +343,26 @@ def register(B):
                     end_angle=90, dxfattribs={"layer": "Objekat", "color": 8})
         solid_rect(msp, ox + CW - t, oy + 1750, t, 315, "Ventilacija", 4)
 
-        # airflow arrows: in at SE low, across the room, out west through the duct
-        arrow([(ox + 2400, oy - 350), (ox + 2400, oy + 550)])
-        arrow([(ox + 2300, oy + 730), (gx + g["skid_L"] + 150, dy_c)])
+        # airflow arrows: in at the NE from the shaded face, across the room, out
+        # west through the radiator duct
+        arrow([(ox + 2400, oy + CH + 350), (ox + 2400, oy + CH - 550)])
+        arrow([(ox + 2300, oy + CH - 700), (gx + g["skid_L"] + 150, dy_c)])
         arrow([(ox + t + 150, dy_c), (ox - 500, dy_c)])
 
         dim_h(msp, ox, ox + CW, oy, SC, off=-800)
         dim_v(msp, oy, oy + CH, ox, SC, off=-800)
-        dim_h(msp, ox + 2150, ox + 2650, oy, SC, off=-350)
+        dim_h(msp, ox + 2150, ox + 2650, oy + CH, SC, off=350)
 
         # Callouts stay short and stay on the sheet; the normative wording lives in
         # the notes below and in Prilog I 4.3.
-        leader(msp, (ox + 2400, oy + t / 2), "usis 500 × 700 (JUG, +0,30)",
-               900, -700, SC)
+        leader(msp, (ox + 2400, oy + CH - t / 2), "usis 500 × 700 (SJEVER, +0,30)",
+               900, 500, SC)
         leader(msp, (ox + t / 2, dy_c), "kanal + žaluzina 600 × 600 (ZAPAD)",
                -500, 1500, SC)
-        leader(msp, (ox + t + 90, oy + 1350), "izduv DN 65 (ZAPAD)", -500, -750, SC)
+        leader(msp, (ox + t + 90, oy + 700), "izduv DN 65 (ZAPAD)", -500, -450, SC)
         leader(msp, (bx + lay["L"], by + lay["W"] / 2), "tankvana ≥110 %",
-               700, -350, SC)
-        leader(msp, (ox + 2800, oy + CH), "oduška (SJEVER)", 500, 400, SC)
+               700, -250, SC)
+        leader(msp, (ox + 2800, oy), "oduška (JUG)", 500, -400, SC)
         leader(msp, (ox + CW - t / 2, oy + 1900), "ventilator Ø315 (ISTOK)",
                600, 350, SC)
         leader(msp, (gx - 120, gy - 120), "roštilj za raznošenje opterećenja",
@@ -396,17 +408,17 @@ def register(B):
         _txt(msp, "izduv iznad krova", sxo + 400, syo + H + 200, 1.5 * SC,
              layer="Tekst", color=8)
 
-        # intake louvre on the SOUTH wall (in front of the section plane) - shown
-        # dashed at its true x-position and height
+        # intake louvre on the NORTH wall (behind the section plane) - shown dashed
+        # at its true x-position and height
         rect(msp, sxo + 2150, syo + 300, 500, 700, "Sakriveno", color=8)
-        _txt(msp, "usis (JUŽNI zid)", sxo + 2000, syo + 1120, 1.5 * SC,
+        _txt(msp, "usis (SJEVERNI zid)", sxo + 1950, syo + 1120, 1.5 * SC,
              layer="Tekst", color=8)
         arrow([(sxo + 2400, syo + 650), (sxo + 2000, syo + 650)])
 
-        # tank behind the section plane (NORTH wall), dashed at its plan position -
-        # at 1310 mm it stands above the 1020 mm genset silhouette
+        # tank in front of the section plane (SOUTH wall), dashed at its plan
+        # position - at 1310 mm it stands above the 1020 mm genset silhouette
         rect(msp, sxo + (tx - ox), syo, tk["L"], tk["H"], "Sakriveno", color=8)
-        _txt(msp, "spremnik iza presjeka", sxo + (tx - ox), syo + tk["H"] + 110,
+        _txt(msp, "spremnik ispred presjeka", sxo + (tx - ox), syo + tk["H"] + 110,
              1.5 * SC, layer="Tekst", color=8)
 
         # room fan high on the EAST (right) wall
@@ -425,9 +437,11 @@ def register(B):
             "4  Izduv DN 65 usvojen (NO 50 zadovoljava protutlak, ali radi pri 33 m/s).",
             "5  Pod je dimenzionisan na 10,00 kN/m² ravnomjerno raspodijeljeno (projekat lokacije, 4.4.2.3).",
             "    Agregat 3,93 i pun spremnik 9,2 kN/m² su KONCENTRISANI — roštilj za raznošenje je OBAVEZAN.",
-            "6  RASPORED: usis JUG (+0,30), kanal/izlaz i izduv ZAPAD, oduška SJEVER, ventilator ISTOK;",
-            "    ≥3 m između usisa, izduva i oduške. Ništa ne izbacuje prema ormarima na SJEVERU.",
-            "7  UNOS: skid 620 mm kroz vrata 900 mm. Kontejner je PRAZAN.",
+            "6  RASPORED: usis SJEVER (+0,30) — zasjenjena strana, najhladniji zrak; kanal/izlaz i izduv",
+            "    ZAPAD, oduška JUG, ventilator ISTOK; ≥3 m između usisa, izduva i oduške. Izlaz toplog",
+            "    zraka i izduv NISU na sjevernoj strani, pa se ormari ICC330-H1/MTS9302 ne griju.",
+            "7  GRO na SJEVERNOM zidu, uz vanjske ormare koje napaja (najkraća trasa).",
+            "8  UNOS: skid 620 mm kroz vrata 900 mm. Kontejner je PRAZAN.",
         ])
         return doc
 

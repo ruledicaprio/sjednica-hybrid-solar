@@ -128,12 +128,13 @@
   "exhaust_DN_recommended": 65,
   "max_back_pressure_kPa": 10.2,
   "layout": {
-   "intake_wall": "JUG - istocni kraj (x 2150-2650), donja ivica +300 mm od poda",
+   "intake_wall": "SJEVER - istocni kraj (x 2150-2650), donja ivica +300 mm od poda",
    "discharge_wall": "ZAPAD - limeni kanal pravo od radijatora kroz zid, zaluzina 600x600 na osi radijatora",
    "exhaust": "ZAPAD - flex + prigusivac, uspon uz zapadni zid, zavrsetak iznad krova sa hvatacem iskri",
    "room_fan_wall": "ISTOK - gore (donja ivica +1750 mm), sjeverno od vrata",
-   "tank_vent_wall": "SJEVER - istocni kraj, >=3 m prostorno od izduva i usisa",
-   "_rationale": "Cross-flow SE->W closes EL RED-03: previous layout put intake, discharge AND exhaust on the NORTH wall 1.4 m apart, next to the outdoor ICC330-H1/MTS9302 cabinets, with the tank standing in front of the intake. Now intake (S) and discharge/exhaust (W) are on opposite airflow ends, nothing discharges toward the cabinets, and the tank+bund sit clear on the NORTH wall."
+   "tank_vent_wall": "JUG - istocni kraj, >=3 m prostorno od izduva i usisa",
+   "gro_wall": "SJEVER - zapadni kraj, uz vanjske ormare ICC330-H1/MTS9302 koje napaja",
+   "_rationale": "Cross-flow NE->W. The original layout put intake, discharge AND exhaust on the NORTH wall 1.4 m apart, next to the outdoor ICC330-H1/MTS9302 cabinets, with the tank in front of the intake (EL RED-03). Rev 3 moved everything to a S->W cross-flow; Rev 4 mirrors the interior N-S so the INTAKE takes air from the NORTH face - the shaded side, so the coolest air available - while the radiator discharge and the exhaust stay WEST. Nothing is blown at the cabinets, so RED-03 stays closed, and the GRO now sits on the north wall beside the cabinets it feeds."
   },
   "_verdict": "The tendered arrangement is ADEQUATE. Intake 500x700 gives 3.4 m/s and ~16 Pa; discharge 600x600 gives ~15 Pa; with the duct the total stays well inside the manufacturer's 125 Pa external-restriction budget. The 1200 m3/h axial fan is a supplementary room-ventilation fan (stated minimum 120 m3/h = 6 ACH), not the cooling path — the radiator's own fan moves the 1980 m3/h. DN50 exhaust meets the 10.2 kPa back-pressure limit (~2.6 kPa) but runs at 33 m/s; DN65 is recommended to stay under the customary 30 m/s.",
   "_source": "Computed from the manufacturer data sheet; supersedes the estimates in 03-electrical.md RED-01/RED-04."

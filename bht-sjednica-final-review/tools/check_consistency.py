@@ -197,7 +197,7 @@ SINGLE_VALUE = {
     "type 1+2 AC SPD (G-6)": r"[Tt]ip\s*1\s*\+\s*2|TIP\s*1\s*\+\s*2",
     "signal-line SPD (G-6)": r"61643-21",
     "fire elaborate priced (G-5)": r"elaborat[a]?\s+za[šs]tite\s+od\s+po[žz]ara",
-    "intake on the south wall": r"JU[ŽZ]NI\s*zid|JU[ŽZ]NOM\s*zidu",
+    "intake on the north wall": r"SJEVERNI\s*zid|SJEVERNOM\s*zidu",
     "discharge on the west wall": r"ZAPADNI\s*zid|ZAPADNOM\s*zidu",
 }
 

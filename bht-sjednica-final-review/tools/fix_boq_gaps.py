@@ -109,16 +109,19 @@ FLOOR_NOTE = (
     "Referentna izvedba data je u Prilogu III")
 
 LAYOUT_INTAKE = (
-    NL + "RASPORED (OBAVEZNO, prema crtežu M-01): žaluzina se ugrađuje u JUŽNI zid "
-    "kontejnera, na istočnom kraju, sa donjom ivicom na cca 0,30 m od poda. "
+    NL + "RASPORED (OBAVEZNO, prema crtežu M-01): žaluzina se ugrađuje u SJEVERNI "
+    "zid kontejnera, na istočnom kraju, sa donjom ivicom na cca 0,30 m od poda. "
+    "Sjeverna strana je zasjenjena i daje najhladniji usisni zrak, čime se "
+    "poboljšava hlađenje agregata. Žaluzina se postavlja istočno od vanjskih "
+    "ormara ICC330-H1/MTS9302 kako se ne bi usisavao topli zrak sa njih. "
     "Prostorna udaljenost od izduva i od odušne cijevi spremnika ≥3 m. Nije "
     "dozvoljeno izvesti dovod zraka kroz ulazna vrata.")
 
 LAYOUT_DISCHARGE = (
     NL + "RASPORED (OBAVEZNO, prema crtežu M-01): žaluzina se ugrađuje u ZAPADNI "
-    "zid kontejnera, na osi radijatora agregata. Topli zrak se NE smije izbacivati "
-    "prema SJEVERNOJ strani, gdje se nalaze postojeći vanjski ormari ICC330-H1 i "
-    "MTS9302.")
+    "zid kontejnera, na osi radijatora agregata. Topli zrak i izduv se NE smiju "
+    "izbacivati prema SJEVERNOJ strani, gdje se nalaze postojeći vanjski ormari "
+    "ICC330-H1 i MTS9302 i gdje se nalazi usis svježeg zraka.")
 
 LAYOUT_DUCT = (
     NL + "RASPORED (OBAVEZNO, prema crtežu M-01): kanal se vodi najkraćim putem od "
@@ -139,7 +142,7 @@ LAYOUT_EXHAUST = (
 
 TANK_DIMS = (
     NL + " - referentne dimenzije spremnika 1050 × 600 × 1310 mm, masa prazan 170 kg "
-    "(pun ≈590 kg); smještaj uz SJEVERNI zid kontejnera u tankvani iz Tačke 4.3, "
+    "(pun ≈590 kg); smještaj uz JUŽNI zid kontejnera u tankvani iz Tačke 4.3, "
     "prema crtežu M-01")
 
 EXCITATION_REF = (
