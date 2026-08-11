@@ -1,9 +1,8 @@
 # sjednica-hybrid-solar
 
-Solar/hybrid energy infrastructure project ("Solarna ograda"), now
-focused on RFP/proposal documents (see below). One subproject remains:
+Solar/hybrid energy infrastructure project, now focused on RFP/proposal documents (see below).
+One subproject remains:
 `rural-star-sjednica/` (structured Python simulation pipeline).
-
 For the solar portion of the RFPs we now just use the existing solar
 irradiation figures under
 `rural-star-sjednica/output/report_results/` — the simulation pipeline
