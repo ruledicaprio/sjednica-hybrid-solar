@@ -215,8 +215,13 @@ def site_plan(msp, ox, oy, scale, future=False, d=None):
     msp.add_lwpolyline(legs + [legs[0]], close=False,
                        dxfattribs={"layer": "Osovina", "color": 8})
 
-    # --- existing outdoor cabinets on the NORTH side ---------------------
-    cab = [("ICC330-H1", 700, 600), ("MTS9302", 600, 600)]
+    # --- outdoor cabinets on the NORTH side -------------------------------
+    # TWO cabinets stand here and both must be drawn: the hybrid power cabinet
+    # ICC360-HA1-C1 (per the Huawei quotation, replacing the ICC330-H1 this used
+    # to name) and the existing TK equipment cabinet MTS9302A, which is a
+    # separate procurement and never went away. Rev 7 dropped the second box by
+    # mistake when the pair collapsed to one name.
+    cab = [("ICC360-HA1-C1", 650, 650), ("MTS9302A", 600, 600)]
     bx = cx + 250
     for name, w, h in cab:
         by = cy + CH + 180
@@ -265,7 +270,7 @@ def sheet_s01():
     leader(msp, (cx + CW + 350, cy + CH / 2 + 250),
            "ULAZNA VRATA 900 × 2000 mm (ISTOČNA strana)", 2100, 1250, SC)
     leader(msp, (cx + 700, cy + CH + 480),
-           "vanjski ormari (SJEVER): Huawei ICC330-H1 + MTS9302",
+           "vanjski ormari (SJEVER): Huawei ICC360-HA1-C1 i MTS9302A",
            -3400, 1750, SC)
     leader(msp, (k["tower_c"][0] - 2100, k["tower_c"][1] - 2100),
            "noge rešetkastog antenskog stuba h=38 m,", -3050, -1450, SC)
@@ -289,14 +294,13 @@ def sheet_s01():
         (254, "postojeća AB temeljna ploča 5,40 × 5,40 m"),
         (6,   "postojeći kontejner za TK opremu — vrata na ISTOK"),
         (5,   "noge antenskog stuba, baza 4,20 × 4,20 m"),
-        (30,  "postojeći vanjski ormari (ICC330-H1 + MTS9302)"),
+        (30,  "vanjski ormari: ICC360-HA1-C1 (hibridni sistem) i MTS9302A (TK)"),
         (2,   "postojeći prstenasti uzemljivač Fe/Zn 25×4 mm"),
     ])
 
     note_block(msp, 6400, 3950, SC, "NAPOMENA:", [
         "Geometrija preuzeta iz ovjerenog projekta lokacije",
         "(SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m, 01 Situacija 1_200).",
-        "Kontejner 3005 × 2300 mm vanjski, paneli 60 mm — 6,29 m², obim 10,13 m.",
     ])
     return doc
 

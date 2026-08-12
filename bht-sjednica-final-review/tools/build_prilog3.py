@@ -356,6 +356,127 @@ def portrait_page(out, src, pno, margin=40):
     return page
 
 
+def site_data_page(doc):
+    """Set the site-data page from data instead of inheriting it.
+
+    It used to be lifted verbatim out of the previous annex, which meant it went
+    on saying 22 kVA / 17,6 kW, "FG Wilson P22-6" and "ograda visine 1,90 m" long
+    after all three were superseded - and `check_consistency` cannot see it,
+    because Prilog III carries no text layer once assembled, so a stale figure
+    here shipped unnoticed.
+
+    Spot-redacting the inherited page was tried and reverted: its values share
+    text objects with the labels beside them, so a redaction rect takes the
+    neighbour with it and the reprint collides with the next column. The same
+    flaw truncated "Bileća" to "Bile" when the entity was stripped. Rebuilding
+    the page is both simpler and self-maintaining - every figure below comes
+    from cad/design.json.
+    """
+    import json
+
+    d = json.load(open(os.path.join(BASE, "cad", "design.json"), encoding="utf-8"))
+    g, a, m, tk, c = d["genset"], d["array"], d["module"], d["tank"], d["container"]
+    fence = 2.10                       # certified 04 Ograda.dwg (Rev 6)
+
+    page = doc.new_page(width=595, height=842)
+    fonts = {}
+    for tag, fname in (("bht", "arial.ttf"), ("bhtb", "arialbd.ttf")):
+        p = os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts", fname)
+        if os.path.exists(p):
+            page.insert_font(fontname=tag, fontfile=p)
+            fonts[tag] = True
+    reg = "bht" if "bht" in fonts else "helv"
+    bold = "bhtb" if "bhtb" in fonts else "hebo"
+
+    page.insert_textbox(fitz.Rect(50, 60, 545, 90), "1.  OPŠTI PODACI O LOKACIJI",
+                        fontname=bold, fontsize=14)
+    page.draw_line(fitz.Point(50, 92), fitz.Point(545, 92),
+                   color=(0.96, 0.51, 0.12), width=1.6)
+
+    rows = [
+        ("Investitor", "BH Telecom d.d. Sarajevo, Franca Lehara 7, 71000 Sarajevo"),
+        ("Objekat", "Bazna stanica SJEDNICA"),
+        ("Općina", "Bileća"),
+        ("Koordinate", "42,9448° N,  18,3236° E"),
+        ("Nadmorska visina", "1076 m"),
+        ("Zakupljena površina", "≈150 m² (dio k.č. 1/1, k.o. Granica 2)"),
+        ("Betonski temelj", f"5,40 × 5,40 m, sa metalnom ogradom visine "
+                            f"{fence:.2f} m".replace(".", ",")),
+        ("Antenski stub", "Rešetkasta izvedba, visina 38 m; baza 4,20 m (dno) / "
+                          "1,20 m (vrh)"),
+        ("Kontejner", f"Vanjske dimenzije {c['ext'][0] / 1000:.3f} × "
+                      f"{c['ext'][1] / 1000:.2f} m, zidni paneli {c['wall']} mm; "
+                      f"IP55, prema ovjerenom projektu lokacije; PRAZAN"
+                      .replace(".", ",")),
+        ("Priključak na EES", "NE — lokacija nije priključena na "
+                              "elektroenergetsku mrežu"),
+        ("TK oprema", "Huawei RRU (3 kom) + BBU/MPLS, −48 VDC"),
+        ("Snaga potrošača", "1.180 W nazivno / 1.330 W maksimalno (sa hlađenjem)"),
+        ("Sistem napajanja", "Hibridni: FN moduli (primarni) + LFP baterije + "
+                             "DEA (rezervni)"),
+        ("FN konfiguracija", f"{a['modules_total']} × {m['model'].split('/')[-1].strip()} "
+                             f"({a['kWp']:.2f} kWp), fiksni nagib {a['tilt_deg']}°, "
+                             f"bifacijalni".replace(".", ",")),
+        ("DEA", f"{g['kVA']:g} kVA / {g['kW']} kW stand-by (ISO 8528-3), skid "
+                f"izvedba u kontejneru".replace(".", ",")),
+        ("Spremnik goriva", f"Dvoplašni, {tk['litres']} l, sa nivo sondom i "
+                            f"detekcijom curenja"),
+        ("Maks. rad DEA", "250 h/god (standby režim prema ISO 8528)"),
+    ]
+
+    x0, x1, x2 = 50, 195, 545
+    SIZE = 8.5
+
+    # `insert_textbox` draws NOTHING when the text does not fit and merely
+    # returns a negative number - that is how the "Kontejner" row came out blank
+    # on the first build of this page. So the row height is measured before the
+    # frame is drawn, on a scratch page carrying the same font, and a row that
+    # still will not fit stops the build instead of shipping empty.
+    scratch = fitz.open()
+    probe = scratch.new_page(width=595, height=842)
+    arial = os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts",
+                         "arial.ttf")
+    pfont = "p" if os.path.exists(arial) else "helv"
+    if pfont == "p":
+        probe.insert_font(fontname="p", fontfile=arial)
+
+    def height_for(txt):
+        for h in range(24, 108, 11):
+            if probe.insert_textbox(fitz.Rect(x1 + 7, 6, x2 - 4, h),
+                                    txt, fontname=pfont, fontsize=SIZE) >= 0:
+                return h
+        raise SystemExit(f"stranica opštih podataka: red ne stane — {txt[:60]!r}")
+
+    y = 115
+    for label, value in rows:
+        h = height_for(value)
+        page.draw_rect(fitz.Rect(x0, y, x2, y + h), color=(0.75, 0.75, 0.75),
+                       width=0.6)
+        page.draw_line(fitz.Point(x1, y), fitz.Point(x1, y + h),
+                       color=(0.75, 0.75, 0.75), width=0.6)
+        for rect, txt, font in (
+                (fitz.Rect(x0 + 7, y + 6, x1 - 4, y + h), label, bold),
+                (fitz.Rect(x1 + 7, y + 6, x2 - 4, y + h), value, reg)):
+            if page.insert_textbox(rect, txt, fontname=font,
+                                   fontsize=SIZE) < 0:
+                raise SystemExit(
+                    f"stranica opštih podataka: {txt[:50]!r} nije stalo")
+        y += h
+    scratch.close()
+
+    page.insert_textbox(
+        fitz.Rect(x0, y + 14, x2, y + 90),
+        "Napomena: podaci preuzeti iz RFI dokumenta „Autonomno napajanje za BS\" "
+        "od 27.04.2026. godine i Projektnog zadatka za hibridno napajanje BS "
+        "Sjednica. Konstruktivni podaci kontejnera preuzeti iz Projektnog zadatka "
+        "za tipsku prenosivu kućicu — kontejner (opterećenje poda 10,00 kN/m², "
+        f"snijeg 3,00 kN/m², vjetar 1,10 kN/m²). DEA kao "
+        f"{g['model'].split(' ili ')[0]} (motor "
+        f"{g['engine'].split(',')[0]}) ili ekvivalent.",
+        fontname=reg, fontsize=7.6, color=(0.25, 0.25, 0.25))
+    return page
+
+
 def strip_entity(page):
     """Drop the entity from the municipality row - the Investor wants the
     opština named on its own."""
@@ -412,9 +533,8 @@ def main():
     out = fitz.open()
     cover_page(out)
     portrait_page(out, src, codes["INFO-01"])
-    out.insert_pdf(src, from_page=opsti, to_page=opsti)
-    n = strip_entity(out[-1])
-    print(f"  site-data page: removed {n} entity word(s) from the opština row")
+    site_data_page(out)
+    print("  site-data page: set from cad/design.json (no longer inherited)")
     for n in ("S-01", "S-02", "S-03", "M-01", "E-01"):
         p = os.path.join(DWG, n + ".pdf")
         if not os.path.exists(p):

@@ -9,7 +9,7 @@ reproduced from the existing certified site project
 in model space in millimetres at 1:1 and the sheet frame is scaled up by the plot
 scale, so a 1:50 A3 sheet is a 21000 x 14850 mm rectangle in model space.
 
-The BH Telecom mark in the title block is traced from `TD-OUTPUT/bht-logo.svg`
+The BH Telecom mark in the title block is traced from `cad/bht-logo.svg`
 (cairosvg is unusable here - its cairo DLL is missing - so the path data is parsed
 and the Béziers flattened directly).
 """
@@ -22,7 +22,7 @@ import ezdxf
 from ezdxf.enums import TextEntityAlignment
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SVG_LOGO = os.path.join(os.path.dirname(HERE), "TD-OUTPUT", "bht-logo.svg")
+SVG_LOGO = os.path.join(HERE, "bht-logo.svg")
 
 BHT_ORANGE = 30          # ACI ~ #f5821f
 A3_W, A3_H = 420.0, 297.0

@@ -57,6 +57,11 @@ bht-sjednica-final-review/SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m/
 bht-sjednica-final-review/EQUIPEMENT/
 # 80 MB pre-change snapshot, mostly the un-optimised 79.5 MB Prilog III
 bht-sjednica-final-review/TD-OUTPUT-BASELINE-20260807/
+# 16 MB export bundle of this repo, made for sending the package out by mail;
+# it is the repo packed into itself and would grow with every re-export
+bht-sjednica-final-review/sjednica-hybrid-solar.zip
+# LibreOffice lock files left behind while a document is open
+.~lock.*#
 # render previews and scratch CAD
 bht-sjednica-final-review/cad/_*.png
 bht-sjednica-final-review/cad/_frame_test.dxf

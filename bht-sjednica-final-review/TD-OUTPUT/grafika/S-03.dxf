@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461264.770162037
+2461265.551053241
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461264.770162037
+2461265.551053241
   9
 $TDUUPDATE
  40
@@ -549,7 +549,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-157
+152
   9
 $SURFTAB1
  70
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{4971A3C4-70CD-46B0-8CB3-C749DDEF93D9}
+{E78C0F94-E7FD-4639-88C9-BEB70E421A17}
   9
 $VERSIONGUID
   2
-{5B00C183-2E5D-4360-959B-B50A86C928C7}
+{50C79C1E-6116-41B5-9B91-46915710F99E}
   9
 $EXTNAMES
 290
@@ -3745,7 +3745,7 @@ ACAD
   0
 APPID
   5
-154
+14F
 330
 3
 100
@@ -3759,7 +3759,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-155
+150
 330
 3
 100
@@ -6929,13 +6929,13 @@ AcDbLine
  10
 1100.0
  20
-7336.0
+6336.0
  30
 0.0
  11
 240.0
  21
-7336.0
+6336.0
  31
 0.0
   0
@@ -6981,7 +6981,7 @@ _ARCHTICK
  10
 300.0
  20
-7336.0
+6336.0
  30
 0.0
  41
@@ -7011,7 +7011,7 @@ AcDbLine
  11
 300.0
  21
-4818.0
+4318.0
  31
 0.0
   0
@@ -7029,13 +7029,13 @@ AcDbLine
  10
 300.0
  20
-5118.0
+4618.0
  30
 0.0
  11
 300.0
  21
-7336.0
+6336.0
  31
 0.0
   0
@@ -7053,7 +7053,7 @@ AcDbMText
  10
 300.0
  20
-4968.0
+4468.0
  30
 0.0
  40
@@ -7061,7 +7061,7 @@ AcDbMText
  71
 5
   1
-4736
+3736
  50
 90.0
   0
@@ -7115,7 +7115,7 @@ AcDbPoint
  10
 1100.0
  20
-7336.0
+6336.0
  30
 0.0
   0
@@ -14477,11 +14477,11 @@ AcDbPolyline
  10
 2700.0
  20
-4100.0
+3100.0
  10
 5936.0
  20
-7336.0
+6336.0
   0
 LWPOLYLINE
   5
@@ -14503,11 +14503,11 @@ AcDbPolyline
  10
 2700.0
  20
-4020.0
+3020.0
  10
 5936.0
  20
-7256.0
+6256.0
   0
 LINE
   5
@@ -14525,7 +14525,7 @@ AcDbLine
  10
 2700.0
  20
-4100.0
+3100.0
  30
 0.0
  11
@@ -14551,7 +14551,7 @@ AcDbLine
  10
 5936.0
  20
-7336.0
+6336.0
  30
 0.0
  11
@@ -14577,7 +14577,7 @@ AcDbLine
  10
 2700.0
  20
-4100.0
+3100.0
  30
 0.0
  11
@@ -16055,13 +16055,13 @@ AcDbLine
  10
 1100.0
  20
-4100.0
+3100.0
  30
 0.0
  11
 7616.0
  21
-4100.0
+3100.0
  31
 0.0
   0
@@ -16081,13 +16081,13 @@ AcDbText
  10
 7556.0
  20
-4050.0
+3050.0
  30
 0.0
  40
 60.0
   1
-donja ivica panela  +1,50
+donja ivica panela  +0,50
   7
 20
  72
@@ -16095,7 +16095,7 @@ donja ivica panela  +1,50
  11
 7556.0
  21
-4050.0
+3050.0
  31
 0.0
 100
@@ -16179,13 +16179,13 @@ AcDbLine
  10
 1100.0
  20
-7336.0
+6336.0
  30
 0.0
  11
 7616.0
  21
-7336.0
+6336.0
  31
 0.0
   0
@@ -16205,13 +16205,13 @@ AcDbText
  10
 7556.0
  20
-7286.0
+6286.0
  30
 0.0
  40
 60.0
   1
-gornja ivica panela  +4,74
+gornja ivica panela  +3,74
   7
 20
  72
@@ -16219,7 +16219,7 @@ gornja ivica panela  +4,74
  11
 7556.0
  21
-7286.0
+6286.0
  31
 0.0
 100
@@ -16305,7 +16305,7 @@ M 30
  11
 300.0
  21
-4968.0
+4468.0
  31
 0.0
  70
@@ -16325,7 +16325,7 @@ AcDbAlignedDimension
  14
 1100.0
  24
-7336.0
+6336.0
  34
 0.0
  50
@@ -16349,7 +16349,7 @@ AcDbText
  10
 3400.0
  20
-4600.0
+3600.0
  30
 0.0
  40
@@ -16361,7 +16361,7 @@ AcDbText
  11
 3400.0
  21
-4600.0
+3600.0
  31
 0.0
 100
@@ -16509,7 +16509,7 @@ AcDbText
  40
 66.0
   1
-postojeća ograda h=2,10 m (v. napomenu 5)
+postojeća ograda h=2,10 m
   7
 20
  11
@@ -16577,7 +16577,7 @@ AcDbText
  40
 63.0
   1
-1  Polje: 2 reda × 2 modula 585 Wp, portret — 2305 × 4576 mm po nagibu,
+1  Polje: 2 reda × 2 modula 585 Wp, portret; horizontalna projekcija 3236 mm pri 45°.
   7
 20
  11
@@ -16611,7 +16611,7 @@ AcDbText
  40
 63.0
   1
-    horizontalna projekcija 3236 mm pri 45°.
+2  Dvije temeljne trake po nosaču 450 × 3300 mm, dubina 900 mm, razmak 1600 mm
   7
 20
  11
@@ -16645,7 +16645,7 @@ AcDbText
  40
 63.0
   1
-2  Dvije temeljne trake po nosaču 450 × 3300 mm, dubina 900 mm, razmak 1600 mm
+    (druga je iza ravni presjeka); beton C30/37 (XC4+XF3), armatura B500B.
   7
 20
  11
@@ -16679,7 +16679,7 @@ AcDbText
  40
 63.0
   1
-    (druga je iza ravni presjeka); beton C30/37 (XC4+XF3) na podlozi C12/15, B500B.
+3  Donja ivica panela +0,50 m, gornja +3,74 m.
   7
 20
  11
@@ -16713,183 +16713,13 @@ AcDbText
  40
 63.0
   1
-3  Donja ivica +1,50 m, gornja +4,74 m — 2,64 m iznad kote ograde h=2,10 m.
+4  Postojeća ograda h=2,10 m prema projektu lokacije (04 Ograda).
   7
 20
  11
 700.0
  21
 1062.6000000000004
- 31
-0.0
-100
-AcDbText
-  0
-TEXT
-  5
-14F
-330
-17
-100
-AcDbEntity
-  8
-Tekst
- 62
-7
-100
-AcDbText
- 10
-700.0
- 20
-971.2500000000003
- 30
-0.0
- 40
-63.0
-  1
-4  CUSTOM IZRADA prema qp ≥ 1,20 kN/m²: sail 10,55 m²/nosaču, ULS uzgon 18,1 kN,
-  7
-20
- 11
-700.0
- 21
-971.2500000000003
- 31
-0.0
-100
-AcDbText
-  0
-TEXT
-  5
-150
-330
-17
-100
-AcDbEntity
-  8
-Tekst
- 62
-7
-100
-AcDbText
- 10
-700.0
- 20
-879.9000000000003
- 30
-0.0
- 40
-63.0
-  1
-    moment prevrtanja 62,8 kNm (v. S-02).
-  7
-20
- 11
-700.0
- 21
-879.9000000000003
- 31
-0.0
-100
-AcDbText
-  0
-TEXT
-  5
-151
-330
-17
-100
-AcDbEntity
-  8
-Tekst
- 62
-7
-100
-AcDbText
- 10
-700.0
- 20
-788.5500000000003
- 30
-0.0
- 40
-63.0
-  1
-5  Postojeća ograda prema projektu lokacije (04 Ograda): stubovi kv. cijev
-  7
-20
- 11
-700.0
- 21
-788.5500000000003
- 31
-0.0
-100
-AcDbText
-  0
-TEXT
-  5
-152
-330
-17
-100
-AcDbEntity
-  8
-Tekst
- 62
-7
-100
-AcDbText
- 10
-700.0
- 20
-697.2000000000003
- 30
-0.0
- 40
-63.0
-  1
-    50×50×3 na 1335 mm, ram 30×30×2, ispuna talasasto pletivo Ø4 50×50,
-  7
-20
- 11
-700.0
- 21
-697.2000000000003
- 31
-0.0
-100
-AcDbText
-  0
-TEXT
-  5
-153
-330
-17
-100
-AcDbEntity
-  8
-Tekst
- 62
-7
-100
-AcDbText
- 10
-700.0
- 20
-605.8500000000003
- 30
-0.0
- 40
-63.0
-  1
-    Č.0361 vruće cinčano; temelj stuba do −1,50 m, ispuna od +0,20 m.
-  7
-20
- 11
-700.0
- 21
-605.8500000000003
  31
 0.0
 100
@@ -17985,7 +17815,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-156
+151
   0
 DICTIONARYVAR
   5
@@ -17997,7 +17827,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-08-11T16:29:02.196195+00:00
+1.4.4 @ 2026-08-12T11:13:31.108058+00:00
   0
 VISUALSTYLE
   5
@@ -18701,7 +18531,7 @@ X-Ray
   0
 DICTIONARYVAR
   5
-156
+151
 330
 2D
 100
@@ -18709,7 +18539,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-08-11T16:29:02.211882+00:00
+1.4.4 @ 2026-08-12T11:13:31.127598+00:00
   0
 ENDSEC
   0
