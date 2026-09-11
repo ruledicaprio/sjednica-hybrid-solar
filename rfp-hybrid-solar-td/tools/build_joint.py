@@ -38,6 +38,7 @@ FIGURES = {
     "spremnik-bocni.png": os.path.join(SJ, "TD-OUTPUT", "grafika", "prilog1", "spremnik-bocni.png"),
     "spremnik-odozgo.png": os.path.join(SJ, "TD-OUTPUT", "grafika", "prilog1", "spremnik-odozgo.png"),
     "m01-raspored.png": os.path.join(SJ, "TD-OUTPUT", "grafika", "prilog1", "m01-raspored.png"),
+    "h04-raspored.png": os.path.join(HZ, "TD-OUTPUT", "grafika", "H-04.pdf"),
     "energetski-bilans-sjednica.png": os.path.join(SJ, "review", "pvsim", "fig", "f1_bilans_t45.png"),
     "energetski-bilans-hamzici.png": os.path.join(HZ, "review", "pvsim", "fig", "f1_bilans_t45.png"),
     "horizont-hamzici.png": os.path.join(HZ, "review", "pvsim", "fig", "f2_horizont.png"),

@@ -36,7 +36,7 @@ The certified situation drawing has its north arrow pointing up and shows the co
 door and the fence gate on the south. The photos of 08.09.2026 and the Investor
 (11.09.2026) put them on the **north, a little north-west**. The photos govern: the
 drawing is rotated ≈180° to the site. `cad/site_geometry.json` is written in the true
-orientation. The Stulz unit is on the east wall at its south end (photos).
+orientation. The Stulz unit is centred on the south wall (photos; Investor 11.09.2026).
 
 ## Site photos (08.09.2026, 12:11–12:17 CEST, Samsung Galaxy A55)
 

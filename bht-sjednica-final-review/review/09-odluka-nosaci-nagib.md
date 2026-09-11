@@ -22,7 +22,7 @@ primjenjivo") po lokaciji.
 | Granice rada agregata (Odluka, Aneks 2) | tvrdnje „≤250 h/god" i „500 l najmanje godinu dana" **zamjenjuju se simuliranim vrijednostima**, uz zahtjev za parametriranje SMU za minimalan rad DEA; tačan tekst Naručilac odobrava prije izmjene |
 | Stablo JJI–JI kod Hamzića | **ostaje**; TD bilježi zasjenjenje i traži od Ponuđača da polje pozicionira tako da ga umanji |
 | Baterije | **6 × 150 Ah = 48,6 kWh** na obje lokacije, kako navodi Odluka (Aneks 2); Huawei ponuda na dosjeu (6 × ESM-48100A6, 28,8 kWh, uz module od 540 W) je zastarjela i ostaje samo kao slučaj osjetljivosti |
-| Trajni potrošači (obje lokacije) | na **−48 V DC** iz ormara ICC360, preko novog DC razvoda: svjetiljka za obilježavanje stuba, vatrodojava, punjač akumulatora za start agregata, ventilator prostora i jedna svjetiljka u kontejneru — agregat je jedini izvor izmjeničnog napona i ≈97 % godine ne radi. Prilog I ih ograničava na 25 W prosječno; simulacija računa sa 45 W pomoćne potrošnje umjesto 20 W (≈+13 h/god rada DEA na Sjednici, ≈+12 h na Hamzićima) |
+| Trajni potrošači (obje lokacije) | na **−48 V DC** iz ormara ICC360, preko novog DC razvoda: svjetiljka za obilježavanje stuba, vatrodojava, punjač akumulatora za start agregata, ventilator prostora, jedna svjetiljka u kontejneru i predgrijač rashladne tečnosti agregata, koji kontroler agregata uključuje samo prije starta (grijač prostora se ne predviđa) — agregat je jedini izvor izmjeničnog napona i ≈97 % godine ne radi. Prilog I ih ograničava na 25 W prosječno; simulacija računa sa 45 W pomoćne potrošnje umjesto 20 W (≈+13 h/god rada DEA na Sjednici, ≈+12 h na Hamzićima) |
 
 ## 2. Zašto 45°, a ne 60°
 

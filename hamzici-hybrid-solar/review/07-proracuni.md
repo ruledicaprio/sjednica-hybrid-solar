@@ -20,7 +20,8 @@ lokacije; ostale su u proračunu za Sjednicu i vrijede i ovdje.
 **Orijentacija.** Vrata kontejnera i kapija ograde su na **SJEVERU, malo prema
 sjeverozapadu** (fotografije 08.09.2026. i Naručilac). Ovjereni crtež iz 2017. ih
 prikazuje na suprotnoj strani uz strelicu sjevera okrenutu naviše — zakrenut je ≈180°.
-Klima-uređaj Stulz je na **istočnom zidu, uz jugoistočni ugao**.
+Klima-uređaj Stulz je na **južnom zidu, u sredini** (fotografije; Naručilac
+11.09.2026).
 
 ---
 
@@ -437,8 +438,9 @@ raditi stalno napajaju se zato sa −48 V DC iz ormara ICC360, preko novog DC ra
 | Vatrodojavna centrala | DC/DC | ≈4 W |
 | Punjač akumulatora za start agregata | DC/DC | ≈3 W |
 | Ventilator prostora 48 V DC (EC) | termostat, ljeti | ≈2 W |
+| Predgrijač rashladne tečnosti DEA | DC, samo prije starta pri niskoj temperaturi (≈0,1 kWh po startu) | ≈1 W |
 | Gubici DC/DC | | ≈3 W |
-| **Ukupno** | | **≈20 W → usvojeno ≤25 W** |
+| **Ukupno** | | **≈21 W → usvojeno ≤25 W** |
 
 Jedna svjetiljka u kontejneru je za 48 V DC, pa je svjetlo dostupno i kad agregat ne
 radi; radi samo pri obilasku i ne ulazi u trajnu potrošnju. Energetski bilans (A.6)

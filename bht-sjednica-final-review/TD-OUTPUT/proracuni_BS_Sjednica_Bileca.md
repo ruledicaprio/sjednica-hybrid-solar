@@ -604,8 +604,9 @@ raditi stalno napajaju se zato sa −48 V DC iz ormara ICC360, preko novog DC ra
 | Vatrodojavna centrala | DC/DC | ≈4 W |
 | Punjač akumulatora za start agregata | DC/DC | ≈3 W |
 | Ventilator prostora 48 V DC (EC) | termostat, ljeti | ≈2 W |
+| Predgrijač rashladne tečnosti DEA | DC, samo prije starta pri niskoj temperaturi (≈0,1 kWh po startu) | ≈1 W |
 | Gubici DC/DC | | ≈3 W |
-| **Ukupno** | | **≈20 W → usvojeno ≤25 W** |
+| **Ukupno** | | **≈21 W → usvojeno ≤25 W** |
 
 Jedna svjetiljka u kontejneru je za 48 V DC, pa je svjetlo dostupno i kad agregat ne
 radi; radi samo pri obilasku i ne ulazi u trajnu potrošnju. Energetski bilans (A.6)

@@ -26,7 +26,11 @@ import paths                                                        # noqa: E402
 SJ = paths.SITES["sjednica"]["folder"]
 HZ = paths.SITES["hamzici"]["folder"]
 sys.path.insert(0, os.path.join(SJ, "tools"))
+# build_prilog3 imports its own site's paths module, but the joint one already
+# sits in sys.modules under the same name: swap it out while bp3 loads.
+_joint_paths = sys.modules.pop("paths")
 import build_prilog3 as bp3                                         # noqa: E402
+sys.modules["paths"] = _joint_paths
 
 SJ_ANNEX = bp3.OUT            # Sjednica Rev 9 Prilog III (16 pages)
 HZ_PROJECT = os.path.join(HZ, "GP BS HAMZIĆI_Čitluk K2 i AS 36 m")

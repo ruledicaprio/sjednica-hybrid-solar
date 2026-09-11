@@ -35,7 +35,7 @@ podloga; **mjerodavan raspored opreme i otvora u kontejneru je onaj sa crteža M
 | Zakupljeni prostor | ≈150 m² (16,00 × 9,40 m) | 150 m² (12,00 × 12,50 m), k.č. 109/1 K.O. Hamzići |
 | Postojeći objekat | AB ploča 5,40 × 5,40 m, ograda h = 2,10 m, kapija 1,00 m | AB ploča 5,40 × 5,40 m, ograda h = 1,80 m, kapija 1,30 m na SJEVERU |
 | Antenski stub | rešetkasti, h = 38 m, baza 4,20 × 4,20 m | rešetkasti, h = 32 m, baza 3,70 × 3,70 m; platforma na +3,0 m iznad krova kontejnera |
-| Kontejner | 3,00 × 2,30 m vanjski, zidni paneli 60 mm, bez opreme; ulazna vrata 900 × 2000 mm na ISTOČNOM zidu | K2 3,00 × 2,30 m vanjski, zidni paneli 60 mm, **prazan, bez GRO i instalacija**; ulazna vrata 1,00 × 2,15 m na SJEVERNOM zidu; na ISTOČNOM zidu klima-uređaj Stulz WDE80 koji se demontira (Tačka 4.8) |
+| Kontejner | 3,00 × 2,30 m vanjski, zidni paneli 60 mm, bez opreme; ulazna vrata 900 × 2000 mm na ISTOČNOM zidu | K2 3,00 × 2,30 m vanjski, zidni paneli 60 mm, **prazan, bez GRO i instalacija**; ulazna vrata 1,00 × 2,15 m na SJEVERNOM zidu; na JUŽNOM zidu, u sredini, klima-uređaj Stulz WDE80 koji se demontira (Tačka 4.8) |
 | Nosivost poda kontejnera | 10,00 kN/m² ukupno (g+p), ravnomjerno raspodijeljeno — ovjereni projekat lokacije, „04 AG dio", tačka 4.4.2.3 | 10,00 kN/m² ukupno (g+p) — ovjereni projekat lokacije, AG dio, tačka 4.4.2 |
 | Sistem napajanja | Huawei ICC360-HA1-C1 (PowerCube 1000) i MTS9302A, vanjski ormari smješteni uz SJEVERNI zid kontejnera | Huawei ICC360-HA1-C1 (PowerCube 1000) — zasebna nabavka Naručioca, kao na Sjednici |
 | Uzemljenje | postojeći prstenasti uzemljivač Fe/Zn 25 × 4 mm | postojeći uzemljivač Fe/Zn 25 × 4 mm: prsten u temeljima stopa stuba i prsten na dubini 0,8 m |
@@ -204,6 +204,7 @@ razlikuju se po lokaciji i dati su u Tačkama 4.3–4.5; Tačka 4.8 je samo za H
 | Derating | Sjednica: 1076 m n.v., Hamzići: 493 m n.v., temperatura okoline do +40 °C (ISO 3046-1); Ponuđač dostavlja derating proizvođača za obje lokacije |
 | **Uzbuda (OBAVEZNO)** | nezavisna pobuda — **PMG ili AREP/AUX** namotaj; trajna struja kratkog spoja **≥3 × In (≈78 A)** u trajanju ≥10 s prema ISO 8528-3. Standardna SHUNT pobuda **NIJE prihvatljiva** |
 | Antivibracioni elementi | gumeno-metalni oslonci, vlastita frekvencija ≤8 Hz, statički progib ≥5 mm, između skida i roštilja iz Tačke 4.2; **svi priključci na motor elastični** — izduv, hladnjak i **oba voda goriva** |
+| Hladni start | predgrijač rashladne tečnosti na DC, napojen iz DC razvoda −48 V (Tačka 4.5); uključuje ga kontroler agregata samo za kratko predgrijavanje prije starta pri niskoj temperaturi; uz to pomoćna sredstva za hladni start prema proizvođaču i zimsko dizel gorivo prema EN 590. Grijač prostora se ne predviđa — agregat je jedini izvor izmjeničnog napona |
 
 ![Slika 1 — FG Wilson P18-6 (Skid), bočni pogled (ilustrativno)](../TD-OUTPUT/grafika/prilog1/agregat-bocni.png){width=60%}
 
@@ -296,6 +297,8 @@ zid, na mjestu otvora klima-uređaja. Topli zrak i izduv se ne usmjeravaju prema
 (jug) ni prema ulaznim vratima (sjever). Položaj otvora Stulz je procjena sa fotografije,
 pa je raspored na crtežu H-04 principijelan — Ponuđač ga potvrđuje na licu mjesta.
 
+![Slika 6 — BS Hamzići: raspored opreme i otvora u kontejneru, crtež H-04 (Prilog III)](../TD-OUTPUT/grafika/prilog1/h04-raspored.png){width=100%}
+
 ### 4.4 Izduvni sistem
 
 | Parametar | Vrijednost |
@@ -355,6 +358,7 @@ izvoda sa vlastitim zaštitnim prekidačem — preko novog **DC razvoda −48 V*
 | Vatrodojavna centrala | preko DC/DC pretvarača na nazivni napon centrale; centrala zadržava vlastite akumulatore prema EN 54-4 |
 | Punjač akumulatora za start agregata | DC/DC 48 V → 12/24 V prema agregatu, sa strujnim ograničenjem i signalizacijom |
 | Ventilator prostora | 48 V DC (EC), Tačka 4.3 |
+| Predgrijač rashladne tečnosti agregata | DC — direktno 48 V ili preko DC/DC odgovarajuće snage; uključuje ga kontroler agregata samo za kratko predgrijavanje prije starta pri niskoj temperaturi (Tačka 4.1), ne radi trajno; ≈0,1 kWh po startu |
 | Rasvjeta kontejnera | najmanje jedna LED svjetiljka 48 V DC sa prekidačem uz vrata — svjetlo i kad agregat ne radi |
 | **Ukupna trajna potrošnja** | **≤25 W prosječno** (bez rasvjete kontejnera, koja radi samo pri obilasku); Ponuđač dostavlja proračun potrošnje. Energetski bilans (Tačka 8) računa sa 45 W pomoćne potrošnje na −48 V: 20 W za SMU, BMS i ispravljače u mirovanju i 25 W za trajne potrošače |
 
@@ -480,8 +484,8 @@ punjenja) agregat bi radio ≈280 h i trošio ≈910 l godišnje na Sjednici, od
 i ≈830 l na Hamzićima. Na Hamzićima vrijednosti važe bez zasjenjenja stablom; sa
 stablom rad agregata raste za 5–23 h godišnje.
 
-![Slika 6 — BS Sjednica: mjesečni energetski bilans (prosjek i raspon 2005–2023)](../TD-OUTPUT/grafika/prilog1/energetski-bilans-sjednica.png){width=100%}
+![Slika 7 — BS Sjednica: mjesečni energetski bilans (prosjek i raspon 2005–2023)](../TD-OUTPUT/grafika/prilog1/energetski-bilans-sjednica.png){width=100%}
 
-![Slika 7 — BS Hamzići: mjesečni energetski bilans (prosjek i raspon 2005–2023)](../TD-OUTPUT/grafika/prilog1/energetski-bilans-hamzici.png){width=100%}
+![Slika 8 — BS Hamzići: mjesečni energetski bilans (prosjek i raspon 2005–2023)](../TD-OUTPUT/grafika/prilog1/energetski-bilans-hamzici.png){width=100%}
 
-![Slika 8 — BS Hamzići: horizont, putanje Sunca i stablo JJI–JI (procjena)](../TD-OUTPUT/grafika/prilog1/horizont-hamzici.png){width=100%}
+![Slika 9 — BS Hamzići: horizont, putanje Sunca i stablo JJI–JI (procjena)](../TD-OUTPUT/grafika/prilog1/horizont-hamzici.png){width=100%}

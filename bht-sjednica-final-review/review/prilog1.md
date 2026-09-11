@@ -175,6 +175,7 @@ po traci. Traka manje zapremine tu provjeru ne zatvara vlastitom težinom.
 | Derating | na 1076 m n.v. i temperaturu okoline do +40 °C (ISO 3046-1); Ponuđač dostavlja derating proizvođača |
 | **Uzbuda (OBAVEZNO)** | nezavisna pobuda — **PMG ili AREP/AUX** namotaj; trajna struja kratkog spoja **≥3 × In (≈78 A)** u trajanju ≥10 s prema ISO 8528-3. Standardna SHUNT pobuda **NIJE prihvatljiva** |
 | Antivibracioni elementi | gumeno-metalni oslonci, vlastita frekvencija ≤8 Hz, statički progib ≥5 mm, između skida i roštilja iz Tačke 4.2; **svi priključci na motor elastični** — izduv, hladnjak i **oba voda goriva** |
+| Hladni start | predgrijač rashladne tečnosti na DC, napojen iz DC razvoda −48 V (Tačka 4.5); uključuje ga kontroler agregata samo za kratko predgrijavanje prije starta pri niskoj temperaturi; uz to pomoćna sredstva za hladni start prema proizvođaču i zimsko dizel gorivo prema EN 590. Grijač prostora se ne predviđa — agregat je jedini izvor izmjeničnog napona |
 
 ![Slika 1 — FG Wilson P18-6 (Skid), bočni pogled (ilustrativno)](../TD-OUTPUT/grafika/prilog1/agregat-bocni.png){width=60%}
 
@@ -293,6 +294,7 @@ vlastitim zaštitnim prekidačem — preko novog **DC razvoda −48 V** u kontej
 | Vatrodojavna centrala | preko DC/DC pretvarača na nazivni napon centrale; centrala zadržava vlastite akumulatore prema EN 54-4 |
 | Punjač akumulatora za start agregata | DC/DC 48 V → 12/24 V prema agregatu, sa strujnim ograničenjem i signalizacijom |
 | Ventilator prostora | 48 V DC (EC), Tačka 4.3 |
+| Predgrijač rashladne tečnosti agregata | DC — direktno 48 V ili preko DC/DC odgovarajuće snage; uključuje ga kontroler agregata samo za kratko predgrijavanje prije starta pri niskoj temperaturi (Tačka 4.1), ne radi trajno; ≈0,1 kWh po startu |
 | Rasvjeta kontejnera | najmanje jedna LED svjetiljka 48 V DC sa prekidačem uz vrata — svjetlo i kad agregat ne radi |
 | **Ukupna trajna potrošnja** | **≤25 W prosječno** (bez rasvjete kontejnera, koja radi samo pri obilasku); Ponuđač dostavlja proračun potrošnje. Energetski bilans (Tačka 8) računa sa 45 W pomoćne potrošnje na −48 V: 20 W za SMU, BMS i ispravljače u mirovanju i 25 W za trajne potrošače |
 

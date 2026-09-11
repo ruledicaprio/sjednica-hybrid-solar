@@ -1142,8 +1142,11 @@ radi. Izvodi GRO su zato pod naponom samo dok agregat radi — i signalna rasvje
 (K7), koju je Rev 8 prevezivao u novi GRO, bila bi većinom bez napajanja. Naručilac je
 11.09.2026. odlučio da se trajni potrošači napajaju sa −48 V DC iz ormara ICC360, preko
 novog DC razvoda: LED svjetiljka stuba za 48 V DC, vatrodojavna centrala i punjač
-akumulatora za start agregata preko DC/DC pretvarača, ventilator prostora 48 V DC i jedna
-svjetiljka u kontejneru. Prilog I §4.5 ih ograničava na 25 W prosječno; simulacija računa
+akumulatora za start agregata preko DC/DC pretvarača, ventilator prostora 48 V DC, jedna
+svjetiljka u kontejneru i predgrijač rashladne tečnosti, koji kontroler agregata uključuje
+samo prije starta. Grijači na 230 V iz Rev 8 (rashladna tečnost u stavci 3.1, prostor u
+stavci 4.13) ne bi radili dok agregat stoji: predgrijač prelazi na DC, a grijač prostora
+se ne predviđa. Prilog I §4.5 ih ograničava na 25 W prosječno; simulacija računa
 sa 45 W pomoćne potrošnje umjesto 20 W, što dodaje ≈13 h rada agregata godišnje. Prilog II
 dobija nove stavke 5.16–5.18 (`tools/fix_boq_dc_aux.py`).
 
