@@ -27,7 +27,7 @@ OUTS = [os.path.join(BASE, "review", "07-proracuni_sjednica.pdf"),
 MD_COPY = os.path.join(TD, "proracuni_BS_Sjednica_Bileca.md")
 SOFFICE = os.environ.get("SOFFICE",
                          r"C:\Program Files\LibreOffice\program\soffice.exe")
-REQUIRED = ["A.6 Energetski bilans", "PVGIS-SARAH3", "≈280 h/god", "≈940 l/god",
+REQUIRED = ["A.6 Energetski bilans", "PVGIS-SARAH3", "≈230 h/god", "≈770 l/god",
             "42,6 kNm", "9,5 kW", "SoC 60 %"]
 
 

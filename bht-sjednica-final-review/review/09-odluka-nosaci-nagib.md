@@ -6,7 +6,7 @@ ove lokacije i `hamzici-hybrid-solar/review/pvsim/kpis.json`; tabele osjetljivos
 `energetski-bilans.md` istih foldera.
 
 Sistem je nepromijenjen (odluka Naručioca): 12 × iPV585-M2A = 7,02 kWp, 2 stringa × 6,
-PVDB500-15-2B, 2 × iSSU S4875G2, ICC360-HA1-C1 + 6 × ESM-48100A6 (28,8 kWh), FG Wilson
+PVDB500-15-2B, 2 × iSSU S4875G2, ICC360-HA1-C1 + LFP baterije 6 × 150 Ah (48,6 kWh), FG Wilson
 P18-6 u kontejneru, start po SoC preko GIM01C1, ograničenje ispravljača 9,5 kW.
 Otvoreno je bilo samo: raspored nosača (3×4 ili 2×6) i nagib (45° ili 60°, „60° ako je
 primjenjivo") po lokaciji.
@@ -18,9 +18,10 @@ primjenjivo") po lokaciji.
 | Tema | Odluka |
 |---|---|
 | Sjednica — nosači i nagib | **3 nosača × 4 modula, 45°** — Rev 8 ostaje; crteži, količine i Prilog I §3 se ne mijenjaju |
-| Hamzići — nosači i nagib | **3 nosača × 4 modula, 45°**, kao Sjednica. Uklapanje potvrđeno iz ovjerenog `01_Situacija 1_200.dwg`: zakup 12 000 (I–Z) × 12 500 mm (S–J), ploča 5 400 mm u sredini, strelica sjevera na 0°, pa je južno od ploče **3 525 mm** — polje pri 45° (projekcija 3,24 m, trake 3,30 m) staje uz ≈0,22 m rezerve. 60° (dubina 2,29 m) nije potreban |
+| Hamzići — nosači i nagib | **3 nosača × 4 modula, 45°**, kao Sjednica. Uklapanje potvrđeno iz ovjerenog `01_Situacija 1_200.dwg`: zakup 12 000 × 12 500 mm, ploča 5 400 mm u sredini. Vrata i kapija su prema fotografijama i Naručiocu na **SJEVERU, malo prema sjeverozapadu** (crtež ih prikazuje suprotno, dakle zakrenut je ≈180°), pa je južno od ploče **3 575 mm** — polje pri 45° (projekcija 3,24 m, trake 3,30 m) staje uz ≈0,27 m rezerve, bez prolaza kroz polje. Nosači gledaju na jug: stepenasto unutar pojasa ili paralelno sa ivicom zakupa uz odstupanje azimuta ≤15° (≈−1 % prinosa); potvrđuje se obilaskom. 60° (dubina 2,29 m) nije potreban |
 | Granice rada agregata (Odluka, Aneks 2) | tvrdnje „≤250 h/god" i „500 l najmanje godinu dana" **zamjenjuju se simuliranim vrijednostima**, uz zahtjev za parametriranje SMU za minimalan rad DEA; tačan tekst Naručilac odobrava prije izmjene |
 | Stablo JJI–JI kod Hamzića | **ostaje**; TD bilježi zasjenjenje i traži od Ponuđača da polje pozicionira tako da ga umanji |
+| Baterije | **6 × 150 Ah = 48,6 kWh** na obje lokacije, kako navodi Odluka (Aneks 2); Huawei ponuda na dosjeu (6 × ESM-48100A6, 28,8 kWh, uz module od 540 W) je zastarjela i ostaje samo kao slučaj osjetljivosti |
 
 ## 2. Zašto 45°, a ne 60°
 
@@ -30,10 +31,10 @@ primjenjivo") po lokaciji.
 |---|---|---|---|---|
 | FN na DC sabirnici, kWh/god | 10 137 | 9 651 | 10 448 | 9 887 |
 | Decembar FN / potrošnja, kWh | 560 / 893 | 617 / 893 | 601 / 893 | 644 / 893 |
-| DEA h/god prosjek / P90 (postavke SMU po defaultu) | 356 / 429 | 378 / 459 | 333 / 382 | 353 / 421 |
-| Gorivo, l/god | 1 079 | 1 142 | 1 008 | 1 071 |
+| DEA h/god prosjek / P90 (48,6 kWh, postavke SMU iz Priloga I) | 234 / 293 | 248 / 309 | 214 / 256 | 227 / 274 |
+| Gorivo, l/god | 773 | 819 | 706 | 749 |
 
-Baterija od 28,8 kWh je ≈1 dan autonomije: agregat pokriva nizove oblačnih dana u
+Baterija od 48,6 kWh pokriva ≈1,5 dan potrošnje: agregat pokriva nizove oblačnih dana u
 proljeće i jesen, ne samo decembar. Tu 60° gubi više nego što dobije u decembru.
 „60° ako je primjenjivo" dakle **nije primjenjivo** ni na jednoj lokaciji.
 
@@ -50,23 +51,24 @@ Konstrukcija ide istim smjerom (qp 1,20 kN/m², `python -m pvsim stands`):
 
 Odluka, Aneks 2 (Obrazloženje) navodi: maksimalno dozvoljeno godišnje vrijeme rada DEA
 250 h (standby prema ISO 8528-3) i da spremnik od 500 l „treba obezbjediti autonomiju od
-najmanje godinu između dopuna goriva". **Nijedno se ne ostvaruje** ni na jednoj
-lokaciji, ni uz jednu ispitanu postavku SMU:
+najmanje godinu između dopuna goriva". Uz baterije od 48,6 kWh (odluka 11.09.2026.)
+**prosjek** rada agregata je ispod 250 h na obje lokacije, ali **lošije godine nisu**, a
+spremnik od 500 l **ne traje godinu dana** ni na jednoj lokaciji:
 
 | 45° | DEA h/god prosjek / P90 / najgora | Gorivo l/god | 500 l traje | Startova/god |
 |---|---|---|---|---|
-| Sjednica, SMU po defaultu (stop SoC 90 %, 0,25 C) | 356 / 429 / 445 | 1 079 | 0,46 god | 113 |
-| Sjednica, **preporuka: stop SoC 60 %, punjenje 0,5 C** | 284 / 345 / 359 | 938 | 0,53 god | 165 |
-| Sjednica, najmanje sati (stop SoC 40 %, 0,5 C) | 268 / 327 / 349 | 884 | 0,57 god | 262 |
-| Hamzići, SMU po defaultu | 333 / 382 / 421 | 1 008 | 0,50 god | 105 |
-| Hamzići, **preporuka** | 264 / 307 / 347 | 871 | 0,57 god | 153 |
-| Hamzići, najmanje sati | 249 / 294 / 327 | 823 | 0,61 god | 244 |
+| Sjednica, 48,6 kWh, **SMU iz Priloga I (stop SoC 60 %)** | 234 / 293 / 313 | 773 | 0,65 god | 83 |
+| Sjednica, 48,6 kWh, SMU bez parametriranja (stop SoC 90 %) | 263 / 312 / 349 | 867 | 0,58 god | 57 |
+| Sjednica, 28,8 kWh (stara ponuda), SMU iz Priloga I | 284 / 345 / 359 | 938 | 0,53 god | 165 |
+| Hamzići, 48,6 kWh, **SMU iz Priloga I** | 214 / 256 / 300 | 706 | 0,71 god | 76 |
+| Hamzići, 48,6 kWh, SMU bez parametriranja | 242 / 290 / 319 | 798 | 0,63 god | 53 |
+| Hamzići, 28,8 kWh (stara ponuda), SMU iz Priloga I | 264 / 307 / 347 | 871 | 0,57 god | 153 |
 
 Već je i sam dosadašnji 07-proračuni C.5 davao ≈925 l/god pri 250 h — dakle 500 l nikad
-nije bilo godišnja zaliha. Preporuka (60 % / 0,5 C) je kompromis: ≈20 % manje sati i
-≈13 % manje goriva od postavki po defaultu, uz ≈0,45 starta dnevno; 40 % daje još
-≈5 % manje, ali udvostručuje broj startova. Punjenje 0,5 C je dozvoljeno samo ako ga
-BMS modula ESM-48100A6 prihvata — Ponuđač to potvrđuje.
+nije bilo godišnja zaliha. Zaustavljanje pri SoC 60 % daje ≈11 % manje sati i goriva od
+zaustavljanja pri 90 %, uz ≈0,2 starta dnevno; 40 % daje još ≈5 % manje, ali udvostručuje
+broj startova. Pri 48,6 kWh struja punjenja od 0,25 C više ne ograničava agregat;
+najveću struju punjenja potvrđuje Ponuđač uz potvrdu proizvođača baterija.
 
 ## 4. Stablo kod Hamzića
 
@@ -77,8 +79,8 @@ Procjena iz fotografija 08.09.2026 (bez geodetskog snimka): listopadno stablo 7�
 
 | 45° | Decembar FN | DEA h/god | Gorivo l/god |
 |---|---|---|---|
-| bez stabla | 601 kWh | 264 | 871 |
-| stablo, povoljna / srednja / nepovoljna procjena | −2,7 / −7,2 / −10,4 % | 268 / 273 / 280 | 885 / 902 / 924 |
+| bez stabla | 601 kWh | 214 | 706 |
+| stablo, povoljna / srednja / nepovoljna procjena | −2,7 / −7,2 / −10,4 % | 218 / 224 / 234 | 721 / 741 / 775 |
 
 Uticaj je mali prema nalazu iz tačke 3, pa stablo ostaje. Detalji:
 `hamzici-hybrid-solar/review/pvsim/photo/zasjenjenje.json`.

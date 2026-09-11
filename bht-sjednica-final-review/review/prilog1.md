@@ -293,9 +293,9 @@ sredstvom zaštite od indirektnog dodira.
   iz Tačke 5, stavka 12:
   - start agregata pri dubini pražnjenja baterija **DOD 85 %** (SoC 15 %)
   - zaustavljanje agregata pri **SoC 60 %** — ostatak punjenja preuzima fotonaponsko
-    polje; punjenje baterija agregatom do vrha povećava rad agregata za 12–15 %
+    polje; punjenje baterija agregatom do vrha povećava rad agregata za 12–17 %
   - struja punjenja baterija podešena tako da ne ograničava agregat ispod 9,5 kW: na
-    najveću vrijednost koju dozvoljava BMS modula ESM-48100A6 (proračun pretpostavlja
+    najveću vrijednost koju dozvoljava BMS baterijskih modula (proračun pretpostavlja
     0,5 C), uz pisanu potvrdu proizvođača
   - najkraće vrijeme rada agregata po startu **1 h**
 - prijenos alarma u sistem daljinskog nadzora: rad agregata, kvar, nivo goriva,
@@ -365,7 +365,7 @@ dostavljaju komisiji **tokom primopredaje** nose oznaku **PRIMOPREDAJA**.
 
 Satna simulacija energetskog bilansa na −48 V DC sabirnici za 19 godina (2005–2023):
 ozračenje lokacije iz PVGIS-SARAH3, FN lanac sa gubicima po komponentama (uključujući
-krivulju efikasnosti iSSU S4875G2), baterije 28,8 kWh i agregat preko ispravljača
+krivulju efikasnosti iSSU S4875G2), baterije 48,6 kWh (6 × 150 Ah) i agregat preko ispravljača
 ograničenih na 9,5 kW, uz parametriranje SMU iz Tačke 4.6. Metoda, provjera prema
 PVGIS-u, gubici i osjetljivost na postavke su u Proračunima, dio A.6. **Vrijednosti su
 informativne i ne mijenjaju zahtjeve Tačaka 3 i 4.**
@@ -375,14 +375,14 @@ informativne i ne mijenjaju zahtjeve Tačaka 3 i 4.**
 | FN proizvodnja na DC sabirnici | ≈10 140 kWh/god (1 444 kWh/kWp) |
 | Potrošnja | ≈10 570 kWh/god (1180 W TK + hlađenje ormara i pomoćna potrošnja) |
 | Decembar | FN ≈560 kWh prema potrošnji ≈890 kWh — razliku pokriva agregat |
-| Solarni udio u potrošnji | 75,5 % |
-| **Rad agregata** | **≈280 h/god** u prosjeku; u 9 od 10 godina do ≈350 h; najviše ≈360 h |
-| Startova agregata | ≈165 godišnje, najviše ≈210 |
-| **Potrošnja goriva** | **≈940 l/god**; spremnik od 500 l dopunjava se dva do tri puta godišnje |
+| Solarni udio u potrošnji | 79,8 % |
+| **Rad agregata** | **≈230 h/god** u prosjeku; u 9 od 10 godina do ≈290 h; najviše ≈310 h |
+| Startova agregata | ≈80 godišnje, najviše ≈110 |
+| **Potrošnja goriva** | **≈770 l/god**; spremnik od 500 l dopunjava se dva puta godišnje |
 | Nepokrivena potrošnja | 0 |
 
 Bez parametriranja iz Tačke 4.6 (zaustavljanje pri SoC 90 %, uobičajena struja
-punjenja) agregat bi radio ≈360 h i trošio ≈1 080 l goriva godišnje.
+punjenja) agregat bi radio ≈260 h i trošio ≈870 l goriva godišnje.
 
 ![Slika 6 — Mjesečni energetski bilans: FN proizvodnja, agregat i potrošnja (prosjek i raspon 2005–2023)](../TD-OUTPUT/grafika/prilog1/energetski-bilans.png){width=100%}
 

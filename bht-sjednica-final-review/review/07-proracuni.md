@@ -100,8 +100,8 @@ Udio direktnog zračenja prihvaćen u podne 21. decembra, `cos(|h − (90 − na
 *ispod* decembarskog optimuma, a spuštanje na 35° košta oko 8 % decembarskog prinosa.
 Ali za otočni sistem sa baterijom od ≈1 dana nije mjerodavan samo decembar: agregat
 radi i u nizovima oblačnih dana u proljeće i jesen, gdje strmiji nagib gubi.
-Simulacija (A.6) daje pri 60° 617 kWh u decembru prema 560 kWh pri 45°, ali **300 h
-rada agregata godišnje prema 284 h** — strmiji nagib povećava rad agregata.
+Simulacija (A.6) daje pri 60° 617 kWh u decembru prema 560 kWh pri 45°, ali **248 h
+rada agregata godišnje prema 234 h** — strmiji nagib povećava rad agregata.
 **Usvojeni nagib: 45°** (odluka 11.09.2026., `review/09-odluka-nosaci-nagib.md`).
 
 ### A.6 Energetski bilans — simulacija (pvlib + PVGIS-SARAH3, 2005–2023)
@@ -118,7 +118,7 @@ procjenu sa paušalnim performance ratio 0,80.
 | Ozračenje | PVGIS v5.3 `seriescalc`, SARAH3 + ERA5 (temperatura, vjetar), satno; polje 45° jug; horizont iz DEM-a (≤5,7°, samo sjever) |
 | FN lanac | refleksija Martin-Ruiz (a_r 0,16); temperatura modula Faiman (26,9 / 6,2); model modula Huld c-Si (PVGIS); zaprljanje 1–2,5 % mjesečno; snijeg do 8 % u januaru; neusklađenost 0,3 %, LID 0,5 %; DC kablovi 0,78 % pri Imp (D.2); optimizatori 99,0 %; **iSSU S4875G2 po krivulji proizvođača** (Vin 330 V), 4 kW po modulu |
 | Potrošnja | 1180 W TK + 20 W pomoćna + hlađenje ormara do 150 W (linearno 20 → 35 °C) |
-| Baterija | 6 × ESM-48100A6 = 28,8 kWh; η punjenja i pražnjenja 97,5 %; punjenje do 0,5 C; donja granica 5 % |
+| Baterija | 6 × 150 Ah LFP = **48,6 kWh** (Odluka, Aneks 2; odluka Naručioca 11.09.2026.); η punjenja i pražnjenja 97,5 %; punjenje do 0,5 C; donja granica 5 % |
 | Agregat | ispravljači ograničeni na 9,5 kW AC (η 96 %); start pri DOD 85 %, stop pri SoC 60 %, najkraći rad 1 h (Prilog I §4.6); gorivo P18-6 prime: 2,6 / 3,4 / 4,4 l/h pri 50 / 75 / 100 % |
 
 **Provjera prema PVGIS-u.** Isti model modula, sa PVGIS-ovim paušalnim gubitkom 14 %,
@@ -148,34 +148,34 @@ rade pri malom opterećenju.
 
 | Mjesec | FN na sabirnici, kWh | Potrošnja, kWh | Agregat (DC), kWh | Agregat, h | Gorivo, l |
 |---|---|---|---|---|---|
-| jan | 591 | 893 | 403 | 44,2 | 146 |
-| feb | 632 | 812 | 325 | 35,6 | 118 |
-| mar | 853 | 892 | 261 | 28,6 | 94 |
-| apr | 892 | 864 | 184 | 20,2 | 67 |
-| maj | 949 | 895 | 140 | 15,3 | 51 |
-| jun | 999 | 874 | 82 | 9,0 | 30 |
-| jul | 1 108 | 913 | 40 | 4,4 | 15 |
-| aug | 1 092 | 912 | 51 | 5,6 | 19 |
-| sep | 957 | 869 | 126 | 13,8 | 45 |
-| okt | 890 | 894 | 208 | 22,8 | 75 |
-| nov | 613 | 864 | 356 | 39,0 | 129 |
-| dec | 560 | 893 | 416 | 45,6 | 151 |
-| **godina** | **10 137** | **10 575** | **2 590** | **284** | **938** |
+| jan | 591 | 893 | 360 | 39,5 | 130 |
+| feb | 632 | 812 | 289 | 31,7 | 105 |
+| mar | 853 | 892 | 218 | 23,9 | 79 |
+| apr | 892 | 864 | 136 | 14,9 | 49 |
+| maj | 949 | 895 | 91 | 10,0 | 33 |
+| jun | 999 | 874 | 54 | 5,9 | 20 |
+| jul | 1 108 | 913 | 14 | 1,6 | 5 |
+| aug | 1 092 | 912 | 23 | 2,5 | 8 |
+| sep | 957 | 869 | 78 | 8,6 | 28 |
+| okt | 890 | 894 | 167 | 18,3 | 60 |
+| nov | 613 | 864 | 319 | 35,0 | 116 |
+| dec | 560 | 893 | 386 | 42,3 | 140 |
+| **godina** | **10 137** | **10 575** | **2 135** | **234** | **773** |
 
-Oko 1 800 kWh/god FN proizvodnje se ljeti ne može iskoristiti jer su baterije pune;
+Oko 1 350 kWh/god FN proizvodnje se ljeti ne može iskoristiti jer su baterije pune;
 zimi i u oblačnim nizovima proljeća i jeseni razliku pokriva agregat.
 
 **Ključni pokazatelji (nagib 45°).**
 
 | Pokazatelj | Vrijednost |
 |---|---|
-| Solarni udio u potrošnji | 75,5 % |
-| **Rad agregata** | **284 h/god** prosjek · P90 345 h · najgora godina 359 h (2010) |
-| Startova agregata | 165/god prosjek, najviše 208 |
-| **Gorivo** | **938 l/god** prosjek · P90 1 140 l · najviše 1 187 l |
-| Dopuna spremnika 500 l (pri 20 %) | 2,4 puta godišnje, najkraći razmak 65 dana |
-| Najduže razdoblje bez rada agregata | 67 dana |
-| Ekvivalentnih ciklusa baterije | 227/god |
+| Solarni udio u potrošnji | 79,8 % |
+| **Rad agregata** | **234 h/god** prosjek · P90 293 h · najgora godina 313 h (2010) |
+| Startova agregata | 83/god prosjek, najviše 112 |
+| **Gorivo** | **773 l/god** prosjek · P90 969 l · najviše 1 032 l |
+| Dopuna spremnika 500 l (pri 20 %) | 1,9 puta godišnje, najkraći razmak 68 dana |
+| Najduže razdoblje bez rada agregata | 111 dana |
+| Ekvivalentnih ciklusa baterije | 136/god |
 | Rad ispod 30 % opterećenja | 0 h |
 | Nepokrivena potrošnja | 0 kWh u 19 godina |
 
@@ -183,26 +183,30 @@ zimi i u oblačnim nizovima proljeća i jeseni razliku pokriva agregat.
 
 | Slučaj | DEA h/god prosjek | P90 | Najgora | Gorivo l/god | Startova/god |
 |---|---|---|---|---|---|
-| **Osnovni (Prilog I §4.6): stop SoC 60 %, punjenje 0,5 C** | **284** | **345** | **359** | **938** | **165** |
-| SMU bez parametriranja: stop SoC 90 %, 0,25 C | 356 | 429 | 445 | 1 079 | 113 |
-| Stop SoC 90 % | 317 | 380 | 392 | 1 046 | 114 |
-| Stop SoC 100 % | 328 | 397 | 405 | 1 079 | 104 |
-| Stop SoC 40 % | 268 | 327 | 349 | 884 | 262 |
-| Punjenje 0,25 C | 317 | 386 | 403 | 972 | 165 |
-| Punjenje 0,15 C | 497 | 604 | 623 | 1 149 | 155 |
-| Start pri DOD 70 % | 298 | 358 | 380 | 984 | 252 |
-| Potrošnja 1180 W stalno | 273 | 333 | 353 | 901 | 160 |
-| Potrošnja 1330 W stalno | 358 | 426 | 448 | 1 182 | 205 |
+| **Osnovni (Prilog I §4.6): stop SoC 60 %, punjenje 0,5 C** | **234** | **293** | **313** | **773** | **83** |
+| SMU bez parametriranja: stop SoC 90 %, 0,25 C | 263 | 312 | 349 | 867 | 57 |
+| Stop SoC 100 % | 274 | 322 | 357 | 902 | 53 |
+| Stop SoC 40 % | 221 | 281 | 303 | 730 | 137 |
+| Punjenje 0,15 C | 262 | 326 | 349 | 797 | 83 |
+| Start pri DOD 70 % | 243 | 302 | 326 | 804 | 127 |
+| Baterija 28,8 kWh (6 × 100 Ah, stara ponuda Huawei) | 284 | 345 | 359 | 938 | 165 |
+| Potrošnja 1180 W stalno | 223 | 275 | 307 | 738 | 79 |
+| Potrošnja 1330 W stalno | 307 | 378 | 396 | 1 014 | 107 |
+
+Pri 48,6 kWh punjenje od 0,25 C (≈12 kW) više ne ograničava agregat i daje isto što i
+0,5 C; stop pri SoC 90 % daje isto što i „SMU bez parametriranja".
 
 **Zaključak.**
 
-- Granica od 250 h/god iz RFI i tvrdnja da spremnik od 500 l traje godinu dana
-  **nisu ostvarive ovim sistemom** — nijedna ispitana postavka ne daje manje od
-  ≈270 h i ≈880 l godišnje. Odluka (Aneks 2) i Prilog I zato navode simulirane
-  vrijednosti (odluka Naručioca 11.09.2026., `review/09-odluka-nosaci-nagib.md`).
-- Najveći uticaj ima **struja punjenja**: pri 0,15 C agregat radi ≈500 h/god. Zato
-  Prilog I §4.6 traži da struja punjenja ne ograničava agregat ispod 9,5 kW.
-- **Agregat je konstrukcijski neophodan**: pokriva ≈25 % potrošnje, najviše od
+- Uz baterije od 48,6 kWh prosječan rad agregata (≈230 h/god) je ispod 250 h/god iz
+  RFI, ali ne i u lošijim godinama (u 9 od 10 godina do ≈290 h, najviše ≈310 h), a
+  spremnik od 500 l **ne traje godinu dana** (≈770 l/god). Odluka (Aneks 2) i Prilog I
+  zato navode simulirane vrijednosti (odluka Naručioca 11.09.2026.,
+  `review/09-odluka-nosaci-nagib.md`).
+- Najveći uticaj ima **kapacitet baterije**: sa 28,8 kWh (6 × 100 Ah iz stare ponude)
+  agregat bi radio ≈280 h i trošio ≈940 l godišnje. Drugi je **stop SoC**: punjenje
+  agregatom do vrha povećava rad agregata za 12–17 %.
+- **Agregat je konstrukcijski neophodan**: pokriva ≈20 % potrošnje, najviše od
   novembra do februara.
 
 ---
@@ -424,9 +428,9 @@ Pri ograničenju ispravljača na 9,5 kW agregat daje ≈9,5 kW (≈72 % prime), 
 
 | | |
 |---|---|
-| Očekivani godišnji rad (A.6) | **≈280 h/god**; u 9 od 10 godina do ≈350 h, najviše ≈360 h |
-| Očekivana godišnja potrošnja (A.6) | **≈940 l/god**; najviše ≈1 190 l |
-| Spremnik **500 l**, dopuna pri 20 % (SMU „Refuel THR") | ≈400 l, tj. ≈120 h rada između dopuna — **dva do tri puta godišnje** |
+| Očekivani godišnji rad (A.6) | **≈230 h/god**; u 9 od 10 godina do ≈290 h, najviše ≈310 h |
+| Očekivana godišnja potrošnja (A.6) | **≈770 l/god**; najviše ≈1 030 l |
+| Spremnik **500 l**, dopuna pri 20 % (SMU „Refuel THR") | ≈400 l, tj. ≈120 h rada između dopuna — **dva puta godišnje** |
 | **Prvo punjenje** | **250 l** (spremnik se pri primopredaji ne puni do vrha) |
 
 Raniji tekst ovdje je navodio „do 250 h/god" i ≈925 l/god — dakle ni tada spremnik od
@@ -590,7 +594,7 @@ održana, pa **tip 2 sam po sebi nije dovoljan**:
 
 | Veličina | Određuje je | Vrijednost |
 |---|---|---|
-| Nagib 45° | godišnji rad agregata (A.5, A.6) — 60° daje više u decembru, a ukupno više rada DEA | 284 h pri 45° prema 300 h pri 60° |
+| Nagib 45° | godišnji rad agregata (A.5, A.6) — 60° daje više u decembru, a ukupno više rada DEA | 234 h pri 45° prema 248 h pri 60° |
 | Custom nosač | qp lokacije vs. kataloške deklaracije (B.2) | nijedan nagib ne prolazi |
 | Donja ivica +0,50 m | vjetar je mjerodavan, snijeg nije (A.3) | moment 42,6 kNm |
 | Puna dubina temeljne trake | spreg od uzgona po traci (B.6) | 32,1 > 29,6 kN |
@@ -598,8 +602,9 @@ održana, pa **tip 2 sam po sebi nije dovoljan**:
 | Roštilj za raznošenje | koncentrisano vs. ravnomjerno opterećenje (B.7) | OBAVEZAN |
 | Ograničenje ispravljača 9,5 kW | derating u prime režimu (D.5) | 11,6 kW raspoloživo |
 | PMG/AREP pobuda | struja kvara ispod In kod SHUNT (D.4) | 0 % po tehničkom listu |
-| Spremnik 500 l | simulirani rad ≈280 h i ≈940 l/god (A.6, C.5) | ≈120 h rada između dopuna, 2–3 dopune godišnje |
-| Stop SoC 60 %, punjenje do granice BMS-a | osjetljivost simulacije (A.6) | ≈20 % manje rada DEA nego bez parametriranja |
+| Spremnik 500 l | simulirani rad ≈230 h i ≈770 l/god (A.6, C.5) | ≈120 h rada između dopuna, 2 dopune godišnje |
+| Baterije 6 × 150 Ah (48,6 kWh) | Odluka, Aneks 2; odluka Naručioca (A.6) | ≈230 h/god prema ≈280 h sa 28,8 kWh |
+| Stop SoC 60 %, punjenje do granice BMS-a | osjetljivost simulacije (A.6) | ≈11 % manje rada DEA nego bez parametriranja |
 
 ---
 
@@ -612,17 +617,17 @@ održana, pa **tip 2 sam po sebi nije dovoljan**:
 3. **Derating agregata za tačne uslove lokacije** iz podataka proizvođača (A.2, D.5).
 4. **Integracija DC odvodnika tipa 2 u PVDB500-15-2B** nije dokazana nijednim
    dokumentom u paketu — stavka ostaje zasebno iskazana dok se ne potvrdi.
-5. **Kapacitet baterija**: Naručilac navodi 150 Ah, a ponuda na dosjeu 6 × ESM-48100A6.
-   Nijedan generisani dokument ne navodi kapacitet i baterije su zasebna nabavka, pa
-   se ništa ne mijenja do dostavljanja revidirane ponude.
+5. **Kapacitet baterija** — riješeno 11.09.2026.: **6 × 150 Ah (48,6 kWh)**, kako navodi
+   Odluka; ponuda na dosjeu (6 × ESM-48100A6, 28,8 kWh, uz module od 540 W) je
+   zastarjela i Huawei narudžbu treba uskladiti. Proračun A.6 računa sa 48,6 kWh.
 6. **Masa nosača (≈110 kg)** je procjena — potvrđuje je proračun izrađivača.
 7. **Procijenjena vrijednost LOT 1** (15.000 KM) računata je na raniju zapreminu
    temeljnih traka; puna dubina iz B.6 nosi 8,91 m³ betona umjesto 2,44 m³.
 8. **Struja punjenja baterija** (Prilog I §4.6): simulacija (A.6) pretpostavlja 0,5 C;
-   najveću struju punjenja modula ESM-48100A6 potvrđuje proizvođač. Pri 0,25 C rad
-   agregata raste na ≈320 h/god.
+   najveću struju punjenja potvrđuje proizvođač baterija. Pri 48,6 kWh ni 0,25 C ne
+   ograničava agregat; tek pri 0,15 C rad agregata raste na ≈260 h/god.
 9. **Stvarna potrošnja** 1180 W / 1330 W je iz RFI; pri stalnih 1330 W rad agregata je
-   ≈360 h/god (A.6, osjetljivost).
+   ≈310 h/god (A.6, osjetljivost).
 
 ---
 

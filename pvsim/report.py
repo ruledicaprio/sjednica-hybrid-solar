@@ -29,6 +29,8 @@ SENSITIVITY = [
     ("Punjenje 0,25 C", {"battery.charge_c_rate": 0.25}),
     ("Punjenje 0,15 C", {"battery.charge_c_rate": 0.15}),
     ("Start pri DOD 70 %", {"control.dod_start": 0.7}),
+    ("Baterija 28,8 kWh (6 × 100 Ah, stara ponuda Huawei)",
+     {"battery.kwh_per_module": 4.8}),
     ("Potrošnja 1180 W stalno (bez hlađenja i pomoćne)",
      {"load.aux_w": 0, "load.cooling_w_max": 0}),
     ("Potrošnja 1330 W stalno", {"load.base_w": 1330, "load.aux_w": 0,
@@ -163,7 +165,8 @@ def markdown(doc):
     b, c, g = s["battery"], s["control"], s["genset"]
     cap = b["modules"] * b["kwh_per_module"]
     w(f"- **Bilans na −48 V DC sabirnici:** satno, sve godine neprekidno. Baterija "
-      f"{b['modules']} × ESM-48100A6 = {_n(cap, 1)} kWh, η punjenja/pražnjenja "
+      f"{b.get('label', str(b['modules']) + ' modula')} = {_n(cap, 1)} kWh, "
+      f"η punjenja/pražnjenja "
       f"{_n(100 * b['eta_charge'], 1)} %, punjenje do {_n(b['charge_c_rate'], 2)} C. "
       f"DEA preko ispravljača ograničenih na {_n(g['rect_cap_ac_kw'], 1)} kW AC "
       f"(η {_n(100 * g['eta_rect'])} %): start pri DOD {_n(100 * c['dod_start'])} %, "

@@ -64,13 +64,14 @@
  },
  "battery": {
   "modules": 6,
-  "kwh_per_module": 4.8,
+  "kwh_per_module": 8.1,
+  "label": "6 × 150 Ah LFP",
   "soc_initial": 0.8,
   "soc_floor": 0.05,
   "eta_charge": 0.975,
   "eta_discharge": 0.975,
   "charge_c_rate": 0.5,
-  "_src": "6 x Huawei ESM-48100A6, 48 V / 100 Ah = 4,8 kWh each (ICC360-HA1-C1 installation guide, table 2-24; Huawei quotation for Sjednica). Efficiencies (95 % round trip) and the 5 % BMS floor are NOT in any vendor file on hand - assumptions typical for LFP telecom modules. Charge limit 0,5 C: the setting Prilog I §4.6 (Rev 9) asks for, i.e. the highest the BMS allows, so that the charge current never holds the genset below its 9,5 kW cap. The BMS maximum of the ESM-48100A6 is not on file; the bidder confirms it. Genset hours are sensitive to it - see the sensitivity runs."
+  "_src": "6 x 150 Ah LFP = 48,6 kWh as stated in the Prijedlog Odluke, Aneks 2 ('6x150 Ah (48,6 kWh), DoD min. 85 %'); Investor's decision 11.09.2026. 8,1 kWh per module reproduces the Odluka's 48,6 kWh. The Huawei quotation on file (6 x ESM-48100A6, 48 V / 100 Ah = 28,8 kWh) is outdated - it also still quotes 540 W modules - and is kept as a sensitivity case. Efficiencies (95 % round trip) and the 5 % BMS floor are NOT in any vendor file on hand - assumptions typical for LFP telecom modules. Charge limit 0,5 C: the setting Prilog I §4.6 (Rev 9) asks for, i.e. the highest the BMS allows, so that the charge current never holds the genset below its 9,5 kW cap; with 48,6 kWh it does not bind. The bidder confirms the BMS maximum."
  },
  "control": {
   "dod_start": 0.85,

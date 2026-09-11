@@ -63,7 +63,7 @@ REQUIRED = [
     "PMG", "AREP", "1,20 kN/m²", "18,1 kN", "13,4 kN", "0,6 kN/m²",
     # Rev 9
     "DOD 85 %", "SoC 60 %", "PVGIS-SARAH3", "Očekivani energetski bilans",
-    "≈280 h/god", "≈940 l/god",
+    "≈230 h/god", "≈770 l/god",
 ]
 
 SECT = re.compile(rb"<w:sectPr\b.*?</w:sectPr>", re.S)

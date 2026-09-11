@@ -1,12 +1,12 @@
 # Energetski bilans — BS Sjednica (Bileća)
 
-*Simulacija pvlib + PVGIS-SARAH3, satno 2005–2023. Generisano 2026-09-11, pvsim 0.1.0, commit 4ae2366. Ulazi i pretpostavke: `pvsim/sites/sjednica.json`; brojevi: `kpis.json` u ovom folderu. Ne uređivati ručno — `python -m pvsim report --site sjednica`.*
+*Simulacija pvlib + PVGIS-SARAH3, satno 2005–2023. Generisano 2026-09-11, pvsim 0.1.0, commit f06377c. Ulazi i pretpostavke: `pvsim/sites/sjednica.json`; brojevi: `kpis.json` u ovom folderu. Ne uređivati ručno — `python -m pvsim report --site sjednica`.*
 
 ## Metoda
 
 - **Ozračenje:** PVGIS v5.3 `seriescalc`, SARAH3 + ERA5 (temperatura, vjetar), satno za 19 godina; horizont iz PVGIS DEM-a; polje jug, nagib 45° i 60°.
 - **FN lanac:** refleksija Martin-Ruiz (a_r 0,16), temperatura modula Faiman (26,9 / 6,2), model modula Huld c-Si (PVGIS), mjesečno zaprljanje i snijeg, neusklađenost i LID, DC kablovi 0,78 % pri Imp, optimizatori 99,0 %, iSSU S4875G2 po krivulji proizvođača (Vin 330 V), ograničenje 4 kW po modulu.
-- **Bilans na −48 V DC sabirnici:** satno, sve godine neprekidno. Baterija 6 × ESM-48100A6 = 28,8 kWh, η punjenja/pražnjenja 97,5 %, punjenje do 0,50 C. DEA preko ispravljača ograničenih na 9,5 kW AC (η 96 %): start pri DOD 85 %, stop pri SoC 60 %, najkraći rad 1,0 h. Gorivo po tehničkom listu P18-6 (prime).
+- **Bilans na −48 V DC sabirnici:** satno, sve godine neprekidno. Baterija 6 × 150 Ah LFP = 48,6 kWh, η punjenja/pražnjenja 97,5 %, punjenje do 0,50 C. DEA preko ispravljača ograničenih na 9,5 kW AC (η 96 %): start pri DOD 85 %, stop pri SoC 60 %, najkraći rad 1,0 h. Gorivo po tehničkom listu P18-6 (prime).
 - **Potrošnja:** 1180 W TK + 20 W pomoćna (SMU, BMS, ventilatori) + hlađenje ormara do 150 W (linearno 20→35 °C).
 - Parametri bez podatka proizvođača (efikasnost i punjenje baterije, stop SoC, zaprljanje, snijeg, hlađenje) su pretpostavke, označene u ulaznom fajlu; njihov uticaj je u tabeli osjetljivosti.
 
@@ -36,35 +36,35 @@
 
 | Mjesec | FN na sabirnici, kWh | Potrošnja, kWh | DEA (DC), kWh | DEA, h | Gorivo, l |
 |---|---|---|---|---|---|
-| jan | 591 | 893 | 403 | 44,2 | 146 |
-| feb | 632 | 812 | 325 | 35,6 | 118 |
-| mar | 853 | 892 | 261 | 28,6 | 94 |
-| apr | 892 | 864 | 184 | 20,2 | 67 |
-| maj | 949 | 895 | 140 | 15,3 | 51 |
-| jun | 999 | 874 | 82 | 9,0 | 30 |
-| jul | 1 108 | 913 | 40 | 4,4 | 15 |
-| aug | 1 092 | 912 | 51 | 5,6 | 19 |
-| sep | 957 | 869 | 126 | 13,8 | 45 |
-| okt | 890 | 894 | 208 | 22,8 | 75 |
-| nov | 613 | 864 | 356 | 39,0 | 129 |
-| dec | 560 | 893 | 416 | 45,6 | 151 |
+| jan | 591 | 893 | 360 | 39,5 | 130 |
+| feb | 632 | 812 | 289 | 31,7 | 105 |
+| mar | 853 | 892 | 218 | 23,9 | 79 |
+| apr | 892 | 864 | 136 | 14,9 | 49 |
+| maj | 949 | 895 | 91 | 10,0 | 33 |
+| jun | 999 | 874 | 54 | 5,9 | 20 |
+| jul | 1 108 | 913 | 14 | 1,6 | 5 |
+| aug | 1 092 | 912 | 23 | 2,5 | 8 |
+| sep | 957 | 869 | 78 | 8,6 | 28 |
+| okt | 890 | 894 | 167 | 18,3 | 60 |
+| nov | 613 | 864 | 319 | 35,0 | 116 |
+| dec | 560 | 893 | 386 | 42,3 | 140 |
 
 ## Mjesečni bilans, nagib 60° (prosjek godina)
 
 | Mjesec | FN na sabirnici, kWh | Potrošnja, kWh | DEA (DC), kWh | DEA, h | Gorivo, l |
 |---|---|---|---|---|---|
-| jan | 652 | 893 | 388 | 42,5 | 140 |
-| feb | 663 | 812 | 328 | 35,9 | 119 |
-| mar | 839 | 892 | 268 | 29,4 | 97 |
-| apr | 821 | 864 | 206 | 22,5 | 74 |
-| maj | 828 | 895 | 180 | 19,8 | 65 |
-| jun | 848 | 874 | 114 | 12,5 | 41 |
-| jul | 948 | 913 | 70 | 7,7 | 26 |
-| aug | 981 | 912 | 76 | 8,3 | 27 |
-| sep | 911 | 869 | 141 | 15,4 | 51 |
-| okt | 896 | 894 | 215 | 23,6 | 78 |
-| nov | 647 | 864 | 352 | 38,5 | 127 |
-| dec | 617 | 893 | 400 | 43,9 | 145 |
+| jan | 652 | 893 | 342 | 37,5 | 124 |
+| feb | 663 | 812 | 288 | 31,5 | 104 |
+| mar | 839 | 892 | 231 | 25,3 | 84 |
+| apr | 821 | 864 | 164 | 18,0 | 59 |
+| maj | 828 | 895 | 137 | 15,0 | 50 |
+| jun | 848 | 874 | 84 | 9,2 | 30 |
+| jul | 948 | 913 | 36 | 3,9 | 13 |
+| aug | 981 | 912 | 43 | 4,7 | 16 |
+| sep | 911 | 869 | 94 | 10,3 | 34 |
+| okt | 896 | 894 | 171 | 18,8 | 62 |
+| nov | 647 | 864 | 306 | 33,5 | 111 |
+| dec | 617 | 893 | 366 | 40,2 | 133 |
 
 ## Ključni pokazatelji
 
@@ -72,17 +72,17 @@
 |---|---|---|---|
 | FN na DC sabirnici, kWh/god | 10 137 | 9 651 |  |
 | Specifični prinos na sabirnici, kWh/kWp | 1 444 | 1 375 |  |
-| FN iskorišteno / odbačeno (baterija puna), kWh/god | 8 323 / 1 815 | 8 180 / 1 471 |  |
+| FN iskorišteno / odbačeno (baterija puna), kWh/god | 8 783 / 1 354 | 8 659 / 992 |  |
 | Potrošnja, kWh/god | 10 575 | 10 575 |  |
-| Solarni udio u potrošnji | 75,5 % | 74,1 % |  |
+| Solarni udio u potrošnji | 79,8 % | 78,6 % |  |
 | Decembar: FN / potrošnja, kWh | 560 / 893 | 617 / 893 |  |
-| DEA rad, h/god — prosjek / P90 / najgora god. | 284 / 345 / 359 | 300 / 366 / 387 | ≤250 h/god |
-| DEA startova, /god — prosjek / najviše | 165 / 208 | 175 / 225 |  |
-| Gorivo, l/god — prosjek / P90 / najgora god. | 938 / 1 140 / 1 187 | 991 / 1 208 / 1 278 |  |
-| Spremnik 500 l traje, god — prosjek / najgora | 0,53 / 0,42 | 0,50 / 0,39 | ≥1 god |
-| Dopuna goriva, /god — prosjek / najviše | 2,4 / 3 | 2,5 / 3 |  |
-| Najduže razdoblje bez rada DEA, dana | 67 | 32 |  |
-| Ekvivalentnih ciklusa baterije, /god | 227 | 229 |  |
+| DEA rad, h/god — prosjek / P90 / najgora god. | 234 / 293 / 313 | 248 / 309 / 336 | ≤250 h/god |
+| DEA startova, /god — prosjek / najviše | 83 / 112 | 88 / 120 |  |
+| Gorivo, l/god — prosjek / P90 / najgora god. | 773 / 969 / 1 032 | 819 / 1 022 / 1 109 |  |
+| Spremnik 500 l traje, god — prosjek / najgora | 0,65 / 0,48 | 0,61 / 0,45 | ≥1 god |
+| Dopuna goriva, /god — prosjek / najviše | 1,9 / 3 | 2,1 / 3 |  |
+| Najduže razdoblje bez rada DEA, dana | 111 | 110 |  |
+| Ekvivalentnih ciklusa baterije, /god | 136 | 138 |  |
 | Rad DEA ispod 30 % opterećenja, h/god | 0,0 | 0,0 |  |
 | Nepokrivena potrošnja, kWh | 0,0 | 0,0 | 0 |
 | ≤250 h/god (P90 / najgora god.) | **NIJE ispunjeno** / **NIJE ispunjeno** | **NIJE ispunjeno** / **NIJE ispunjeno** | |
@@ -92,34 +92,36 @@
 
 | Slučaj | DEA h/god prosjek | P90 | najgora | Gorivo l/god prosjek | najgora | Spremnik traje, god | Startova/god |
 |---|---|---|---|---|---|---|---|
-| Osnovni slučaj (TD Rev 9): start DOD 85 %, stop SoC 60 %, punjenje 0,5 C | 284 | 345 | 359 | 938 | 1 187 | 0,53 | 165 |
-| SMU bez parametriranja: stop SoC 90 %, punjenje 0,25 C | 356 | 429 | 445 | 1 079 | 1 341 | 0,46 | 113 |
-| Stop SoC 90 % | 317 | 380 | 392 | 1 046 | 1 294 | 0,48 | 114 |
-| Stop SoC 100 % (punjenje do vrha) | 328 | 397 | 405 | 1 079 | 1 332 | 0,46 | 104 |
-| Stop SoC 40 % | 268 | 327 | 349 | 884 | 1 152 | 0,57 | 262 |
-| Punjenje 0,25 C | 317 | 386 | 403 | 972 | 1 239 | 0,51 | 165 |
-| Punjenje 0,15 C | 497 | 604 | 623 | 1 149 | 1 457 | 0,44 | 155 |
-| Start pri DOD 70 % | 298 | 358 | 380 | 984 | 1 256 | 0,51 | 252 |
-| Potrošnja 1180 W stalno (bez hlađenja i pomoćne) | 273 | 333 | 353 | 901 | 1 167 | 0,55 | 160 |
-| Potrošnja 1330 W stalno | 358 | 426 | 448 | 1 182 | 1 480 | 0,42 | 205 |
+| Osnovni slučaj (TD Rev 9): start DOD 85 %, stop SoC 60 %, punjenje 0,5 C | 234 | 293 | 313 | 773 | 1 032 | 0,65 | 83 |
+| SMU bez parametriranja: stop SoC 90 %, punjenje 0,25 C | 263 | 312 | 349 | 867 | 1 153 | 0,58 | 57 |
+| Stop SoC 90 % | 263 | 312 | 349 | 867 | 1 153 | 0,58 | 57 |
+| Stop SoC 100 % (punjenje do vrha) | 274 | 322 | 357 | 902 | 1 176 | 0,55 | 53 |
+| Stop SoC 40 % | 221 | 281 | 303 | 730 | 999 | 0,68 | 137 |
+| Punjenje 0,25 C | 234 | 293 | 313 | 773 | 1 032 | 0,65 | 83 |
+| Punjenje 0,15 C | 262 | 326 | 349 | 797 | 1 069 | 0,63 | 83 |
+| Start pri DOD 70 % | 243 | 302 | 326 | 804 | 1 078 | 0,62 | 127 |
+| Baterija 28,8 kWh (6 × 100 Ah, stara ponuda Huawei) | 284 | 345 | 359 | 938 | 1 187 | 0,53 | 165 |
+| Potrošnja 1180 W stalno (bez hlađenja i pomoćne) | 223 | 275 | 307 | 738 | 1 015 | 0,68 | 79 |
+| Potrošnja 1330 W stalno | 307 | 378 | 396 | 1 014 | 1 307 | 0,49 | 107 |
 
 ## Osjetljivost, nagib 60°
 
 | Slučaj | DEA h/god prosjek | P90 | najgora | Gorivo l/god prosjek | najgora | Spremnik traje, god | Startova/god |
 |---|---|---|---|---|---|---|---|
-| Osnovni slučaj (TD Rev 9): start DOD 85 %, stop SoC 60 %, punjenje 0,5 C | 300 | 366 | 387 | 991 | 1 278 | 0,50 | 175 |
-| SMU bez parametriranja: stop SoC 90 %, punjenje 0,25 C | 378 | 459 | 462 | 1 142 | 1 408 | 0,44 | 120 |
-| Stop SoC 90 % | 335 | 404 | 416 | 1 108 | 1 372 | 0,45 | 121 |
-| Stop SoC 100 % (punjenje do vrha) | 348 | 418 | 433 | 1 145 | 1 424 | 0,44 | 111 |
-| Stop SoC 40 % | 282 | 346 | 369 | 933 | 1 219 | 0,54 | 277 |
-| Punjenje 0,25 C | 335 | 406 | 431 | 1 026 | 1 323 | 0,49 | 174 |
-| Punjenje 0,15 C | 525 | 639 | 676 | 1 212 | 1 564 | 0,41 | 164 |
-| Start pri DOD 70 % | 314 | 379 | 403 | 1 039 | 1 331 | 0,48 | 266 |
-| Potrošnja 1180 W stalno (bez hlađenja i pomoćne) | 285 | 348 | 364 | 943 | 1 204 | 0,53 | 167 |
-| Potrošnja 1330 W stalno | 380 | 454 | 481 | 1 254 | 1 590 | 0,40 | 218 |
+| Osnovni slučaj (TD Rev 9): start DOD 85 %, stop SoC 60 %, punjenje 0,5 C | 248 | 309 | 336 | 819 | 1 109 | 0,61 | 88 |
+| SMU bez parametriranja: stop SoC 90 %, punjenje 0,25 C | 278 | 342 | 368 | 918 | 1 216 | 0,54 | 61 |
+| Stop SoC 90 % | 278 | 342 | 368 | 918 | 1 216 | 0,54 | 61 |
+| Stop SoC 100 % (punjenje do vrha) | 292 | 355 | 381 | 961 | 1 254 | 0,52 | 57 |
+| Stop SoC 40 % | 232 | 296 | 320 | 768 | 1 058 | 0,65 | 144 |
+| Punjenje 0,25 C | 248 | 309 | 336 | 819 | 1 109 | 0,61 | 88 |
+| Punjenje 0,15 C | 277 | 347 | 380 | 845 | 1 147 | 0,59 | 88 |
+| Start pri DOD 70 % | 258 | 321 | 345 | 853 | 1 139 | 0,59 | 135 |
+| Baterija 28,8 kWh (6 × 100 Ah, stara ponuda Huawei) | 300 | 366 | 387 | 991 | 1 278 | 0,50 | 175 |
+| Potrošnja 1180 W stalno (bez hlađenja i pomoćne) | 235 | 295 | 319 | 775 | 1 054 | 0,65 | 84 |
+| Potrošnja 1330 W stalno | 329 | 405 | 424 | 1 086 | 1 400 | 0,46 | 115 |
 
 ## Zaključak (izveden iz brojeva iznad)
 
-- **45°:** DEA 284 h/god u prosjeku (P90 345), gorivo 938 l/god. Najpovoljniji slučaj osjetljivosti za sate (Stop SoC 40 %) daje P90 327 h/god; za gorivo (Stop SoC 40 %) 884 l/god, tj. spremnik 500 l traje 0,57 god.
-- **60°:** DEA 300 h/god u prosjeku (P90 366), gorivo 991 l/god. Najpovoljniji slučaj osjetljivosti za sate (Stop SoC 40 %) daje P90 346 h/god; za gorivo (Stop SoC 40 %) 933 l/god, tj. spremnik 500 l traje 0,54 god.
+- **45°:** DEA 234 h/god u prosjeku (P90 293), gorivo 773 l/god. Najpovoljniji slučaj osjetljivosti za sate (Potrošnja 1180 W stalno (bez hlađenja i pomoćne)) daje P90 275 h/god; za gorivo (Stop SoC 40 %) 730 l/god, tj. spremnik 500 l traje 0,68 god.
+- **60°:** DEA 248 h/god u prosjeku (P90 309), gorivo 819 l/god. Najpovoljniji slučaj osjetljivosti za sate (Potrošnja 1180 W stalno (bez hlađenja i pomoćne)) daje P90 295 h/god; za gorivo (Stop SoC 40 %) 768 l/god, tj. spremnik 500 l traje 0,65 god.
 

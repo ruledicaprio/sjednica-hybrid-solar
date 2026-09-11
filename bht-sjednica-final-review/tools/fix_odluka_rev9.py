@@ -7,10 +7,12 @@ Three statements in the Odluka no longer held:
   Aneks 2   "maksimalno dozvoljeno godišnje vrijeme rada ... 250 h (standby ...)" and
             "spremnik goriva zapremine 500 l treba obezbjediti autonomiju od najmanje
             godinu između dopuna goriva". The pvsim simulation (review/pvsim/,
-            decision in review/09-odluka-nosaci-nagib.md) gives ≈280 h and ≈940 l a
-            year even with the SMU set for minimum genset running - no setting
-            reaches either figure. Replaced with the simulated expectation, in the
-            wording the Investor approved on 2026-09-11.
+            decision in review/09-odluka-nosaci-nagib.md) gives ≈230 h and ≈770 l a
+            year with the SMU set for minimum genset running and the 6 x 150 Ah
+            (48,6 kWh) battery the Odluka itself names: the mean is under 250 h,
+            the bad years are not, and 500 l lasts about half a year. Replaced with
+            the simulated expectation, in the wording the Investor approved on
+            2026-09-11. Run it on the original (pre-Rev 9) document.
   LOT 2     "za režim rada u pričuvi (stand-by) prema ISO 8528-3, kao FG Wilson P22-6"
             - the P22-6 was withdrawn in Rev 7, and a set that cycles on battery SoC
             at an off-grid site runs in prime duty, capped at 9,5 kW (07-proracuni D.5).
@@ -40,9 +42,9 @@ NEW_LIMITS = (
     "potrošnje, a dizel električni agregat radi samo kada baterije dostignu zadanu "
     "dubinu pražnjenja, tj. u nizovima dana slabe osunčanosti i pri kvaru opreme. "
     "Satna simulacija energetskog bilansa za 19 godina (pvlib, PVGIS-SARAH3, "
-    "2005–2023) daje očekivani rad agregata od ≈280 h godišnje (u najlošijoj godini "
-    "do ≈360 h), uz potrošnju goriva od ≈940 l godišnje; spremnik od 500 l "
-    "dopunjava se u prosjeku dva do tri puta godišnje. Vrijednosti važe uz "
+    "2005–2023) daje očekivani rad agregata od ≈230 h godišnje (u najlošijoj godini "
+    "do ≈310 h), uz potrošnju goriva od ≈770 l godišnje; spremnik od 500 l "
+    "dopunjava se u prosjeku dva puta godišnje. Vrijednosti važe uz "
     "parametriranje upravljačke jedinice za minimalan rad agregata, propisano "
     "Prilogom I TD. Agregat radi u režimu trajne (prime) snage prema ISO 8528-1, sa "
     "ulaznom snagom ispravljača ograničenom na 9,5 kW.")

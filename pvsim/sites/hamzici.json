@@ -5,8 +5,8 @@
  "lat": 43.28801195406457,
  "lon": 17.624794323005304,
  "altitude_m": 493,
- "design_json": "bht-sjednica-final-review/cad/design.json",
- "_design_json": "Same system as Sjednica (plan: design cannot change). Point this at hamzici-hybrid-solar/cad/design.json once that file exists (Phase 5).",
+ "design_json": "hamzici-hybrid-solar/cad/design.json",
+ "_design_json": "Same system as Sjednica (the design cannot change); the Hamzići design.json carries the Sjednica module, array, genset and tank values plus the site data.",
  "review_dir": "hamzici-hybrid-solar/review/pvsim",
  "pvgis": {
   "db": "PVGIS-SARAH3",
@@ -62,13 +62,14 @@
  },
  "battery": {
   "modules": 6,
-  "kwh_per_module": 4.8,
+  "kwh_per_module": 8.1,
+  "label": "6 × 150 Ah LFP",
   "soc_initial": 0.8,
   "soc_floor": 0.05,
   "eta_charge": 0.975,
   "eta_discharge": 0.975,
   "charge_c_rate": 0.5,
-  "_src": "As sjednica.json (6 x ESM-48100A6; efficiencies are assumptions; 0,5 C is the Prilog I §4.6 setting, BMS maximum to be confirmed by the bidder)."
+  "_src": "As sjednica.json: 6 x 150 Ah LFP = 48,6 kWh as stated in the Odluka (Investor, 11.09.2026); efficiencies are assumptions; 0,5 C is the Prilog I §4.6 setting, BMS maximum confirmed by the bidder."
  },
  "control": {
   "dod_start": 0.85,
@@ -102,8 +103,8 @@
  },
  "array_position": {
   "east_m": 0.0,
-  "north_m": -4.46,
-  "_src": "Array centre relative to the tower centre (= slab centre): the middle of the 3 525 mm strip between the slab (half-width 2,70 m) and the south lease line, per 01_Situacija 1_200.dwg."
+  "north_m": -4.49,
+  "_src": "Array centre relative to the tower centre (= slab centre): the middle of the 3 575 mm strip between the slab (half-width 2,70 m) and the south lease line (site_geometry.json, true orientation)."
  },
  "obstacles": [
   {
@@ -121,7 +122,7 @@
   "bottom_edge_m": 0.5,
   "strip_spacing_m": 1.6,
   "plot_max_width_m": 12.0,
-  "plot_max_depth_m": 3.525,
-  "_src": "qp is PROVISIONAL, taken as Sjednica's 1,20 kN/m². The 2017 Hamzići project used JUS U.C7 (vm,50,10 = 25 m/s); a BAS EN 1991-1-4 + NA value is derived in Phase 5. Plot measured from the certified 01_Situacija 1_200.dwg (version A): lease 12 000 mm E-W x 12 500 mm N-S (k.č. 109/1 K.O. Hamzići), slab 5 400 mm centred in it, north arrow block at 0° (+Y = north). That leaves 3 525 mm south of the slab (3 300 east and west, 3 575 north): a 45° field (3,24 m projection, 3,30 m strips) fits with ≈0,22 m to spare."
+  "plot_max_depth_m": 3.575,
+  "_src": "qp ≥ 1,20 kN/m² adopted as at Sjednica (one stand design for both sites); the certified 2017 project (JUS U.C7, vm,50,10 = 25 m/s) translates to BAS EN 1991-1-4 qp 0,69-0,96 kN/m². Plot from the certified 01_Situacija 1_200.dwg: lease 12 000 x 12 500 mm (k.č. 109/1 K.O. Hamzići), slab 5 400 mm centred. The photos and the Investor (11.09.2026) put the door and gate on the NORTH side, so the drawing is rotated ≈180° to the site and the strip south of the slab is 3 575 mm (3 300 east and west): a 45° field (3,24 m projection, 3,30 m strips) fits with ≈0,27 m to spare. Geometry: hamzici-hybrid-solar/cad/site_geometry.json."
  }
 }

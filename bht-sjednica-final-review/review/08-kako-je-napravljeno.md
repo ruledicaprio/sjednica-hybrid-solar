@@ -222,7 +222,8 @@ puno", Claude izračuna da je hladnjak 60 mm od zida pa kanal ne može biti već
 > Hamzići su u općini **Čitluk**, na **493 m n.v.** (PVGIS DEM; projekat 500 m);
 > **sistem je isti kao na Sjednici**, a **agregat ide U postojeći kontejner**, ne
 > vani — radijator izbacuje zrak kroz otvor klima-uređaja Stulz koji se demontira.
-> Nosači 3×4 pri 45° staju u zakup (3 525 mm južno od ploče). Odluke:
+> Nosači 3×4 pri 45° staju u zakup (3 575 mm južno od ploče; vrata i kapija su na
+> sjeveru, malo prema sjeverozapadu, prema fotografijama). Odluke:
 > `review/09-odluka-nosaci-nagib.md`; energetski bilans:
 > `hamzici-hybrid-solar/review/pvsim/`. Pododjeljak „Agregat VANI" niže je time
 > odbačen i ostaje samo kao zapis.

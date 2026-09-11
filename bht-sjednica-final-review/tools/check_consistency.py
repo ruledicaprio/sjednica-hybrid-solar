@@ -285,8 +285,8 @@ SINGLE_VALUE = {
     # operation the pvsim simulation gives with them - both must be stated.
     "SMU start at DOD 85 %": r"DOD\s*85\s*%",
     "SMU stop at SoC 60 %": r"SoC\s*60\s*%",
-    "expected genset operation ≈280 h/god": r"≈\s*280\s*h",
-    "expected fuel ≈940 l/god": r"≈\s*940\s*l",
+    "expected genset operation ≈230 h/god": r"≈\s*230\s*h",
+    "expected fuel ≈770 l/god": r"≈\s*770\s*l",
 }
 
 # text that must not survive from the 46-generator template
