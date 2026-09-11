@@ -1,0 +1,314 @@
+{
+ "_source": "BS Hamzići (Čitluk). The same system as BS Sjednica (Investor, 11.09.2026: the design cannot change) - module, stands, foundations, genset, tank and electrical values are carried over from bht-sjednica-final-review/cad/design.json. Site values (wind derivation, fence, derating, ventilation through the Stulz cut-outs, orientation, Stulz removal) come from the certified 2017 project GP-BS-10472-291 and the 08.09.2026 photos; geometry in cad/site_geometry.json. Dimensions in mm.",
+ "module": {
+  "model": "Huawei iPV585-M2A / 585 W",
+  "L": 2278,
+  "W": 1134,
+  "T": 30,
+  "kg": 32.0,
+  "Voc": 51.55,
+  "Imp": 13.67,
+  "source": "PVM p.43 Table 3-5"
+ },
+ "support": {
+  "bom": "custom-fabricated (off-catalogue on wind grounds, see wind.verdict) — Huawei Standard A-shaped 3.0 geometry conventions reused for margins/overhang only",
+  "anchor_bom": "M16-M20 resin anchor, site-specific (karst limestone), not a Huawei part",
+  "crossbeam": 2918,
+  "long_margin": 306.5,
+  "overhang": 558.5,
+  "modules_each": 4,
+  "arrangement": "2 rows x 2 columns, portrait",
+  "field_w": 2305.0,
+  "field_slope": 4576,
+  "strip_spacing": 1600,
+  "anchor_group_spacing": 1200,
+  "weight_kg": 110,
+  "source": "review/07-calculations.md F.6 (2026-08-08) — rederived from PVM p.80 Table 3-29 / p.180 Table 4-20 conventions for a custom 2-column crossbeam; frame mass is an estimate pending the fabricator's calc",
+  "proj": 3236,
+  "rise": 3236,
+  "strip_l": 3300,
+  "strip_w": 450
+ },
+ "array": {
+  "count": 3,
+  "modules_total": 12,
+  "kWp": 7.02,
+  "tilt_deg": 45,
+  "azimuth_deg": 180,
+  "bottom_edge": 500,
+  "top_edge": 3736,
+  "above_fence": 1936,
+  "fence_height": 1800,
+  "plot_depth_south_mm": 3575
+ },
+ "wind": {
+  "site_qp_kNm2": 1.2,
+  "site_gust_ms": 45,
+  "rated_gust_ms": {
+   "15": 40,
+   "25": 40,
+   "35": 35,
+   "45": 31
+  },
+  "rated_q_kNm2": {
+   "15": 0.87,
+   "25": 0.87,
+   "35": 0.67,
+   "45": 0.52
+  },
+  "verdict": "The certified project was designed to JUS U.C7 with vm,50,10 = 25 m/s (gust pressure 0,41-0,56 kN/m2 at 1,5-4,5 m). Taking vb,0 = 25 m/s, BAS EN 1991-1-4 gives qp = 0,69 (terrain II) to 0,96 kN/m2 (terrain 0) at the panel top - above the 0,52 kN/m2 the Huawei catalogue support is rated for at 45 deg, so the stand is custom here too. The tender adopts qp >= 1,20 kN/m2, the Sjednica value, so both sites use one stand and one foundation design; the forces are therefore identical to Sjednica.",
+  "sail_area_m2_per_support": 10.55,
+  "uls_uplift_kN_per_support": 18.1,
+  "overturning_kNm_per_support": 42.6,
+  "jus_vm_50_10_ms": 25.0,
+  "jus_qg_kNm2": {
+   "1.5 m": 0.41,
+   "4.5 m": 0.56
+  },
+  "en_qp_derived_kNm2": {
+   "terrain II": 0.69,
+   "terrain I": 0.86,
+   "terrain 0": 0.96
+  }
+ },
+ "foundation": {
+  "strip_w_top": 450,
+  "strip_w_base": 550,
+  "strip_l": 3300,
+  "strip_d": 900,
+  "concrete": "C30/37 (XC4+XF3, aerant 4-6%) on C12/15 blinding",
+  "rebar": "B500B",
+  "cover": 50,
+  "supports": 3,
+  "strips_total": 6,
+  "blinding_thk": 50,
+  "volume_m3_per_strip": 1.485,
+  "volume_m3_total": 8.91,
+  "blinding_m3_total": 0.54,
+  "excavation_m3_total": 10.35,
+  "backfill_m3_total": 0.89,
+  "spoil_m3_total": 9.45,
+  "_quantities": "strip_d 900 is the FULL DEPTH OF CONCRETE, not a trench depth with a thinner footing at the bottom - that is what S-02 draws (a 900 mm block, hatched solid) and what its note 2 states. Volume per strip = ((0.45+0.55)/2) x 0.90 x 3.30 = 1.485 m3. Excavation is taken to the underside of the blinding, 950 mm, at the base width 550: 1.724 m3/strip; backfill is only the taper wedge, 0.149 m3/strip, so nearly all the spoil is carted away. Rev 8 (2026-08-12) corrected BOQ 2.1/2.2/2.2a/2.3 to these figures; they had carried 0.41 m3/strip (a 450x275 footing) from an earlier lighter design, with the excavation and backfill still sized for a 900 mm trench.",
+  "_uplift_check": "The full-depth strip is what the wind case needs. Overturning 42.6 kNm per support over the 1600 mm strip spacing gives a 26.6 kN uplift couple on the windward strip; the strip's own weight 1.485 x 24 = 35.6 kN, factored 0.9, gives 32.1 kN - adequate on dead weight alone. The 0.41 m3 strip gives only 8.9 kN and is 17.7 kN short, which it could only recover from friction on the backfill - not a defensible assumption on karst. The chemical anchors carry uplift into the strip, not into the ground, so they do not close that gap.",
+  "note": "Same 6 full-depth strips as Sjednica (one design for both sites). Depth and reinforcement are confirmed by the bidder's certified calculation. C30/37 XC4+XF3 is kept for one specification at both sites; at 493 m XF1 would suffice. Soil: certified project, sigma_dop = 150 kN/m2, no groundwater; karst, rock near surface."
+ },
+ "genset": {
+  "model": "FG Wilson P18-6 (Skid) ili ekvivalent",
+  "kVA": 18,
+  "kW": 14.4,
+  "kVA_prime": 16.5,
+  "kW_prime": 13.2,
+  "engine": "Perkins 404D-22G1, 4-cyl, in-line, naturally aspirated, 2.2 l, 1500 rpm",
+  "alternator": "FG Wilson FGL10040, SHUNT excitation, AVR R120, IP23, class H",
+  "skid_L": 1550,
+  "skid_W": 620,
+  "skid_H": 1020,
+  "radiator_end": "WEST",
+  "mass_dry_kg": 365,
+  "mass_wet_kg": 372,
+  "fuel_l_h_standby_100pct": 4.8,
+  "fuel_l_h_standby_75pct": 3.7,
+  "fuel_l_h_standby_50pct": 2.7,
+  "motor_starting_kVA_400V": 26,
+  "In_A_400V": 26.0,
+  "site_derate": {
+   "basis": "ISO 3046 / ISO 8528-1: -1 %/100 m above 100 m at 493 m a.s.l. = -3,9 %, and -3 % for 40 C ambient. Factor 0,931.",
+   "standby_kW": 13.4,
+   "standby_kVA": 16.8,
+   "prime_kW": 12.3,
+   "prime_kVA": 15.4,
+   "rectifier_draw_kW": 12.5,
+   "verdict": "At 493 m the derated prime (12,3 kW) is still below the 12,5 kW an uncapped rectifier system can draw, so the 9,5 kW cap stays; here it is 77 % of the derated prime (82 % at Sjednica) - more margin."
+  },
+  "_source": "FG Wilson P18-6 (Skid) technical data sheet 2019-08-14 — EQUIPEMENT/GENSET/P18-6.pdf. The Investor adopted 18 kVA on 2026-08-12, returning to the original first choice. NOTE the skid envelope 1550x620x1020 is IDENTICAL to both superseded sets, so no drawing geometry moved - only mass, thermal and electrical figures. The alternator is still SHUNT and the data sheet states short-circuit capacity 0 % without the optional PMG/AUX winding, so the tender's PMG/AREP requirement stands and is now backed by the sheet itself.",
+  "_superseded": "P13.5-6 (Rev 7, 2026-08-11): 13.5 kVA/10.8 kW, Perkins 403D-15G 1.5 l, FGL10020, 302/308 kg, 4.0 l/h — WITHDRAWN because the site derate takes it to 9.7 kW prime, below the 12.5 kW rectifier draw. P22-6 (Rev 1-6): 22 kVA/17.6 kW, Perkins 404D-22G, FGL10060, 378/385 kg, 5.9 l/h."
+ },
+ "tank": {
+  "litres": 500,
+  "type": "dvoplasni",
+  "L": 1050,
+  "W": 600,
+  "H": 1310,
+  "mass_empty_kg": 170,
+  "mass_full_kg": 590,
+  "_source": "FG Wilson 500 l indoor tank data supplied by the Investor 2026-08-11: 1050L x 600W x 1310H, 170 kg. Supersedes the earlier unverified 1200x700x800 estimate; full mass = 170 kg + 500 l diesel @ ~0.84 = ~590 kg over 0.63 m2 = 9.2 kN/m2.",
+  "secondary_containment": "The tank is DOUBLE-SKINNED (dvoplasni) with interstitial leak monitoring, so the interstitial space IS the secondary containment and no 110 % bund is required. Investor's decision 2026-08-11. NOTE the arithmetic that decided it: a bund does not gain capacity from height, because the tank standing in it displaces the retention volume - only FREE area x upstand counts. The 2885x800x330 bund gave (2.308 - 0.63) x 0.33 = 554 l, clearing 550 l by 0.7 %; the earlier 1600x1060x330 gave only (1.696 - 0.63) x 0.33 = 352 l and never met 110 % at all. Any compact bund is arithmetically impossible: 1500x640 has 0.33 m2 free, so it would have to stand 1.67 m tall.",
+  "kada": {
+   "L": 1150,
+   "W": 640,
+   "rim_mm": 200,
+   "volume_gross_l": 147,
+   "volume_free_l": 21,
+   "basis": "Drip/spill tray under the tank - NOT a 110 % bund; secondary containment is the tank's own second skin. It catches fill and draw-off spillage and drains to a visible low point. Sized to the tank with 50/20 mm margins so the whole assembly stays inside the 640 mm strip SOUTH of the container door (door 900 wide, 700..1600 mm off the south wall), which is what keeps the doorway and the skid entry path clear."
+  }
+ },
+ "ventilation": {
+  "radiator_m3h": 1980,
+  "radiator_m3h_site_derated": 2206,
+  "combustion_air_m3h": 90,
+  "max_external_restriction_Pa": 125,
+  "max_combustion_air_restriction_kPa": 3.0,
+  "heat_to_water_kW": 15.2,
+  "heat_radiated_to_room_kW": 5.8,
+  "intake_mm": [
+   500,
+   700
+  ],
+  "discharge_mm": [
+   600,
+   600
+  ],
+  "duct": "plenum od pocinčanog lima od prirubnice hladnjaka do postojećih otvora klima-uređaja Stulz na istočnom zidu",
+  "exhaust_run_m": 4.0,
+  "room_fan_m3h": 1200,
+  "room_min_m3h": 120,
+  "exhaust_flow_m3h": 192,
+  "exhaust_T_C": 413,
+  "exhaust_DN": 50,
+  "exhaust_velocity_ms": 27.2,
+  "exhaust_back_pressure_kPa": 1.9,
+  "max_back_pressure_kPa": 10.2,
+  "layout": {
+   "intake_wall": "ZAPAD - novi otvor, donja ivica +0,30 m od poda",
+   "discharge_wall": "ISTOK - kroz postojeće otvore klima-uređaja Stulz (južni kraj istočnog zida), spojene/proširene na >=0,36 m2 bruto; višak otvora zatvoriti panelom 60 mm",
+   "exhaust": "ISTOK - horizontalni izlaz kroz zid na ≈+2,30 m, ISPOD platforme stuba (+3,0 m), usmjeren na istok - dalje od FN polja (jug) i ulaznih vrata (sjever), sa hvatačem iskri i kapom",
+   "room_fan_wall": "ZAPAD - gore, sjeverno od usisa",
+   "tank_vent": "prema elaboratu zaštite od požara, >=3 m od izduva i usisa",
+   "gro_wall": "SJEVER - zapadno od ulaznih vrata",
+   "_rationale": "Cross-flow W -> E. The radiator discharges where the Stulz unit is today, so the existing wall cut-outs are reused (Investor, 11.09.2026). Discharge and exhaust share the east wall, away from the PV array to the south and the door to the north. The tower platform at +3,0 m sits over the roof, so the exhaust cannot terminate above it as at Sjednica."
+  },
+  "_verdict": "Radiator 1980 m3/h, density-corrected to 2206 at 493 m / 40 C, plus 90 m3/h combustion air. At 50 % louvre free area: both 300x700 Stulz cut-outs together (0,42 m2 gross) give 3,0 m/s and ≈12 Pa, a 600x600 discharge 3,5 m/s and ≈17 Pa, the 500x700 intake 3,6 m/s and ≈18 Pa - far inside the 125 Pa budget.",
+  "discharge_min_gross_m2": 0.36,
+  "duct_area_m2": 1.5,
+  "_duct_area": "Plenum from the radiator to the Stulz cut-outs at the SE corner; ≈1,5 m2 developed with flanges - confirm on site.",
+  "exhaust_insulation_area_m2": 2.5,
+  "_exhaust_run": "≈1 m flex + silencer, then ≈3 m horizontal through the east wall: 4 m x 0,52 m2/m + silencer ≈ 2,5 m2."
+ },
+ "container": {
+  "ext": [
+   3005,
+   2300
+  ],
+  "wall": 60,
+  "int": [
+   2885,
+   2180
+  ],
+  "height": 2630,
+  "height_high_eave": 2890,
+  "_height_note": "04 Fasade.dwg (Hamzići): +2,63 / +2,89 m, 10 % mono-pitch roof.",
+  "empty": true,
+  "door": [
+   1000,
+   2150
+  ],
+  "floor_capacity_kNm2": 10.0,
+  "floor_note": "Certified project AG dio §4.4.2 (Hamzići): secondary HOP U 100x50x3 at 0,51 m, primary beams 10,00 x 1,50 = 15,00 kN/m' - the same K2 floor as Sjednica, 10,00 kN/m2 (g+p). Genset 3,80 kN/m2 and full tank 9,2 kN/m2 act as concentrated loads, so the load-spreading grillage is REQUIRED as at Sjednica.",
+  "door_wall": "SJEVER (malo prema sjeverozapadu; fotografije i Naručilac 11.09.2026 - ovjereni crtež iz 2017 je zakrenut ≈180°)"
+ },
+ "access": {
+  "skid_width_mm": 620,
+  "door_clear_mm": 1000,
+  "gate_clear_mm": 1300,
+  "verdict": "FITS - 620 mm skid through the 1000 mm door; height 1020 mm against 2150 mm."
+ },
+ "site": {
+  "name": "BS Hamzići",
+  "municipality": "Čitluk",
+  "lat": 43.28801195406457,
+  "lon": 17.624794323005304,
+  "altitude_m": 493,
+  "altitude_project_m": 500,
+  "cadastral": "k.č. 109/1 K.O. Hamzići (novi premjer)",
+  "lease_m": [
+   12.0,
+   12.5
+  ],
+  "tower_m": 32,
+  "fence_m": 1.8
+ },
+ "stulz": {
+  "model": "Stulz WDE80 (Wall-Air kompaktni zidni klima-uređaj), 8 kW",
+  "refrigerant": "R407C (standard for the WDE series)",
+  "operating_range_C": [
+   -20,
+   50
+  ],
+  "position": "ISTOČNI zid, južni kraj (fotografije 08.09.2026)",
+  "size_mm_estimated": [
+   700,
+   500,
+   2200
+  ],
+  "action": "odspajanje (230 V AC, 48 V DC, signalizacija), demontaža bez otvaranja rashladnog kruga, pakovanje i transport u skladište BH Telecom d.d., Alipašino Polje, Sarajevo, uz zapisnik o primopredaji",
+  "nameplate": "nečitljiva na fotografijama - očitati pri obilasku lokacije",
+  "_note": "Sealed monoblock moved as one unit; no F-gas recovery item (Investor, 11.09.2026)."
+ },
+ "tower": {
+  "height": 32000,
+  "base": [
+   3700,
+   3700
+  ],
+  "platforms_m": [
+   3.0,
+   12.0,
+   30.0
+  ]
+ },
+ "tree": {
+  "what": "listopadno stablo 7-9 m, 15-20 m JJI-JI od stuba",
+  "decision": "ostaje (11.09.2026)",
+  "effect": "-2,7 do -10,4 % decembarske FN proizvodnje; +4 do +16 h/god rada DEA (review/pvsim/photo/zasjenjenje.json)"
+ },
+ "energy": {
+  "_source": "review/pvsim/kpis.json, written by `python -m pvsim report --site hamzici`; copied here by tools/sync_energy.py. Do not edit by hand.",
+  "kpis_sha256": "5780b3c4127adb0043474979d39be860bfcbbe6a13d5d18e411343352e3b0f3e",
+  "pvsim_commit": "f06377c",
+  "generated_utc": "2026-09-11T13:38:38+00:00",
+  "tilt_deg": 45,
+  "years": [
+   2005,
+   2023
+  ],
+  "pv_bus_kwh": 10448.321,
+  "specific_yield_bus": 1488.365,
+  "pv_used_kwh": 9040.199,
+  "curtailed_kwh": 1408.123,
+  "load_kwh": 10644.426,
+  "solar_fraction": 0.817,
+  "dec_pv_kwh": 600.64,
+  "dec_load_kwh": 892.8,
+  "genset_h_mean": 213.656,
+  "genset_h_p90": 256.313,
+  "genset_h_max": 300.227,
+  "starts_mean": 76.105,
+  "fuel_l_mean": 705.712,
+  "fuel_l_p90": 846.61,
+  "fuel_l_max": 991.657,
+  "refills_mean": 1.789,
+  "tank_years_mean": 0.709,
+  "longest_genset_free_days": 133.667,
+  "cycles_mean": 136.486,
+  "unmet_kwh_total": 0.0,
+  "validation": {
+   "pvcalc_E_y": 9839.5,
+   "pvsim_E_y": 9780.3,
+   "worst_month_dev": 0.0215,
+   "hourly_r": 0.99999
+  },
+  "limits_odluka": {
+   "genset_h_max": 250,
+   "tank_years_min": 1.0,
+   "_status": "superseded in Rev 9 by the simulated values (review/09-odluka-nosaci-nagib.md)"
+  }
+ },
+ "control": {
+  "_source": "Prilog I §4.6 (Rev 9): SMU settings the bidder sets and proves with evidence item 12; the same values are the pvsim base case.",
+  "dod_start": 0.85,
+  "soc_stop": 0.6,
+  "min_run_h": 1.0,
+  "charge_c_rate": 0.5,
+  "rect_cap_ac_kw": 9.5
+ }
+}

@@ -1,0 +1,101 @@
+{
+  "_source": "Measured from the certified site project GP-BS-10472-291 (hamzici-hybrid-solar/GP BS HAMZIĆI_Čitluk K2 i AS 36 m, version A): 461 Graficki dio TEMELJ i OGRADA/01_Situacija 1_200.dwg and 04_Ograda.dwg, 463 Graficki dio OBJEKAT/01 Osnova.dwg and 04 Fasade.dwg, 462 .../01_Dispozicija S32 m.dwg, 5_ELEKTRO/3.6.9 Plan uzemljivača objekta.dwg, converted to DXF with ODA File Converter and read with ezdxf. Millimetres, in a slab-local frame: origin = south-west corner of the 5 400 mm slab, +X = EAST, +Y = NORTH (true orientation, see 'orientation').",
+  "_verification": "Container 2300 x 3005 external with 60 mm panels = 2180 x 2885 internal = 6,29 m2 and 10,13 m perimeter - both annotated on 01 Osnova.dwg ('P = 6.29 m2', 'O = 10.13 m'). Offsets container-to-slab 1550 / 1197,5 read off the situation drawing's own dimension entities (1550, 2300, 1550; 5400; 12000; 12500).",
+
+  "parcel": {
+    "cadastral": "k.č. br. 109/1 K.O. Hamzići (novi premjer), općina Čitluk",
+    "lease": {"size": [12000, 12500], "origin": [-3300, -3575]},
+    "leased_area_m2": 150,
+    "altitude_m": 493,
+    "altitude_project_m": 500,
+    "lat": 43.28801195406457,
+    "lon": 17.624794323005304,
+    "strips_outside_slab_mm": {"south": 3575, "north": 3525, "east": 3300, "west": 3300},
+    "access": "pristupni put ≈800 m × 3 m (projekat 2017)"
+  },
+
+  "slab": {
+    "size": [5400, 5400],
+    "origin": [0, 0],
+    "note": "Existing reinforced concrete tower foundation slab 5,40 x 5,40 m; the container stands on it, centred between the tower legs."
+  },
+
+  "fence": {
+    "size": [5500, 5500],
+    "origin": [-50, -50],
+    "height": 1800,
+    "height_source": "04_Ograda.dwg, POGLED - OGRADA BAZNE STANICE: '+ 1.80'. Photos 08.09.2026: ≈1,8-2,0 m.",
+    "detail": {
+      "posts": "kv. cijev 50x50x3 mm na 1335 mm",
+      "gate_posts": "kv. cijev 70x70x3 mm",
+      "frame": "kv. cijev 30x30x2 mm"
+    },
+    "offset_outside_slab": 50,
+    "gate": {
+      "leaf": 1300,
+      "hinge": [2050, 5450],
+      "span_x": [2050, 3350],
+      "wall": "NORTH fence line, same face as the container door"
+    }
+  },
+
+  "container": {
+    "external": [2300, 3005],
+    "internal": [2180, 2885],
+    "wall_panel_thickness": 60,
+    "wall_panel_module": 1170,
+    "origin": [1550, 1197.5],
+    "centred_on_slab": true,
+    "heights": {"eave_low": 2630, "eave_high": 2890, "roof_pitch_pct": 10},
+    "floor": "antistatic; 10,00 kN/m2 (g+p) per the certified AG dio §4.4.2 (secondary HOP U 100x50x3, primary 15,00 kN/m')",
+    "door": {
+      "leaf": 1006,
+      "opening": 990,
+      "hinge": [3195, 4202.5],
+      "span_x": [2205, 3195],
+      "opens": "outward",
+      "wall": "NORTH (the 2300 mm face)",
+      "size_mm": [1000, 2150]
+    },
+    "status": "EMPTY - no GRO, no installations; only the Stulz wall unit is mounted (Investor, 11.09.2026)."
+  },
+
+  "stulz": {
+    "what": "Stulz WDE80 kompaktni zidni klima-uređaj (Wall-Air), 8 kW",
+    "wall": "EAST",
+    "position": "south end of the east wall, next to the SE corner",
+    "size_mm_estimated": [700, 500, 2200],
+    "source": "photos 08.09.2026 (20260908_121141(1).jpg and others); size estimated from the photos - measure the unit and its wall cut-outs at intake",
+    "cutouts_2017_design_mm": [[300, 700], [300, 700]],
+    "cutouts_note": "The 2017 design (6_MASINSKE, 5,4 kW compact unit) specifies two 30/70 cm openings (supply low, return high) plus a 10/10 cable hole; the installed WDE80 is a larger unit, so the real cut-outs must be measured."
+  },
+
+  "tower": {
+    "height": 32000,
+    "legs_centres": [[850, 850], [4550, 850], [850, 4550], [4550, 4550]],
+    "leg_footprint": [500, 500],
+    "base": [3700, 3700],
+    "footings": {"size": [1700, 1700], "depth": 2000, "at": "the four slab corners"},
+    "platforms_m": [3.0, 12.0, 30.0],
+    "note": "Lattice tower 32 m (the project title says 'AS 36 m', a template leftover; 462 .../01_Dispozicija S32 m.dwg carries 32 000). Platform P I at +3,0 m doubles as an ice shield and sits over the container roof (+2,89 m) - no exhaust can terminate above the roof."
+  },
+
+  "orientation": {
+    "container_door": "NORTH (a little NW)",
+    "gate": "NORTH (a little NW)",
+    "stulz": "EAST wall, south end",
+    "pv_array": "SOUTH of the slab, facing SOUTH (azimuth 180°)",
+    "drawing_rotation_deg": 180,
+    "rotation_to_true_north_deg": "a few degrees counter-clockwise (door face points a little north-WEST); not measured",
+    "note": "The Investor's site visit and the photos of 08.09.2026 are the reference: door and gate face NORTH, a little north-WEST (Investor, 11.09.2026). The certified 2017 situation drawing shows them on the opposite side with its north arrow pointing up, i.e. the drawing is rotated by about 180° relative to the site. All coordinates here are rotated to the site and drawn square to north; the small residual rotation is not measured. The PV stands face true south: either in echelon within the south strip or square to the lease edge with an azimuth deviation of at most 15° (about -1 % yield). The bidder verifies the orientation during the mandatory site visit."
+  },
+
+  "earthing": {
+    "ring": "postojeći uzemljivač Fe/Zn 25x4 mm: prsten u temeljima stopa stuba i prsten na dubini 0,8 m oko ploče (3.6.9 Plan uzemljivača objekta)",
+    "note": "New PV supports and the container equipment bond to this ring."
+  },
+
+  "obstacles": {
+    "tree": "listopadno stablo 7-9 m, 15-20 m JJI-JI od stuba, izvan zakupa (procjena iz fotografija 08.09.2026); ostaje - vidi review/09-odluka-nosaci-nagib.md"
+  }
+}
