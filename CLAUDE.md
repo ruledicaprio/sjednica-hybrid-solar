@@ -25,6 +25,14 @@ only. Never quote `rural-star-sjednica/output/report_results/`: it reports
 - `TD_OUT=<dir>` redirects a site's build outputs (`tools/paths.py`), so a
   rebuild can be compared against the committed package without touching it.
 
+## Commits and pull requests
+
+No AI attribution in this repo (owner's rule, 11.09.2026). Commit messages and
+PR descriptions carry no trailers and no contribution lines: no
+`Co-Authored-By`, no `Claude-Session`, no "Generated with Claude Code", no Qwen
+or other assistant credits. Commits are authored and committed by the owner,
+never by an assistant or bot identity.
+
 ## Data & tool sources
 
 Radiance is one input tool among several this toolkit is meant to lean on.
