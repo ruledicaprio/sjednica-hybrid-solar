@@ -497,3 +497,610 @@ measured obstruction-light load), plus:
   K2 set — which exists, in `2 - ARHITEKTONSKO GRADJEVINSKI DIO` — would be the clean fix.
 - Container height 2400 mm is from the type sheet; `02-construction.md` Y-05 lists four
   conflicting heights. To be confirmed on the site visit.
+
+## 20. Prilog III rebuilt from parts (Rev 3, second pass)
+
+The annex was previously maintained by splicing corrected sheets into an inherited
+30-page PDF. It is now **assembled from sources** by `tools/build_prilog3.py`, which
+made the Investor's restructure possible:
+
+| Was | Now |
+|---|---|
+| 8 K3 container drawings (G-01..G-08) | **6 K2 drawings** from the certified project of this object: osnova, presjek 1-1, presjek 2-2, fasade, detalji, osnova temelja |
+| 9 K3 electrical drawings (E-01..E-09) | **1 K2 drawing**: 3.5.2 Jednopolna šema GRO. The PMO sheets go with the rest — the PMO no longer has a supply, and sheet E-01 of this package shows the new GRO |
+| INFO-03 (RFI block diagram), INFO-04 (named PowerCube), closing REFERENTNA DOKUMENTACIJA page | removed |
+| INFO-01 at page 25 | moved directly behind the cover |
+| inherited cover | rebuilt in the style of the TD title page |
+
+**30 pages → 16**, 10,0 MB → 7,3 MB, and the K3 container — which was never the
+container on this site — no longer appears anywhere in the package.
+
+Three things the vendor DWGs needed:
+
+- **Fonts.** The cover is generated with PyMuPDF, whose base-14 fonts have no
+  š/ć/č/ž/đ; Bosnian text came out as question marks. The system Arial is embedded.
+- **Text normalisation.** The inherited pages set words with non-breaking spaces and
+  soft hyphens, so `"OPŠTI PODACI O LOKACIJI"` and `"INFO-01"` could not be found by
+  substring search — the same class of bug as the docx reader in §12.
+- **Cropping.** The GRO single-line parks a duplicate load table outside its sheet
+  frame; plotted fit-to-page that padding shrank the drawing into a corner. Cropping
+  is **opt-in per sheet**, after a heuristic applied to all of them threw away real
+  content on the plans. The bounding boxes come from `ezdxf.bbox` — a hand-rolled
+  version ignored block INSERTs, and the stray table is a block, so it survived
+  every crop until that was fixed.
+
+Also in this pass: **the container is drawn on S-03**, on the existing slab north of
+the fence, so the section shows what the panel actually oversails.
+
+## 21. Note on the K2 architectural drawings
+
+They are the 2018 as-built set and show the container with RBS cabinets and
+"UREĐAJI ZA NAPAJANJE" in place. The package states the container is now **PRAZAN**
+(Investor's site visit, `05-site-corrections.md` C-1). That is not a contradiction to
+fix in the drawings — they are a historical annex — and the precedence clause in
+Prilog I §0 settles which document governs.
+
+## 22. Rev 6 — Investor's mark-up on the Situacija set (2026-08-11)
+
+Scope was deliberately confined to `cad/`: the drawing sources, `design.json` and
+`site_geometry.json`. No BOQ, no TD, no Prilog I.
+
+**Three real geometry errors, not preferences.**
+
+- **The footings were drawn too short.** `design.json`, the S-02 leader and the
+  S-02 legend all said 450 × 3300; `sheets_new.py` drew **450 × 1500**. On S-03 the
+  pair was drawn as two 450-wide pads under the panel ends, which is the wrong
+  projection — the strips run NORTH–SOUTH at 1600 mm centres EAST–WEST, so section
+  A–A sees **one** 3300 mm strip spanning the whole 3236 mm panel projection and the
+  other directly behind the section plane. Both now come from `support.strip_l` /
+  `strip_w` rather than from literals, which is what let them drift apart.
+- **The fence was a single hairline.** It is now drawn to the certified elevation in
+  `461 Graficki dio TEMELJ i OGRADA/04 Ograda.dwg`, which had never been opened:
+  posts 50×50×3 at 1335 mm, ram 30×30×2, infill Ø4 50×50 woven mesh, gate posts
+  70×70×3, Č.0361 hot-dip galvanised, post footing to −1,50 m. That drawing also
+  settles the height: **+2,10**, not the 1,90 carried through the package with no
+  source. `site_geometry.json` records the measurement and its provenance. Infill
+  starts +0,20 per the Investor.
+- **M-01 overflowed the frame.** The west-duct leader tail sat at y = 7400 against a
+  frame top of 7175 — outside the frame but inside the paper, which is why
+  `check_extents` (paper-only) passed it while the plot clipped it. Plan and section
+  moved down 700 units. The bund's spreading frame also started 20 mm *inside* the
+  60 mm south wall.
+
+**Two defects found while measuring.**
+
+- **S-03 printed the wrong bottom-panel level.** `b` held `bottom_edge` (1500); the
+  tower bracing loop `for a, b in zip(lvl, lvl[1:])` then rebound it to 4600, so the
+  sheet read *"donja ivica panela +4,60"* and drew that line 3,1 m too high. `lvl`
+  was clobbered the same way. Third instance of this class in this package (after
+  `tx` on M-01) — loop variables in these sheet functions now get local names.
+- **Array-to-fence distance disagreed three ways**: Prilog I and the S-02 note both
+  say 400 mm, S-02 drew 150, S-03 drew 800. Prilog I cannot be regenerated, so 400
+  governs and both sheets now use it.
+
+**Investor's layout decisions.** The bund now runs the **full internal length of the
+south wall**: 2885 × 800 with a 330 mm upstand = **762 l**, comfortably over the
+550 l (110 %) required and 260 mm shallower than 1600 × 1060. That is what makes the
+container usable — the 2180 mm internal depth is otherwise fully committed
+(bund + skid with its spreading frame + GRO), and the aisle was 50 mm. It is now
+**370 mm**, and M-01 note 8 says so, so no bidder rearranges it casually. The tank
+is drawn in the east half of the bund; its footprint is not binding, since the tank
+is to be fabricated.
+
+Also: the bund was dropped from S-02 (it is an M-01 detail, not a 1:50 site plan),
+the S-02 note block moved under the legend bottom-left, three leaders that ran off
+the sheet edge were shortened or re-aimed, and *"postojeći"* was dropped from the
+S-01 outdoor-cabinet callout.
+
+### Open — the prose was deliberately left behind
+
+Carrying 2,10 m into the drawings makes the derived overhang **2,64 m**, not 2,84.
+By the Investor's instruction the correction stopped at `cad/`, so four lines still
+carry the old figures and need hand editing (Prilog I is hand-maintained):
+
+| document | line |
+|---|---|
+| Prilog I (and `_K`) §1 | *"AB ploča 5,40 × 5,40 m, ograda h = 1,90 m, kapija 1,00 m"* → h = 2,10 m |
+| Prilog I (and `_K`) | *"Nadvišenje ograde — 2,84 m iznad kote ograde h = 1,90 m"* → 2,64 m / h = 2,10 m |
+| Prilog I (and `_K`) §4.2 | *"referentno 1600 × 1060 mm"* → 2885 × 800 mm, 762 l |
+| TD §lokacija | *"metalna ograda visine 1,90 m"* → 2,10 m |
+
+`check_consistency.py` still reports 0 failures **only because Prilog III is
+image-only** — it cannot read the drawings' text. Do not read that as agreement.
+
+---
+
+## §23 — Rev 7: FG Wilson **P18-6** (18 kVA) becomes the reference set (2026-08-12)
+
+### Why the rating moved twice in two days
+
+The package was drafted around the **P22-6 (22 kVA)**. On 2026-08-11 the Investor
+set **13,5 kVA**, and `design.json` plus all five sheets were swapped to the
+**P13.5-6**. Working through the BOQ and Prilog I edits turned up the reason that
+rating does not survive the site:
+
+| | at 25 °C / 100 m | derated at 1076 m, 40 °C |
+|---|---|---|
+| P13.5-6 standby | 10,8 kW | **9,7 kW** |
+| P13.5-6 prime | 9,9 kW | 8,9 kW |
+| rectifier draw (3 × R4875G5) | — | **12,5 kW on the AC side** |
+
+The set would have been overloaded before it charged anything. On 2026-08-12 the
+Investor returned to the original first choice, the **P18-6**, read off
+`EQUIPEMENT/GENSET/P18-6.pdf` (TDS 2019-08-14).
+
+**The derate still bites, and the BOQ now says so numerically.** 18 kVA / 14,4 kW
+standby derates to **12,6 kW** — 0,1 kW above the draw — and the site's real duty
+is *prime*, not standby (there is no utility; the set cycles on battery SoC, see
+03-electrical Y-02), where **11,6 kW is below it**. BOQ 3.1 already required the
+rectifier input to be limited "so as not to overload the DEA" but gave no number.
+It now caps the AC input at **9,5 kW** (≈82 % of derated prime), which leaves
+≈8,2 kW for charging above the 1,33 kW TK load and keeps the engine clear of the
+30 % minimum-load line that Y-03 warned about.
+
+### What the data sheet changed — and what it did not
+
+**The skid is 1550 × 620 × 1020 on all three sets**, so no drawing geometry moved
+again. Nor did the ventilation: the P18-6 carries the same Perkins **404D-22G1**
+(2,2 l) and the same cooling pack as the P22-6, so radiator air stays **1980 m³/h**
+(2151 site-derated), combustion air **90 m³/h**, intake restriction 3 kPa. Louvres
+500 × 700 and 600 × 600 stand at 3,6 / 3,5 m/s and ≈33 Pa against the 125 Pa budget,
+so BOQ 4.7/4.8 were not churned.
+
+| | P22-6 | P13.5-6 | **P18-6** |
+|---|---|---|---|
+| standby | 22 kVA / 17,6 kW | 13,5 / 10,8 | **18 / 14,4** |
+| alternator | FGL10060 | FGL10020 | **FGL10040**, still SHUNT |
+| mass wet | 385 kg | 308 | **372** → floor **3,80** kN/m² |
+| exhaust | 234 m³/h @ 505 °C | 174 @ 490 | **192 @ 413** |
+| DN 50 velocity | 33 m/s ✗ | 24,6 ✓ | **27,2 ✓** |
+| fuel 75 % standby | — | — | **3,7 l/h** → 925 l/yr at 250 h |
+| In at 400 V | 31,75 A | 19,5 | **26,0** (3 × In = 78 A) |
+
+**Exhaust stays NO 50** — 27,2 m/s is inside the customary 30 m/s and back pressure
+is ≈1,9 kPa against 10,2. The DN 65 requirement written for the P22-6 is withdrawn,
+which restores agreement with BOQ 4.11, whose text always said `NO 50 mm`.
+
+**The PMG/AREP requirement is now backed by the sheet itself**: P18-6 p.4 states
+*Short Circuit Capacity 0 %* in the standard SHUNT build, the rated fault current
+arriving only with the optional PMG/AUX winding. BOQ 3.1 quotes this.
+
+### Also carried in the same pass
+
+- **ICC330-H1 + MTS9302 → ICC360-HA1-C1 (PowerCube 1000)** everywhere the *power
+  system* is named — the Huawei quotation and `01-huawei-solar.md` §185/§190 both
+  said so, and Rev 2 had unified the other way on a majority count. Where the text
+  describes what physically stands on the north face, **both** cabinets stay
+  (`ICC360-HA1-C1 / MTS9302A`) — the TK cabinet is still there.
+- **Fence 1,90 → 2,10 m and overhang 2,84 → 2,64 m** in the prose: the four lines
+  left open at the end of §22 are now closed in Prilog I `_K` and the BOQ.
+- **Bund → korito** in Prilog I §4.2, matching the double-skin decision.
+- **Estimates 15.000 / 34.000 / 49.000 KM**, including the LOT 2 qualification
+  threshold in TD `_K` and the figure in the Odluka.
+
+### A silent-corruption bug found in `fix_boq_lots.py`
+
+Its first run left the BOQ **arithmetically wrong without erroring**: `insert_rows`
+translates no formulas, so after three rows went in above `UKUPNO 5`, section 6's
+items still multiplied `D128..D131`, `UKUPNO 6` summed a blank band and the
+recapitulation pointed at the wrong pair of cells. Patching the two sums known to
+move was not enough. The script now runs `translate_formulas()` — every formula
+re-derived from an untouched copy with its row references remapped — plus
+`extend_section_sums()`, because rows inserted immediately *above* a total fall
+outside its range and the new 5.12–5.14 would have been priced and not counted.
+Verified by pricing every item at 100 KM and recalculating through LibreOffice.
+
+A first attempt rebuilt the ranges from structure instead and was **rejected**: the
+sheet's numbering is irregular (LOT 2's `UKUPNO 3` spans items numbered `1.1` *and*
+`3.2`), so inferring ranges collapsed that total to a single cell.
+
+### Open
+
+1. **The old non-`_K` duplicates are the only remaining conflicts.**
+   `check_consistency.py` reports 5 failures and every one of them is
+   `3. TD JN ....docx` / `3. Prilog I ....docx`, which still carry 22 kVA,
+   ICC330-H1, 1,90 m and the 500 l first fill. The `_K` files are the master. They
+   should be deleted from `TD-OUTPUT/` or the check taught to skip them — Investor's
+   call, but shipping both is the real hazard.
+2. **Prilog III page 3 (site data) is stale and inherited.** It still reads
+   *22 kVA / 17,6 kW*, *FG Wilson P22-6 (motor Perkins 404D-22G1)* and *ograda
+   visine 1,90 m*. Spot-redaction was tried and reverted — the values share text
+   objects with the labels beside them, so the rect takes the neighbour with it and
+   the reprint collides with the next column. The page needs re-typesetting from
+   data the way `cover_page()` is built.
+3. **`strip_entity()` truncates the municipality**: the page renders *"Bile"*, not
+   *"Bileća"* — the redaction rect is 14 pt too wide to the left. Pre-existing,
+   visible on any render of page 3.
+4. **BOQ `UKUPNO LOT 2` excludes `UKUPNO 3`** (`=F94+F127+F135`). Inherited, not
+   introduced here: §3 is the DEA *specification*, priced under 4.1 — but **3.2,
+   the 500-hour spare-parts set, is a genuine priced item that falls out of the
+   total**. A bidder would price it and it would not be counted.
+5. **BOQ item 4.19 has a number and no description** in the inherited file. The
+   script's integrity check is comparative so it does not fail on it, but a
+   numbered empty item invites a query at tender.
+6. Prilog I §4.3 still carries the **pre-Rev-4 airflow layout** (intake SOUTH, tank
+   vent NORTH), contradicting BOQ 4.8, M-01 and `design.json`, which all say intake
+   NORTH / vent SOUTH. Out of scope for the genset swap; needs one more edit pass.
+7. Type-2 DC SPD integration in the PVDB500-15-2B is still unproven, so BOQ 5.13
+   stays priced.
+
+### §23b — maintenance space around the genset (Investor, 2026-08-12)
+
+The skid was drawn in the **south-west corner with its load-spreading frame flush
+against both walls** — 60 mm to the south face and 0 to the west. Two sides of the
+machine could not be reached. The container is empty, so nothing ever required it;
+the position was inherited from when the 110 % bund still ran the length of the
+south wall and left only a 370 mm aisle.
+
+The skid is now **centred in the free floor**. Interior depth 2180 less the 740 mm
+frame leaves 1440 mm, split evenly:
+
+| side | clear | |
+|---|---|---|
+| SOUTH | **720 mm** | full-length service corridor, clear of the kada |
+| NORTH | **720 mm** | 520 mm where the GRO stands proud of the wall |
+| EAST | **1155 mm** | alternator and control-panel end |
+| WEST | 60 mm | the radiator face — discharges into the duct, not serviced here |
+
+`gx` is held at `ox+180` so the frame stops at `ox+1790`, just short of the kada at
+`ox+1795`: the two never overlap in plan. The **exhaust riser moved from `oy+1100`
+to `oy+1800`** — the radiator duct band travelled with the skid to
+`oy+850..oy+1450`, and the old riser position is now inside it.
+
+Carried into `design.json` as `access.service_clearance_mm`, onto M-01 as two
+in-plan labels plus **normative note 9** (the old note 9 becomes 10), and into
+**BOQ 4.1**, which until now said only *"uz obavezan servisni pristup"* with no
+figures. A dimension chain for the three clearances was drawn on the east side and
+**removed** — that is where the door swings and it crossed the arc.
+
+### §23c — MTS9302A restored, LOT 2 scope shaded on E-01, notes cut back (Investor, 2026-08-12)
+
+**1. MTS9302A was missing from S-01 (Prilog III p. 4/16).** Collapsing the
+`ICC330-H1 + MTS9302` pair to the single quoted `ICC360-HA1-C1` in §23 dropped the
+second box from the plan as well. Two cabinets stand on the north face and both
+belong there: the hybrid power cabinet **ICC360-HA1-C1** and the existing TK
+equipment cabinet **MTS9302A**, which is a separate procurement and never went
+away. `cab` in `site_plan()` carries both again (650 × 650 and 600 × 600), with the
+S-01 leader and legend row saying so.
+
+**2. E-01 (p. 8/16) now shades the LOT 2 supply boundary** — **DEA**, **KOA/ATS**
+and the **GRO with its type 1+2 AC SPD** are hatched, with a key reading *"isporuka
+i montaža — LOT 2"*. The PV side and the Huawei equipment stay unshaded: they are
+the Buyer's separate procurement. The key was first placed at x=13600 and landed on
+top of the Investor's address in the title block; it sits at x=7500 now, clear of
+the note lines to its left and well short of the title block at ≈11500.
+
+**3. Every note block cut back**, on the Investor's instruction: no commentary, and
+nothing that Prilog I or Prilog II already carries.
+
+| sheet | was | now | dropped |
+|---|---|---|---|
+| M-01 | 10 notes, 20 lines | 6 notes, 8 lines | ventilation arithmetic, floor-load derivation, the ICC360 and GRO rationales |
+| E-01 | 6 notes | 4 notes | protection-coordination and lightning-zone clauses (Prilog I) |
+| S-02 | 5 lines | 3 lines | sail area, ULS uplift and overturning figures |
+| S-03 | 5 notes, 10 lines | 4 notes, 5 lines | slope dimensions, the repeated wind figures, the full fence build-up |
+| S-01 | 3 lines | 2 lines | container area and perimeter |
+
+The S-03 fence leader read *"(v. napomenu 5)"* and there is no note 5 any more —
+the cross-reference is gone with it. **Renumbering notes breaks leaders that cite
+them; there is one such reference on these sheets and it was the only one.**
+
+### §23d — genset centred on S-02, panel bottom edge back to +0,50 m (Investor, 2026-08-12)
+
+**1. S-02 (p. 5/16) still drew the genset in the SW corner.** M-01 was recentred in
+§23b but S-02 keeps its own `gx, gy` and was left behind, so the two sheets
+disagreed about where the machine stands. S-02 now uses `cx+180, cy+840`, the same
+offsets as M-01. **These two must be changed together — nothing links them.**
+
+**2. Panel bottom edge +1,50 m → +0,50 m** (p. 6/16). Worth being clear that this
+gives capacity back rather than spending it: the +1,50 m of `07-calculations` F.6
+was never a requirement. It was the wind margin freed by the 3×4 relayout,
+deliberately **spent as height**, sized to bring overturning back up to — not past —
+the old 2×6 design's 64,3 kNm. Banking it instead:
+
+| per support | at +1,50 m | **at +0,50 m** |
+|---|---|---|
+| centroid arm | 3,118 m | **2,118 m** |
+| overturning | 62,8 kNm | **42,6 kNm** (−32 %) |
+| couple over the 1600 mm strip spacing | 39,2 kN | **26,6 kN** |
+| ULS uplift | 18,1 kN | **18,1 kN** — height-independent |
+| top edge | +4,74 m | **+3,74 m** |
+| above the 2,10 m fence | 2,64 m | **1,64 m** |
+
+**Snow is the standing counter-argument** and it has already been ruled on:
+`02-construction` argued against a +0,50 m bottom edge on snow grounds, and
+`07-calculations` A.3 set that aside on the Investor's site knowledge — a
+wind-scoured bura-belt peak with 45 m/s gusts does not accumulate snow. That earlier
+ruling is what makes this reversal consistent rather than a new risk. The bidder's
+certified calculation still has to carry a code snow check either way.
+
+**One thing this does not improve:** at 45° the panel plane now crosses fence height
+**1600 mm** from the bottom edge instead of 600 mm. The array's set-back from the
+fence must be re-confirmed when the supports are sited — the 400 mm figure in the
+BOQ was derived at the old height, and the sentence quoting it has been dropped
+rather than silently re-used.
+
+Carried into `design.json` (`array`, `wind.overturning_kNm_per_support` and its
+note), S-02/S-03 — where the level labels are formatted from `design.json`, so they
+followed automatically — plus Prilog I `_K` §1, BOQ LOT 1 1.1 and
+`make_prilog1.py`.
+
+`check_consistency.py`: **+3,74 is the live value again**, the same figure the 2×6
+design had, reached a different way; +4,74 becomes superseded. The overhang chain is
+now four deep — 1,84 → 2,84 → 2,64 → **1,64** — and only the last is live. These
+lookaheads invert every time the value moves; check their direction when editing.
+
+All six remaining `check_consistency` failures are confined to the superseded
+non-`_K` duplicates and Prilog III's inherited site-data page (open items 1 and 2).
+
+### §23e — `review/07-proracuni.md` (bosanski) dodan
+
+Bosanska verzija objedinjenih proračuna, tražena 12.08.2026. **Pisana je na
+AKTUELNE vrijednosti (Rev 7c), a nije prevod `07-calculations.md`** — engleski
+dokument je datirani zapis pregleda, pisan za P22-6 (22 kVA) i donju ivicu na
++1,50 m, i namjerno ostaje nepromijenjen. Prevod zastarjelih brojeva bio bi gori od
+nikakvog.
+
+Struktura prati original (A ambijent, B konstrukcija, C mašinski, D elektro,
+E sažetak, F otvorene stavke), sa svim brojevima povučenim iz `cad/design.json`:
+P18-6 18 kVA, derating 12,6 / 11,6 kW, ograničenje ispravljača **9,5 kW**, izduv
+**NO 50** pri 27,2 m/s, donja ivica **+0,50 m**, moment **42,6 kNm**, korito
+1150 × 640, servisni prostor 720/720/1155, ICC360-HA1-C1 + MTS9302A.
+
+Gdje se dokument razlikuje od engleskog, mjerodavan je bosanski i `design.json` —
+to je i navedeno u zaglavlju fajla. `check_consistency.py` skenira samo `TD-OUTPUT/`,
+pa `review/` ne ulazi u provjeru: brojevi u ovom fajlu se održavaju ručno.
+
+---
+
+## §24 — Prilog II sažet i ispravljen (Naručilac, 2026-08-12)
+
+Predmjer je kroz šest revizija narastao na **157 redova u LOT-u 2**, od kojih je ~40
+bilo „siročad" — nastavci opisa tačke 3.1 razliveni po redovima bez broja stavke.
+Sažimanje je vođeno pravilom **„brisati objašnjenje, zadržati obavezu"**, uz
+`COVERAGE` listu od 74 obavezna tokena koja mora preživjeti, inače `compact_boq.py`
+staje.
+
+| list | prije | poslije |
+|---|---|---|
+| LOT 1 | 190 redova, 1.1 u jednoj ćeliji od 3222 znaka | **38 redova** |
+| LOT 2 | 157 redova, sekcija 3 preko 42 reda | **84 reda** |
+
+### Greške koje je provjera otkrila
+
+| # | Greška | Ispravka |
+|---|---|---|
+| E1 | Prva stavka sekcije 3 numerisana **`1.1`** umjesto `3.1`; stavka 4.1 i Prilog I referencirali „Tačku 3.1" — obje reference visile | prenumerisano u `3.1` |
+| **E2** | **Stavka 6.4 ostala bez opisa (167 → 0 znakova)** — regresija iz mog pokretanja `fix_boq_lots.py`; integrity pass je vratio 4.19 a 6.4 propustio | opis vraćen; provjera pooštrena (v. niže) |
+| E3 | Stavka 4.19 imala broj i nijedan opis (naslijeđeno) | postaje set rezervnih dijelova |
+| **E4** | **Dvostruko obračunavanje**: `3.1` i `4.1` obje cjenovne, pa je `UKUPNO LOT 2` namjerno izostavljao `UKUPNO 3` — a time je **ispadala i 3.2 (rezervni dijelovi), koju ponuđač ukalkuliše a ne broji se** | sekcija 3 je sada nenaplativa specifikacija; rezervni dijelovi su 4.19, unutar `UKUPNO 4` |
+| E5, E9 | 5.13 i 5.6 referencirale obrisanu „Tačku 1.6" (PVDB je u Huawei paketu); „Tačka 1.1" nejednoznačna otkad i LOT 2 ima 1.1 | → „PVDB koji obezbjeđuje Kupac"; → „LOT 1, Tačka 1.1" |
+| E6 | Jedinica `pšl` | → `paušal` |
+| E7 | Tri prazna reda u LOT 1 (ostatak Rev 7 repacka) | obrisani |
+| E8 | 4.4 nosila **3,93 kN/m²** (vrijednost za P22-6) i riječ „tankvane" | → 3,80 kN/m², „korita"; `OBRAZLOŽENJE` obrisano |
+| **E10** | 5.6 tvrdila *„agregat je SHUNT pobude"* — a tender PMG/AREP **zahtijeva**. Premisa je bila neistinita, iako je zaključak (RCD obavezan) tačan | prepisano na tačan razlog: i sa PMG/AREP je 3 × In ≈ 78 A, što ne isključuje prekidač C 32 A u 0,4 s |
+| **E11** | LOT 1 1.1 nosila moment **62,8 kNm**, a 1.2 **39,3 kN/traci** — vrijednosti za donju ivicu +1,50 m | → **42,6 kNm** i **26,6 kN** |
+| E12 | LOT 1 1.1 referencirala obrisanu „Tačku 1.6a" i odmak **400 mm** od ograde | referenca uklonjena; odmak → ponuđač ga utvrđuje pri poziciranju |
+
+> **Ispravka zapisa uz §23d.** Tamo stoji da je rečenica sa 400 mm „dropped rather
+> than silently re-used". To je bilo tačno samo za napomenu na crtežu S-02 — u
+> predmjeru je ostala i uklonjena je tek sada, kroz E12.
+
+### Dvije zamke koje su se ponovo javile
+
+1. **Referenca na drugi list se ne remapira.** `REF` u `remap_formulas` ima
+   lookbehind na `!`, pa `='LOT 1'!F50` ostaje netaknuta — a `UKUPNO LOT 1` je pri
+   sažimanju otišlo sa reda 50 na 31. Rekapitulacija je pokazivala na prazan red i
+   **ukupna cijena ponude bi tiho pala na vrijednost samo LOT-a 2**. Sada se
+   prevodi ručno, kroz `rowmap` drugog lista.
+2. **`remap_formulas` vraća formule iz netaknute kopije**, pa je stavci 3.1 vratila
+   cjenovnu formulu koju smo joj namjerno skinuli. Brisanje se ponavlja *poslije*
+   remapa.
+
+### Provjera koja je propustila E2 je pooštrena
+
+`fix_boq_lots.py::assert_no_loss()` zamjenjuje raniji integrity pass. Raniji je
+*popravljao* prazne opise i pri tome propustio da 6.4 izgubi svih 167 znakova —
+nađeno je tek diffom protiv gita. Novi **pada umjesto da krpi**, i provjerava tri
+stvari: da stavka nije nestala, da opis nije pao ispod 50 % originalne dužine (osim
+namjerno sažetih), i da svaka cjenovna formula adresira svoj red.
+
+### Provjereno
+
+Sve stavke po 100 KM, prerachunato kroz LibreOffice: `UKUPNO 4` = 27 000,
+`UKUPNO 5` = 23 300, `UKUPNO 6` = 400, `UKUPNO LOT 2` = **50 700**, LOT 1 = **4 608**,
+`SVE UKUPNO` = **55 308** — poklapa se sa ručnim zbirom u cent. Nijedna „Tačka X.Y"
+ne pokazuje na nepostojeću stavku. `check_consistency.py` ostaje na 6 grešaka, sve
+iz starih non-`_K` duplikata.
+
+### §24b — izlazna žaluzina na S-02
+
+`sheet_s02` je crtao izlaznu žaluzinu na **`cy + 130`** — osa hladnjaka dok je
+agregat stajao u jugozapadnom uglu. Nakon centriranja (§23b) osa je na `cy + 1150`,
+pa je žaluzina bila **720 mm ispod hladnjaka koji opslužuje**. Sada se `dy_c` izvodi
+iz `gy`, kao na M-01.
+
+**Treći put da se S-02 i M-01 raziđu** jer S-02 drži vlastite kopije koordinata
+(prvo agregat, pa žaluzina). Sve što je vezano za položaj agregata mora se računati
+iz `gx`/`gy`, nikad ispisivati.
+
+### §25 — preostale greške zatvorene, provjera na 0 (Naručilac, 2026-08-12)
+
+**1. Stari non-`_K` duplikati obrisani.** `3. TD JN … .docx` i
+`3. Prilog I … .docx` (bez `_K`) nosili su 22 kVA, ICC330-H1, ogradu 1,90 m,
++4,74 m i prvo punjenje 500 l. `_K` je master od 2026-08-11, pa su dva fajla istog
+sadržaja u paketu značila da se može poslati pogrešan. Uklonjeni iz `TD-OUTPUT/`;
+ostaju u git historiji.
+
+**2. Stranica opštih podataka Priloga III (str. 3) se više ne naslijeđuje.** Do sada
+je preuzimana verbatim iz prethodnog aneksa i zato je i dalje govorila *22 kVA /
+17,6 kW*, *FG Wilson P22-6* i *ograda visine 1,90 m*. Nova `site_data_page()` je
+slaže iz `cad/design.json`, u stilu `cover_page()`.
+
+To rješava i dvije stare mane te stranice: `strip_entity()` je rezao **„Bileća" na
+„Bile"**, a red „Kontejner" je izlazio izvan okvira tabele. Obje su nestale zajedno
+sa naslijeđenom stranicom; `strip_entity()` više se ne poziva.
+
+> **Ista klasa greške po treći put.** `insert_textbox` **ne crta ništa** kad tekst ne
+> stane — samo vrati negativan broj. Red „Kontejner" je tako izašao prazan iz prvog
+> builda. Visina reda se sada mjeri unaprijed na pomoćnoj stranici sa istim fontom, a
+> red koji i dalje ne stane **ruši build**. Isti obrazac kao `assert_no_loss` u
+> predmjeru i `check_extents` na crtežima: tiho odbacivanje sadržaja mora postati
+> greška.
+
+**Rezultat: `check_consistency.py` → 0 grešaka.** Jedina živa vrijednost u paketu je
+sada 18 kVA, ICC360-HA1-C1, 250 l, ograda 2,10 m, nadvišenje 1,64 m i gornja ivica
+panela +3,74 m.
+
+Napomena za buduće provjere: PyMuPDF upisuje **neprelomive razmake** (`\xa0`), pa
+naivno `"18 kVA" in text` ne pogađa na stranicama koje sam generiše. Regexi u
+`check_consistency.py` koriste `\s*`, što u Pythonu hvata i `\xa0`, pa provjera radi
+— ali ručni grep ne.
+
+---
+
+## §26 — Rev 8 (12.08.2026.): Prilog I iz markdowna, količine, sažeti proračuni
+
+Naručilac je vratio ranije `_K` dokumente i preimenovao paket (nema više `_K`
+sufiksa; `TD-OUTPUT/DWG/` je sada `TD-OUTPUT/grafika/`). Poređenje je pokazalo da je
+**vraćeni Prilog I zapravo posljednji `_K`** uz Naručiočeve vlastite izmjene — dakle
+nijedna ranija ispravka nije izgubljena. Ono što je nađeno su **zaostale greške koje
+nikad nisu ni bile uhvaćene**.
+
+### Prilog I se sada gradi iz markdowna
+
+Odluka Naručioca: Prilog I dobija izgled md dokumenata (kao render
+`proracuni_sjednica.pdf`), ali ostaje `.docx`. Novi izvor je `review/prilog1.md`,
+build je `tools/build_prilog1.py` (Pandoc + `tools/ref-prilog1.docx`).
+
+Time pada zabrana regenerisanja Priloga I koja je važila od početka, pa je
+**`tools/make_prilog1.py` obrisan** — držan je „u koraku, nikad pokrenut" upravo zbog
+te zabrane, a dva generatora istog fajla su zamka.
+
+> **Zašto je zabrana uopšte postojala i zašto sada pada.** Prilog I je bio ručno
+> uređivan, pa bi ga regenerisanje pregazilo. Sada je izvor tekstualni i pod
+> verzijom, a build **provjerava rezultat**: 15 zabranjenih vrijednosti ne smije se
+> pojaviti, 26 obaveznih mora. Ručno uređivanje `.docx`-a bilo je jedina zaštita dok
+> provjere nije bilo; sada je zamijenjeno nečim što ne zaboravlja.
+
+### Trinaest zaostalih grešaka u Prilogu I
+
+| # | Bilo | Sada |
+|---|---|---|
+| P1 | moment prevrtanja 62,8 kNm | **42,6 kNm** |
+| P2 | spreg po traci 39,3 kN | **26,6 kN** |
+| P3 | „400 mm južno od kote ograde" | odmak se utvrđuje pri poziciranju |
+| P4 | toplota u prostor 7,1 kW | **5,8 kW** |
+| P5 | usisna žaluzina na **JUŽNOM** zidu | **SJEVERNI**, istočni kraj |
+| P6 | odušna cijev na **SJEVERNOM** zidu | **JUŽNI**, istočni kraj |
+| P7 | „usis JUG → izlaz ZAPAD" (2×) | **SJEVER → ZAPAD** |
+| P8 | kanal ≈6 m² | **≈1,0 m²** |
+| P9 | struja kvara PMG/AREP ≥95 A | **≥78 A** |
+| P10 | 407 A / 16 A pri kvaru | **≈333 A / ≈13 A** |
+| P11 | „NO 50 (stavka 4.11)" | stavka **4.10** |
+| P12 | roštilj „vidi Tačku 4.8" | Tačka **4.2** (Prilog I nije imao 4.8) |
+| P13 | „Tečnički nacrti" | „Tehnički" |
+
+**P5–P7 su bile najozbiljnije**: Prilog I je slao ponuđača da probije pogrešan zid
+kontejnera. P9 je stajala u istoj tabeli koja tri reda više navodi In = 26,0 A —
+95 A je 3 × In za 22 kVA. Slika rasporeda bila je screenshot starog rasporeda i
+zamijenjena je renderom aktuelnog M-01.
+
+### Količine u Prilogu II
+
+Naručilac je osporio 6 m² limenog kanala. Bio je u pravu, i trag vodi do
+specifikacije za salu **„POTOCI" Mostar**, odakle je predmjer naslijeđen: tamo stavka
+glasi 10 m², jer je agregat stajao u hali daleko od zida.
+
+- **4.5 kanal: 6 m² → ≈1,0 m².** Hladnjak je 60 mm od zapadnog zida, kanal je
+  prelazni komad ≈0,2 m.
+- **4.12 izolacija izduva: 6 m² → ≈3,0 m².** 6 m² traži 12 m cijevi. Trasa se sada
+  iskazuje u metrima (1 m + do 4 m), kako je i mostarski predložak radio — površina
+  se time više ne može otkinuti od dužine.
+- **4.10 je sama sebi protivrječila**: isti opis tražio je izduv „oboreno prema
+  zemlji u obliku lule" i „završetak IZNAD KROVA usmjeren naviše". Ostaje iznad
+  krova, kako traže Prilog I §4.4 i `design.json`.
+
+**Temeljne trake — najveća izmjena.** S-02 crta traku **pune dubine 900 mm** i tako
+kaže njegova napomena 2, a predmjer je nosio **0,41 m³ po traci** (traka 450 × 275 na
+dnu rova). Iskop je pritom već bio dimenzionisan za rov od 900 mm, pa su se iskop i
+beton razilazili.
+
+> **Presudila je provjera na podizanje.** Spreg iz vjetra je 26,6 kN po traci; uz
+> `γG,stb = 0,9` treba 29,6 kN stabilizujuće težine. Puna traka daje
+> `1,485 × 24 × 0,9 = 32,1 kN` i zatvara provjeru vlastitom težinom. Traka od
+> 0,41 m³ daje 8,9 kN i **fali joj 17,7 kN**, koje bi mogla posuditi samo od trenja o
+> zasip — na kršu to nije dokaz. Ankeri prenose uzgon u traku, ne u tlo, pa tu
+> razliku ne pokrivaju. Mjerodavan je crtež.
+
+Sekcija 2 je zato preračunata koherentno: iskop **10,35 m³**, podložni beton
+**0,54 m³**, beton C30/37 **8,91 m³**, zatrpavanje **0,89 m³**, odvoz **9,45 m³**.
+
+**Ovo diže vrijednost LOT-a 1** — 8,91 m³ betona umjesto 2,44 m³ — pa procijenjenu
+vrijednost od 15.000 KM treba preispitati. Upisano kao otvorena stavka F.7.
+
+### Tri stvari koje niko nije isporučivao
+
+Otkrivene su usput, i nijedna nije nastala u ovoj reviziji:
+
+1. **Ograničenje ulazne snage ispravljača od 9,5 kW nije postojalo u predmjeru.** To
+   je mjerodavno elektro ograničenje (D.5): derativana prime snaga je 11,6 kW, a
+   neograničen ispravljački sistem vuče 12,5 kW. Prilog I je tražio „ograničenje
+   ulazne snage" **bez brojke**, što ne obavezuje nikoga. Sada stoji u Tačkama 3.1 i
+   5.7 predmjera i u Prilogu I §4.6, a dokaz je uvršten u red 12 tabele dokaza.
+2. **Prihvatno korito ispod spremnika niko nije isporučivao.** Tačke 4.2 i 4.3 obje
+   su upućivale na „korito iz Tačke 4.3", ali 4.3 isporučuje samo roštilj. Korito
+   1150 × 640, rub 200 mm, sada je stavka pod 4.2.
+3. **Stavka 6.4 imala je formulu, ali ni jedinicu ni količinu** — dokumentacija
+   izvedenog stanja za cijeli LOT 2 tiho je ispadala iz `UKUPNO 6`. Sada `kpl 1`.
+
+Prve dvije je uhvatila `COVERAGE` lista iz `compact_boq.py`, koja se do sada
+pokretala samo unutar tog skripta; treću je uhvatio prerachun sa 100 KM po stavci.
+**Obje provjere sada su dio `fix_boq_quantities.py`.**
+
+### Antivibracija
+
+Bila je pola rečenice u 4.1, bez tipa, broja i progiba. Po odluci Naručioca ostaje
+unutar 4.1, dopunjena: gumeno-metalni oslonci, min. 4 kom, vlastita frekvencija
+≤8 Hz, statički progib ≥5 mm, između skida i roštilja.
+
+Uz to jedan stvarni propust: **gorivo je do motora išlo krutom Cu cijevi NO 8.** Motor
+stoji na antivibracionim osloncima i pomiče se, pa se kruta cijev na priključku zamara
+i puca. Izduv je već imao elastični umetak, hladnjak ceradni spoj; vod goriva je bio
+jedini koji je ostao krut. Dodan fleksibilni umetak na oba voda.
+
+### Proračuni
+
+`review/07-proracuni.md` sažet je po nalogu Naručioca: izbačen je svaki trag
+prethodnih iteracija odabira (P22-6, 13,5 kVA, donja ivica +1,50 m, povlačenje DN 65,
+prelazak 2×6 → 3×4, „naslijeđeni predmjer", odnos prema `07-calculations.md`).
+Zadržani su tehnički dokazi, ne njihova historija.
+
+**Snijeg je dobio pozitivnu formulaciju umjesto „izračunat, pa odbačen".** Uz
+koeficijent oblika `μ₁ = 0,4` pri 45° (EN 1991-1-3 §5.3.6) i najveću opaženu visinu
+snijega na lokaciji od ≈0,5 m pri gustoći slegnutog snijega 300 kg/m³:
+
+```
+s = 0,4 · 1,0 · 1,0 · 1,5 kN/m²  ≈  0,6 kN/m²      prema vjetru 1,20 kN/m²
+```
+
+Vjetar je mjerodavan sa dvostrukom razlikom, a snijeg djeluje naniže i **umanjuje**
+uzgon — dakle nije nepovoljan ni u jednoj kombinaciji. Kodna provjera prema BAS EN
+1991-1-3 svejedno ostaje obavezna u ovjerenom proračunu ponuđača. **Led je odvojen od
+snijega**: radijalna naledica 20 mm / 300 kg/m³ ostaje zahtjev, kao akrecija na
+profile i spojeve, jer se led na ovoj koti zadržava tamo gdje se snijeg ne zadržava.
+
+### Provjere
+
+- `check_consistency.py` → **0 grešaka**, uz **6 novih pravila** (42,6 kNm · 26,6 kN ·
+  5,8 kW · 78 A · 1,0 m² · 8,91 m³) i **3 nove obavezne vrijednosti** (9,5 kW ·
+  1150 × 640 · 3,0 m²). Putanje su prilagođene preimenovanom paketu.
+- Prerachun predmjera kroz LibreOffice sa 100 KM po stavci: `UKUPNO 4/5/6`,
+  `UKUPNO LOT 1/2` i `SVE UKUPNO` slažu se sa ručnim zbirom, bez odstupanja.
+- `COVERAGE`: svih 76 tehničkih zahtjeva prisutno.
+- Sve unakrsne reference „Tačka X.Y" u Prilogu I i Prilogu II pogađaju postojeću
+  stavku.
+- Prilog I: 11 stranica, 5 slika, 15 zabranjenih vrijednosti odsutno.
+
+Sigurnosne kopije prije Rev 8 su u `review/backup-rev7/`, **izvan** `TD-OUTPUT/` —
+strani fajlovi u isporučnom folderu su tačno ona zamka koja je zatvorena u §25.

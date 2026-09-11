@@ -10,6 +10,7 @@ lossless: it subsets fonts (the original embedded full Arial Regular + Arial Bol
 seventeen times, 16.6 MB) and deflates streams that were stored uncompressed.  No
 page is rasterised, so every page stays vector and searchable.
 """
+
 import os
 import sys
 
@@ -38,7 +39,7 @@ DROP_IF_CONTAINS = ["Nosač fotonaponskih panela (ground support) — LOW Suppor
 
 
 def _should_drop(page):
-    t = page.get_text().replace("\xa0", " ")   # PDF text uses NBSP between words
+    t = page.get_text().replace("\xa0", " ")  # PDF text uses NBSP between words
     return any(marker in t for marker in DROP_IF_CONTAINS)
 
 
@@ -53,15 +54,23 @@ def build_situacija():
     out = fitz.open()
     for n in ("S-01", "S-02", "S-03", "M-01", "E-01"):
         out.insert_pdf(sheet(n))
-    out.set_metadata({
-        "title": "Situacija i dispozicija — BS Sjednica (Bileća)",
-        "author": "BH Telecom d.d. Sarajevo",
-        "subject": "Autonomni hibridni sistem napajanja — nacrti S-01, S-02, S-03, M-01, E-01",
-        "creator": "Rusmir Skopljak, dipl. ing. el.",
-    })
+    out.set_metadata(
+        {
+            "title": "Situacija i dispozicija — BS Sjednica (Bileća)",
+            "author": "BH Telecom d.d. Sarajevo",
+            "subject": "Autonomni hibridni sistem napajanja — nacrti S-01, S-02, S-03, M-01, E-01",
+            "creator": "Rusmir Skopljak, dipl. ing. el.",
+        }
+    )
     out.subset_fonts()
-    out.save(SITUACIJA, garbage=4, deflate=True, deflate_images=True,
-             deflate_fonts=True, clean=True)
+    out.save(
+        SITUACIJA,
+        garbage=4,
+        deflate=True,
+        deflate_images=True,
+        deflate_fonts=True,
+        clean=True,
+    )
     out.close()
     return SITUACIJA
 
@@ -82,12 +91,18 @@ def build_prilog():
     if dropped:
         print(f"  dropped {dropped} superseded reference page(s)")
     meta = src.metadata or {}
-    meta.update({"creator": "Rusmir Skopljak, dipl. ing. el."})
+    meta.update({"creator": "_______________, dipl. ing. __."})
     out.set_metadata(meta)
     src.close()
     out.subset_fonts()
-    out.save(PRILOG, garbage=4, deflate=True, deflate_images=True,
-             deflate_fonts=True, clean=True)
+    out.save(
+        PRILOG,
+        garbage=4,
+        deflate=True,
+        deflate_images=True,
+        deflate_fonts=True,
+        clean=True,
+    )
     n = out.page_count
     out.close()
     return before, os.path.getsize(PRILOG), n
@@ -96,14 +111,18 @@ def build_prilog():
 def main():
     s = build_situacija()
     d = fitz.open(s)
-    print(f"Situacija_BS_Sjednica.pdf   {d.page_count} pages, "
-          f"{os.path.getsize(s)/1e6:.2f} MB")
+    print(
+        f"Situacija_BS_Sjednica.pdf   {d.page_count} pages, "
+        f"{os.path.getsize(s) / 1e6:.2f} MB"
+    )
     d.close()
 
     before, after, pages = build_prilog()
-    print(f"Prilog_III...pdf            {pages} pages, "
-          f"{before/1e6:.1f} MB -> {after/1e6:.2f} MB "
-          f"({100*(1-after/before):.0f}% smaller)")
+    print(
+        f"Prilog_III...pdf            {pages} pages, "
+        f"{before / 1e6:.1f} MB -> {after / 1e6:.2f} MB "
+        f"({100 * (1 - after / before):.0f}% smaller)"
+    )
 
     d = fitz.open(PRILOG)
     fonts = set()
@@ -114,13 +133,16 @@ def main():
     for x in fonts:
         try:
             tot += len(d.extract_font(x)[3])
-        except Exception:                                   # noqa: BLE001
+        except Exception:  # noqa: BLE001
             pass
     txt = sum(1 for i in range(d.page_count) if d[i].get_text().strip())
-    a3 = sum(1 for i in range(d.page_count)
-             if abs(d[i].rect.width * 25.4 / 72 - 420) < 2)
-    print(f"  embedded font bytes {tot/1e6:.2f} MB | pages with text {txt}/{d.page_count} "
-          f"| A3 pages {a3}")
+    a3 = sum(
+        1 for i in range(d.page_count) if abs(d[i].rect.width * 25.4 / 72 - 420) < 2
+    )
+    print(
+        f"  embedded font bytes {tot / 1e6:.2f} MB | pages with text {txt}/{d.page_count} "
+        f"| A3 pages {a3}"
+    )
     d.close()
     return 0
 

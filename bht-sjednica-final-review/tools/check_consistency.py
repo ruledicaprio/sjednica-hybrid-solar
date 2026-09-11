@@ -86,10 +86,15 @@ def read_dxf(path):
 READERS = {".docx": read_docx, ".xlsx": read_xlsx, ".pdf": read_pdf, ".dxf": read_dxf}
 
 
+# NOTE - a blind spot worth knowing about: Prilog III is an image-only PDF
+# (scanned drawing sheets with no text layer), so READERS returns nothing for it
+# and none of the rules below ever see its content. Anything that lives only on
+# those sheets, and any disagreement between them and the prose, is invisible
+# here and has to be read off the drawings by eye.
 def load():
     docs = {}
     for p in sorted(glob.glob(os.path.join(TD, "*")) +
-                    glob.glob(os.path.join(TD, "DWG", "*.dxf"))):
+                    glob.glob(os.path.join(TD, "grafika", "*.dxf"))):
         ext = os.path.splitext(p)[1].lower()
         if ext not in READERS or os.path.basename(p).startswith("~"):
             continue
@@ -106,9 +111,15 @@ def load():
 # --------------------------------------------------------------------------
 # name -> {variant label: regex}.  Exactly ONE variant may appear package-wide.
 CONFLICTS = {
+    # Rev 7 (2026-08-12): FG Wilson P18-6. 22 kVA was the original set; 13,5 kVA
+    # was adopted on 2026-08-11 and withdrawn a day later, because its
+    # site-derated prime rating (9,7 kW at 1076 m / 40 C) is below the 12,5 kW
+    # the rectifiers can draw. Both earlier ratings are now superseded, so either
+    # one appearing anywhere is a live conflict.
     "generator rating": {
-        "22 kVA": r"22\s*kVA",
-        "13,5 kVA": r"13[,.]5\s*kVA",
+        "18 kVA (correct)": r"18\s*kVA",
+        "22 kVA (superseded)": r"22\s*kVA",
+        "13,5 kVA (superseded)": r"13[,.]5\s*kVA",
         # excluded: bibliographic/explanatory mentions of the MATISA 2x13 kVA
         # reference installation, which are correct usages rather than conflicts
         "2x13 kVA as a spec": r"(?<!MATISA )(?<!agregata \()2\s*[x×]\s*13\s*kVA(?![^.]{0,40}referent)",
@@ -140,10 +151,15 @@ CONFLICTS = {
     # F.6), so +3,74 is now only a legitimate historical/superseded mention (Prilog I
     # §0's corrigendum table, or S-03's design-history note) when the corrected +4,74
     # appears nearby, same lookahead pattern as the 2590/3236 correction above.
+    # Rev 7c (2026-08-12): the bottom edge returns to +0,50 m, so the top edge is
+    # +3,74 again - the same figure the 2x6 design had, reached a different way.
+    # The +4,74 of the raised 3x4 layout is now the superseded variant. Watch the
+    # direction of these lookaheads: they invert every time this value moves.
     "top panel edge level": {
-        "+3,09 (WRONG - superseded twice)": r"\+?3[,.]09(?![^§]{0,90}3[,.]74)",
-        "+3,74 (superseded - was correct for 2x6)": r"\+?3[,.]74(?![^§]{0,90}4[,.]74)",
-        "+4,74 (correct - 3x4 raised)": r"\+?4[,.]74",
+        "+3,09 (WRONG - never correct)": r"\+?3[,.]09(?![^§]{0,90}3[,.]74)",
+        "+4,74 (superseded - the raised 3x4 layout)":
+            r"\+?4[,.]74(?![^§]{0,90}3[,.]74)",
+        "+3,74 (correct - bottom edge back at +0,50)": r"\+?3[,.]74",
     },
     # Rev 2 (2026-08-11): the airflow relayout and the section-G closures below.
     # Each corrected value is quoted once more in Prilog I's "Ranije navedeno"
@@ -167,29 +183,87 @@ CONFLICTS = {
         "1050 x 600 x 1310 (correct - vendor data)":
             r"1050\s*[x×]\s*600",
     },
+    # The TANK is 500 l; the FIRST FILL is 250 l (TD _K, BOQ 4.16 quantity). Only
+    # the fill is checked here - a bare "500 l" is the tank, and is covered by
+    # SINGLE_VALUE["fuel tank"] - so every pattern is anchored on the filling.
     "first fuel fill": {
-        "200 l (WRONG - contradicts the priced 500 l)":
-            r"najmanje\s*200\s*l|≥\s*200\s*l",
-        "500 l (correct - matches BOQ 4.16)": r"500\s*l\s*\(pun spremnik\)|500\s*l\b",
+        "200 l (WRONG)": r"najmanje\s*200\s*l|≥\s*200\s*l",
+        "500 l / pun spremnik (superseded)":
+            r"500\s*l\s*\(pun spremnik\)|tankanje\s*500\s*l",
+        "250 l (correct - matches BOQ 4.16)":
+            r"[Pp]rvo punjenje je 250\s*l|tankanje\s*250\s*l",
     },
+    # Rev 7: the Huawei quotation on file (EQUIPEMENT/CABINETS/iSitePower ...
+    # BOQ_v2.xlsx, sheet L3-iSitePower-A) quotes ICC360-HA1-C1 (01075399), and
+    # review/01-huawei-solar.md §185/§190 had already said so. Rev 2 unified on
+    # ICC330-H1 + MTS9302 by counting mentions - a majority count is not evidence.
     "power system named": {
-        "PowerCube 1000 (WRONG - not installed here)": r"PowerCube\s*1000",
-        "ICC330-H1 + MTS9302 (correct)": r"ICC330-H1",
+        "ICC360-HA1-C1 (correct - per the vendor quotation)": r"ICC360-HA1-C1",
+        "ICC330-H1 + MTS9302 (superseded)": r"ICC330-H1",
     },
     "fence overhang": {
         "0,17 m (WRONG)": r"0[,.]17\s*m",
         "0,20 m (WRONG)": r"nadvi[šs]uje ogradu[^.]{0,20}0[,.]20\s*m",
-        "1,84 m / 1836 mm (superseded - was correct for 2x6)":
-            r"(1[,.]84\s*m|1836\s*mm)(?![^§]{0,90}(2[,.]84|2836))",
-        "2,84 m / 2836 mm (correct - 3x4 raised)": r"2[,.]84\s*m|2836\s*mm",
+        # Two corrections stack here. Rev 6: the fence is 2,10 m off the certified
+        # 04 Ograda.dwg, not the 1,90 m assumed earlier. Rev 7c: the bottom edge
+        # drops back to +0,50 m, taking a further 1,00 m off the overhang.
+        # 1,84 -> 2,84 -> 2,64 -> 1,64, and only the last one is live.
+        "1,84 m / 1836 mm (superseded - 2x6 against a 1,90 m fence)":
+            r"(1[,.]84\s*m|1836\s*mm)(?![^§]{0,90}(1[,.]64|1636))",
+        "2,84 m / 2836 mm (superseded - raised 3x4, 1,90 m fence)":
+            r"(2[,.]84\s*m|2836\s*mm)(?![^§]{0,90}(1[,.]64|1636))",
+        "2,64 m / 2636 mm (superseded - raised 3x4, 2,10 m fence)":
+            r"(2[,.]64\s*m|2636\s*mm)(?![^§]{0,90}(1[,.]64|1636))",
+        "1,64 m / 1636 mm (correct)": r"1[,.]64\s*m|1636\s*mm",
+    },
+    "fence height": {
+        "1,90 m (superseded - was an assumption)":
+            r"ograd[ae][^.]{0,20}h\s*=\s*1[,.]90\s*m",
+        "2,10 m (correct - certified 04 Ograda.dwg)":
+            r"ograd[ae][^.]{0,20}h\s*=\s*2[,.]10\s*m",
+    },
+    # ---- Rev 8 (2026-08-12) --------------------------------------------------
+    # These six all survived six revisions inside Prilog I because nothing here
+    # was watching them. Five are values that moved when the bottom edge dropped
+    # to +0,50 m or when the set became the P18-6; the sixth is the sheet-metal
+    # duct area inherited from the Mostar "POTOCI" specification.
+    "overturning moment per support": {
+        "42,6 kNm (correct - bottom edge +0,50 m)": r"42[,.]6\s*kNm",
+        "62,8 kNm (superseded - bottom edge +1,50 m)": r"62[,.]8\s*kNm",
+        "64,3 kNm (superseded - the 2x6 design)": r"64[,.]3\s*kNm",
+    },
+    "uplift couple per foundation strip": {
+        "26,6 kN (correct)": r"26[,.]6\s*kN\b",
+        "39,2/39,3 kN (superseded - bottom edge +1,50 m)": r"39[,.][23]\s*kN\b",
+    },
+    "heat radiated into the room": {
+        "5,8 kW (correct - P18-6)": r"5[,.]8\s*kW",
+        "7,1 kW (superseded - P22-6)": r"7[,.]1\s*kW",
+    },
+    # 3 x In depends on the rating: 78 A at 18 kVA, 95 A at 22 kVA. Prilog I
+    # carried BOTH - §4.1 said 78 A and §4.5 said 95 A, in the same document.
+    "generator sustained fault current (3 x In)": {
+        "78 A (correct - 18 kVA)": r"78\s*A\b",
+        "95 A (superseded - 22 kVA)": r"95\s*A\b",
+    },
+    "discharge duct developed area": {
+        "1,0 m² (correct - radiator is 60 mm off the wall)":
+            r"1[,.]0\s*m²(?=[^§]{0,120}(kanal|prirubnic|hladnjak))"
+            r"|(kanal|prelazni komad)[^§]{0,160}?1[,.]0\s*m²",
+        "6 m² (superseded - inherited from Mostar)":
+            r"[≈~]\s*6\s*m²|P\s*[≈~]?\s*6\s*m2",
+    },
+    "foundation concrete volume": {
+        "8,91 m³ (correct - full-depth strip)": r"8[,.]91\s*m³",
+        "2,44 m³ (superseded - 450x275 footing)": r"2[,.]44\s*m³",
     },
 }
 
 # these must appear with a single consistent value; reported if they disagree
 SINGLE_VALUE = {
     "LOT 1 estimate": r"15\.000,00",
-    "LOT 2 estimate": r"35\.000,00",
-    "total estimate": r"50\.000,00",
+    "LOT 2 estimate": r"34\.000,00",
+    "total estimate": r"49\.000,00",
     "fuel tank": r"500\s*l\b",
     "site altitude": r"1076\s*m",
     # closed in Rev 2 - each was specified nowhere or in only one document
@@ -197,8 +271,16 @@ SINGLE_VALUE = {
     "type 1+2 AC SPD (G-6)": r"[Tt]ip\s*1\s*\+\s*2|TIP\s*1\s*\+\s*2",
     "signal-line SPD (G-6)": r"61643-21",
     "fire elaborate priced (G-5)": r"elaborat[a]?\s+za[šs]tite\s+od\s+po[žz]ara",
-    "intake on the south wall": r"JU[ŽZ]NI\s*zid|JU[ŽZ]NOM\s*zidu",
+    "intake on the north wall": r"SJEVERNI\s*zid|SJEVERNOM\s*zidu",
     "discharge on the west wall": r"ZAPADNI\s*zid|ZAPADNOM\s*zidu",
+    # Rev 8: the rectifier input cap is the governing electrical requirement
+    # (07-proracuni D.5) and it had gone missing from the BOQ entirely - the
+    # prose said "limit the input power" without ever saying to what.
+    "rectifier input cap as a number": r"9[,.]5\s*kW",
+    # Rev 8: the drip tray under the tank was referenced by two BOQ items but
+    # supplied by none, and its size appeared nowhere.
+    "drip tray under the fuel tank": r"1150\s*[x×]\s*640",
+    "exhaust insulation area": r"3[,.]0\s*m²",
 }
 
 # text that must not survive from the 46-generator template

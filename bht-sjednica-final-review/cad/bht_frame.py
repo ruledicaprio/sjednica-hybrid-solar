@@ -9,7 +9,7 @@ reproduced from the existing certified site project
 in model space in millimetres at 1:1 and the sheet frame is scaled up by the plot
 scale, so a 1:50 A3 sheet is a 21000 x 14850 mm rectangle in model space.
 
-The BH Telecom mark in the title block is traced from `TD-OUTPUT/bht-logo.svg`
+The BH Telecom mark in the title block is traced from `cad/bht-logo.svg`
 (cairosvg is unusable here - its cairo DLL is missing - so the path data is parsed
 and the Béziers flattened directly).
 """
@@ -22,7 +22,7 @@ import ezdxf
 from ezdxf.enums import TextEntityAlignment
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SVG_LOGO = os.path.join(os.path.dirname(HERE), "TD-OUTPUT", "bht-logo.svg")
+SVG_LOGO = os.path.join(HERE, "bht-logo.svg")
 
 BHT_ORANGE = 30          # ACI ~ #f5821f
 A3_W, A3_H = 420.0, 297.0
@@ -292,11 +292,11 @@ def draw_frame(msp, scale, naziv, broj, razmjera, godina="2026.",
                     layer="Tekst", color=7)
 
     # band 38..48 - logo and issuer
-    draw_logo(msp, tx0 + X(4), ty0 + X(38.6), X(21))
-    _txt(msp, "BH TELECOM d.d. SARAJEVO", tx0 + X(29), ty0 + X(43.4), X(3.0),
+    draw_logo(msp, tx0 + X(4), ty0 + X(39.6), X(17))
+    _txt(msp, "BH TELECOM d.d. SARAJEVO", tx0 + X(25), ty0 + X(43.4), X(3.0),
          layer="Tekst", color=7)
     _txt(msp, "Izvršna direkcija za tehnologiju i razvoj servisa",
-         tx0 + X(29), ty0 + X(39.6), X(2.2), layer="Okvir", color=8)
+         tx0 + X(25), ty0 + X(39.6), X(2.2), layer="Okvir", color=8)
 
     # bands 30..38, 22..30 - full width
     lbl("Investitor:", 3, 35.4);      val("BH Telecom d.d. Sarajevo, Franca Lehara 7, Sarajevo", 3, 31.6, 2.6)

@@ -42,14 +42,11 @@ def register(B):
 
         sup = D["support"]
         fw, proj = sup["field_w"], sup["proj"]
-        # The foundations sit OUTSIDE the fence, south of it; the upper (north) part
-        # of the panel oversails the fence.  At 45 deg the panel plane reaches the
-        # 1.90 m fence height north of its lower edge, so that run lies south of the
-        # fence (south strip is 1950 mm) and the rest oversails.  See
-        # review/07-calculations.md F.6 and review/05-site-corrections.md.
-        run_to_fence = (1900.0 - D["array"]["bottom_edge"]) / math.tan(
-            math.radians(D["array"]["tilt_deg"]))
-        ay = oy - run_to_fence
+        # The array stands clear of the compound in the open ground south of it -
+        # the whole field, not just the footings, so nothing oversails the fence.
+        # The leased plot is positioned to suit (the compound sits toward its north
+        # edge), which is what leaves the front area free. See 07-calculations.md F.6.
+        ay = oy - proj - 400
         mid = ox + F / 2
         gap = 500
         total_w = 3 * fw + 2 * gap
@@ -65,12 +62,16 @@ def register(B):
                          dxfattribs={"layer": "Panel", "color": 8})
             msp.add_line((ax + fw / 2, ay), (ax + fw / 2, ay + proj),
                          dxfattribs={"layer": "Panel", "color": 8})
+            # strips run NORTH-SOUTH under the full horizontal projection of the
+            # panel - 3300 mm, not the 1500 they used to be drawn at, which
+            # contradicted this sheet's own leader, the legend and design.json
+            sl, sw = sup["strip_l"], sup["strip_w"]
             for so in (fw / 2 - sup["strip_spacing"] / 2,
                        fw / 2 + sup["strip_spacing"] / 2):
-                rect(msp, ax + so - 225, ay - 250, 450, 1500,
+                rect(msp, ax + so - sw / 2, ay - (sl - proj) / 2, sw, sl,
                      "Temelj", color=32, lw=35)
             _txt(msp, f"PV-{i}  ·  4 × 585 Wp  ·  45°  JUG", ax + fw / 2,
-                 ay - 900, 2.2 * SC, layer="Tekst", color=7, align=TA.CENTER)
+                 ay - 450, 2.2 * SC, layer="Tekst", color=7, align=TA.CENTER)
 
         msp.add_lwpolyline([(mid, ay + proj), (mid, cy + 150)],
                            dxfattribs={"layer": "Kabal", "color": 2, "lineweight": 35})
@@ -81,59 +82,69 @@ def register(B):
                                            "lineweight": 35})
 
         v = D["ventilation"]
-        # cross-flow layout (see M-01 / design.json ventilation.layout):
-        # intake SOUTH wall east end, discharge WEST wall on the radiator axis
-        solid_rect(msp, cx + 2150, cy, v["intake_mm"][0], 60, "Ventilacija", 4)
-        solid_rect(msp, cx, cy + 430, 60, v["discharge_mm"][0], "Ventilacija", 4)
-
+        # Interior repeats M-01 exactly: skid CENTRED in the free floor with its
+        # 720 mm service corridors north and south, tank in the SE corner south
+        # of the door. These offsets must track M-01's gx/gy - S-02 was left at
+        # the old SW-corner position when M-01 was recentred.
         g, tk = D["genset"], D["tank"]
-        gx, gy = cx + 450, cy + 420
+        gx, gy = cx + 180, cy + 840
+
+        # cross-flow layout (see M-01 / design.json ventilation.layout):
+        # intake NORTH wall east end, discharge WEST wall ON THE RADIATOR AXIS.
+        # The discharge y is DERIVED from gy, exactly as M-01 derives its dy_c -
+        # it used to be hard-coded at cy+130, which was the axis while the skid
+        # stood in the SW corner, and it stayed there when the skid was recentred,
+        # leaving the louvre 720 mm off the radiator it serves. Anything keyed to
+        # the genset position must be computed from gx/gy, never written out.
+        dy_c = gy + g["skid_W"] / 2
+        solid_rect(msp, cx + 2150, cy + CH - 60, v["intake_mm"][0], 60,
+                   "Ventilacija", 4)
+        solid_rect(msp, cx, dy_c - v["discharge_mm"][0] / 2, 60,
+                   v["discharge_mm"][0], "Ventilacija", 4)
+
         rect(msp, gx, gy, g["skid_L"], g["skid_W"], "Agregat", color=30, lw=50)
-        _txt(msp, "DEA 22 kVA", gx + g["skid_L"] / 2, gy + g["skid_W"] / 2,
+        _txt(msp, "DEA 18 kVA", gx + g["skid_L"] / 2, gy + g["skid_W"] / 2,
              1.7 * SC, layer="Tekst", color=7, align=TA.MIDDLE_CENTER)
-        bnd = tk["bund"]
-        rect(msp, cx + 350, cy + CH - 60 - bnd["W"], bnd["L"], bnd["W"],
-             "Agregat", color=1)
-        rect(msp, cx + 550, cy + CH - 60 - bnd["W"] + 180, tk["L"], tk["W"],
-             "Agregat", color=30)
-        _txt(msp, "500 l", cx + 550 + tk["L"] / 2,
-             cy + CH - 60 - bnd["W"] + 180 + tk["W"] / 2,
+        # tank only - the drip tray is an M-01 detail and clutters a 1:50 site plan
+        tkx, tky = cx + 1845, cy + 80
+        rect(msp, tkx, tky, tk["L"], tk["W"], "Agregat", color=30)
+        _txt(msp, "500 l", tkx + tk["L"] / 2, tky + tk["W"] / 2,
              1.7 * SC, layer="Tekst", color=7, align=TA.MIDDLE_CENTER)
 
         dim_h(msp, axs[0], axs[0] + fw, ay, SC, off=-1000)
         dim_v(msp, ay, ay + proj, axs[0], SC, off=-1000)
-        dim_h(msp, px, px + pw, py, SC, off=-1400)
+        # parcel width dimensioned along the top: below the plot there is now the
+        # array, its labels and the legend
+        dim_h(msp, px, px + pw, py + ph, SC, off=700)
         dim_v(msp, py, py + ph, px + pw, SC, off=1400)
 
-        leader(msp, (cx + 2400, cy + 30),
-               "usisna žaluzina 500 × 700 mm — JUŽNI zid", 2600, -1500, SC)
+        leader(msp, (cx + 2400, cy + CH - 30),
+               "usisna žaluzina 500 × 700 mm — SJEVERNI zid", 2600, 1500, SC)
         leader(msp, (cx + 30, cy + 730),
-               "kanal + žaluzina 600 × 600, izduv DN 65 iznad krova — ZAPADNI zid; "
-               "ventilator 1200 m³/h — ISTOČNI zid",
+               "kanal + žaluzina 600 × 600 i izduv DN 50 — ZAPAD; ventilator — ISTOK",
                -1900, 2500, SC)
         leader(msp, (mid, oy - 380), "DC trasa u PEHD Ø50 → PVDB (2 stringa, v. E-01)",
                2900, -1250, SC)
-        leader(msp, (axs[0] + 400, ay - 100),
-               "2 temeljne trake po nosaču (×3), 450 × 3300, razmak 1600 — IZVAN ograde",
-               -2200, -900, SC)
+        # to the right of the array: to the left it landed on the scale bar
+        leader(msp, (axs[2] + fw - 400, ay + 300),
+               "2 temeljne trake po nosaču (×3), 450 × 3300, razmak 1600",
+               1200, -700, SC)
 
         north_arrow(msp, 19500, 11700, 1700)
-        scale_bar(msp, 1200, 4500, SC, total_m=5, step_m=1)
-        # below the parcel dimension line (py - 1400 = 4000), which used to run
-        # straight through the second line of the notes
-        legend(msp, 1200, 3750, SC, [
+        scale_bar(msp, 1200, 3150, SC, total_m=5, step_m=1)
+        # legend bottom-left, notes directly under it - the notes used to sit at
+        # x=7900 where the panel-width dimension text ran into them
+        bot = legend(msp, 1200, 2900, SC, [
             (110, "LOT 1 — nosači FN panela PV-1..PV-3 (po 4 × 585 Wp, 45°, JUG) — 2 stringa × 6"),
             (32,  "LOT 1 — AB temeljne trake 450 × 3300 mm, razmak 1600 mm"),
             (2,   "LOT 1 — DC trasa u PEHD Ø50 do PVDB"),
-            (30,  "LOT 2 — DEA 22 kVA u skid izvedbi i spremnik 500 l"),
-            (4,   "LOT 2 — usisna žaluzina (JUG); kanal, žaluzina i izduv (ZAPAD); ventilator (ISTOK)"),
+            (30,  "LOT 2 — DEA 18 kVA u skid izvedbi i dvoplašni spremnik 500 l"),
+            (4,   "LOT 2 — usisna žaluzina (SJEVER); kanal, žaluzina i izduv (ZAPAD); ventilator (ISTOK)"),
         ])
-        note_block(msp, 7900, 3750, SC, "NAPOMENA — PRORAČUNSKO OPTEREĆENJE:", [
-            "Vjetar qp ≥ 1,20 kN/m² (udar 3 s ≈ 45 m/s) — iznad kapaciteta kataloškog",
-            "nosača tipa A, stoga CUSTOM IZRADA: sail 10,55 m²/nosaču, ULS uzgon 18,1 kN,",
-            "moment prevrtanja 62,8 kNm; ovjerava ponuđač (Prilog II, 1.3).",
-            "Temelji IZVAN ograde (400 mm od kote ograde); gornja ivica panela +4,74 m,",
-            "2836 mm iznad ograde. Kontejner je PRAZAN.",
+        note_block(msp, 1200, bot - 180, SC, "NAPOMENA — PRORAČUNSKO OPTEREĆENJE:", [
+            "Vjetar qp ≥ 1,20 kN/m² — CUSTOM IZRADA nosača; ovjereni statički proračun",
+            "dostavlja ponuđač (Prilog II, 1.3).",
+            "Temelji IZVAN ograde; gornja ivica panela +3,74 m, donja +0,50 m.",
         ])
         return doc
 
@@ -147,13 +158,14 @@ def register(B):
                    razmjera="1:30")
 
         sup, arr = D["support"], D["array"]
+        C_H = D["container"]["height"]
         proj = sup["proj"]
         b, top = arr["bottom_edge"], arr["top_edge"]
         # A3 window at 1:30 is 600..12300 x 300..8610, title block x>6900 below
         # y=1740. The panel reaches +4736 above the ground line, so the ground line
         # sits at 2600 and the notes go bottom-left, clear of the title block.
         GX, GY = 2200, 2600
-        msp.add_line((GX - 1400, GY), (GX + 10200, GY),
+        msp.add_line((GX - 1400, GY), (GX + 9700, GY),
                      dxfattribs={"layer": "Objekat", "color": 8, "lineweight": 50})
         for i in range(26):
             x = GX - 1200 + i * 450
@@ -169,22 +181,108 @@ def register(B):
         msp.add_line((x0, y0), (x0, GY), dxfattribs={"layer": "Konstrukcija", "color": 5})
         msp.add_line((x1, y1), (x1, GY), dxfattribs={"layer": "Konstrukcija", "color": 5})
         msp.add_line((x0, y0), (x1, GY), dxfattribs={"layer": "Konstrukcija", "color": 8})
-        for fx in (x0, x1):
-            rect(msp, fx - 225, GY - 900, 450, 900, "Temelj", color=32, lw=50)
-            hatch_rect(msp, fx - 225, GY - 900, 450, 900, "Temelj", "ANSI31",
-                       SC * 0.35, 32)
+        # ONE strip in this section, not two pads under the panel ends: the two
+        # 450 x 3300 strips run NORTH-SOUTH at 1600 mm centres EAST-WEST, so
+        # section A-A sees one of them over its full length and the other
+        # directly behind the section plane.
+        sl, sw = sup["strip_l"], sup["strip_w"]
+        fnd_x = x0 - (sl - proj) / 2
+        rect(msp, fnd_x, GY - 900, sl, 900, "Temelj", color=32, lw=50)
+        hatch_rect(msp, fnd_x, GY - 900, sl, 900, "Temelj", "ANSI31",
+                   SC * 0.35, 32)
 
-        fx = x1 + 800
-        msp.add_line((fx, GY), (fx, GY + 1900),
-                     dxfattribs={"layer": "Ograda", "color": 8, "lineweight": 50})
+        # Fence, cut by the section plane, drawn to the certified elevation
+        # '461 Graficki dio TEMELJ i OGRADA/04 Ograda.dwg': post 50x50x3 to
+        # +2,10 on a footing down to -1,50, framed mesh infill starting +0,20.
+        FH, FI = 2100, 200
+        fx = x1 + 400
+        solid_rect(msp, fx - 25, GY, 50, FH, "Ograda", 8)
+        rect(msp, fx - 25, GY, 50, FH, "Ograda", color=8, lw=70)
+        rect(msp, fx - 200, GY - 1500, 400, 1500, "Ograda", color=8, lw=50)
+        hatch_rect(msp, fx - 200, GY - 1500, 400, 1500, "Ograda", "ANSI31",
+                   SC * 0.35, 8)
+        # frame rails 30x30 top and bottom of the infill, mesh between them
+        for ry in (GY + FI, GY + FH - 30):
+            rect(msp, fx - 15, ry, 30, 30, "Ograda", color=8, lw=50)
+        hatch_rect(msp, fx - 15, GY + FI + 30, 30, FH - FI - 60, "Ograda",
+                   "ANSI37", SC * 0.5, 8)
+
+        # existing slab and container north of the fence, so the section shows what
+        # the panel actually oversails
+        S_, CH_ = 5400, 2300
+        H_LO, H_HI = C_H, D["container"]["height_high_eave"]
+        sx_ = fx + 50
+        rect(msp, sx_, GY - 300, S_, 300, "Objekat", color=254, lw=35)
+        hatch_rect(msp, sx_, GY - 300, S_, 300, "Objekat", "ANSI31", SC * 0.5, 8)
+
+        # true elevation rather than a box: the certified K2 facade gives a 10 %
+        # mono-pitch roof, +2,63 at one eave and +2,89 at the other, and the slope
+        # runs across the 2300 mm face that this section looks at
+        cx_ = sx_ + (S_ - CH_) / 2
+        ov = 120                                        # roof overhang, both eaves
+        msp.add_lwpolyline([(cx_, GY), (cx_ + CH_, GY),
+                            (cx_ + CH_, GY + H_HI), (cx_, GY + H_LO)],
+                           close=True,
+                           dxfattribs={"layer": "Objekat", "color": 6,
+                                       "lineweight": 50})
+        msp.add_lwpolyline([(cx_ - ov, GY + H_LO - 40), (cx_ + CH_ + ov, GY + H_HI - 40),
+                            (cx_ + CH_ + ov, GY + H_HI + 60), (cx_ - ov, GY + H_LO + 60)],
+                           close=True,
+                           dxfattribs={"layer": "Objekat", "color": 6,
+                                       "lineweight": 50})
+        _txt(msp, "postojeći kontejner", cx_ + CH_ / 2, GY + H_LO / 2 + 120,
+             2.0 * SC, layer="Tekst", color=7, align=TA.CENTER)
+        _txt(msp, f"{CH_} mm · krov u nagibu 10 %", cx_ + CH_ / 2,
+             GY + H_LO / 2 - 260, 1.7 * SC, layer="Tekst", color=8, align=TA.CENTER)
+        for lvl, lab, xx in ((H_LO, "+2,63", cx_ - ov), (H_HI, "+2,89", cx_ + CH_ + ov)):
+            _txt(msp, lab, xx, GY + lvl + 130, 1.7 * SC, layer="Kota_tekst",
+                 color=8, align=TA.CENTER)
+        _txt(msp, "postojeća AB ploča 5,40 × 5,40 m", sx_ + S_ / 2, GY - 620,
+             1.7 * SC, layer="Tekst", color=8, align=TA.CENTER)
+
+        # Base segment of the 38 m lattice tower, drawn to the certified taper
+        # (4200 mm at grade narrowing linearly to 1200 mm at 24,60 m per
+        # site_geometry.json). The container stands between its legs, so showing
+        # it is what makes the section read as the real structure.
+        TB, TT, TH = GEO["tower"]["base"][0], GEO["tower"]["top"][0], 24600.0
+        tcx_ = sx_ + S_ / 2
+        top_ = 5000.0
+
+        def half(h):
+            return (TB - (TB - TT) * h / TH) / 2.0
+
+        for s in (-1, 1):
+            msp.add_lwpolyline([(tcx_ + s * half(0), GY),
+                                (tcx_ + s * half(top_), GY + top_)],
+                               dxfattribs={"layer": "Konstrukcija", "color": 5,
+                                           "lineweight": 50})
+            solid_rect(msp, tcx_ + s * half(0) - 130, GY - 300, 260, 300,
+                       "Konstrukcija", 5)
+        # local names only - `b` and `lvl` belong to the panel levels below and
+        # were being clobbered here, which printed the bottom panel edge as
+        # +4,60 instead of +1,50
+        brc = [0, 1150, 2300, 3450, 4600]
+        for ba, bb in zip(brc, brc[1:]):
+            msp.add_line((tcx_ - half(ba), GY + ba), (tcx_ + half(ba), GY + ba),
+                         dxfattribs={"layer": "Konstrukcija", "color": 5})
+            for s in (-1, 1):                           # bracing, alternating
+                msp.add_line((tcx_ + s * half(ba), GY + ba),
+                             (tcx_ - s * half(bb), GY + bb),
+                             dxfattribs={"layer": "Konstrukcija", "color": 5})
+        msp.add_line((tcx_ - half(brc[-1]), GY + brc[-1]),
+                     (tcx_ + half(brc[-1]), GY + brc[-1]),
+                     dxfattribs={"layer": "Konstrukcija", "color": 5})
+        _txt(msp, "antenski stub h=38 m — baza 4,20 × 4,20 m", tcx_,
+             GY + top_ + 200, 1.8 * SC, layer="Tekst", color=8, align=TA.CENTER)
 
         for lvl, lab in ((b, f"donja ivica panela  +{b / 1000:.2f}".replace(".", ",")),
-                         (1900, "kota ograde  +1,90"),
+                         (FH, f"kota ograde  +{FH / 1000:.2f}".replace(".", ",")),
                          (top, f"gornja ivica panela  +{top / 1000:.2f}".replace(".", ","))):
-            msp.add_line((GX - 1100, GY + lvl), (fx + 1900, GY + lvl),
+            # stop short of the container so the level captions do not land on it
+            msp.add_line((GX - 1100, GY + lvl), (cx_ - 320, GY + lvl),
                          dxfattribs={"layer": "Sakriveno", "color": 8})
-            _txt(msp, lab, fx + 2000, GY + lvl - 50, 2.0 * SC,
-                 layer="Kota_tekst", color=7)
+            _txt(msp, lab, cx_ - 380, GY + lvl - 50, 2.0 * SC,
+                 layer="Kota_tekst", color=7, align=TA.RIGHT)
 
         dim_h(msp, x0, x1, GY - 900, SC, off=-1300)
         dim_v(msp, GY, GY + top, GX - 1100, SC, off=-800)
@@ -194,17 +292,15 @@ def register(B):
              layer="Orijentacija", color=1)
         _txt(msp, "←  J U G", GX - 1100, GY - 480, 2.4 * SC,
              layer="Orijentacija", color=1)
-        _txt(msp, "ograda h=1,90 m", fx + 150, GY + 900, 2.0 * SC,
-             layer="Tekst", color=8)
+        leader(msp, (fx, GY + 1300), "postojeća ograda h=2,10 m",
+               900, 1500, SC)
 
         note_block(msp, 700, 1500, SC, "OBJAŠNJENJA:", [
-            "1  Polje: 2 reda × 2 modula 585 Wp, portret — 2305 × 4576 mm po nagibu,",
-            "    horizontalna projekcija 3236 mm pri 45°.",
-            "2  Dvije temeljne trake po nosaču 450 × 3300 mm, dubina 900 mm, razmak 1600 mm;",
-            "    beton C30/37 (XC4+XF3) na podlozi C12/15, armatura B500B.",
-            "3  Donja ivica +1,50 m, gornja +4,74 m — 2,84 m iznad kote ograde h=1,90 m.",
-            "4  CUSTOM IZRADA prema qp ≥ 1,20 kN/m²: sail 10,55 m²/nosaču, ULS uzgon 18,1 kN,",
-            "    moment prevrtanja 62,8 kNm (v. S-02).",
+            "1  Polje: 2 reda × 2 modula 585 Wp, portret; horizontalna projekcija 3236 mm pri 45°.",
+            "2  Dvije temeljne trake po nosaču 450 × 3300 mm, dubina 900 mm, razmak 1600 mm",
+            "    (druga je iza ravni presjeka); beton C30/37 (XC4+XF3), armatura B500B.",
+            "3  Donja ivica panela +0,50 m, gornja +3,74 m.",
+            "4  Postojeća ograda h=2,10 m prema projektu lokacije (04 Ograda).",
         ])
         return doc
 
@@ -223,7 +319,7 @@ def register(B):
         # Plan and section both sit inside the A3 window (500..10250 x 250..7175 at
         # 1:25); the title block occupies x>5750 below y=1450. Keeping to it is what
         # makes the sheet plot at a true 1:25 instead of being shrunk to fit.
-        ox, oy = 1900, 4300
+        ox, oy = 1900, 3600
         rect(msp, ox, oy, CW, CH, "Objekat", color=6, lw=50)
         rect(msp, ox + t, oy + t, CW - 2 * t, CH - 2 * t, "Objekat", color=6)
         for hx, hy, hw, hh in ((ox, oy, CW, t), (ox, oy + CH - t, CW, t),
@@ -233,7 +329,7 @@ def register(B):
         _txt(msp, "OSNOVA  —  kontejner je PRAZAN", ox, oy + CH + 520, 2.6 * SC,
              layer="Tekst", color=7)
 
-        lay = tk["bund"]
+        lay = tk["kada"]
 
         def arrow(pts, color=4):
             msp.add_lwpolyline(pts, dxfattribs={"layer": "Ventilacija",
@@ -245,19 +341,40 @@ def register(B):
             msp.add_solid([a1, (x1, y1), a2],
                           dxfattribs={"layer": "Ventilacija", "color": color})
 
-        # genset along the SOUTH side, radiator end WEST; skid entry through the
-        # east door, then shifted south.  Cross-flow SE -> W (see design.json
-        # ventilation.layout - closes EL RED-03).
-        gx, gy = ox + 450, oy + 420
-        rect(msp, gx - 120, gy - 120, g["skid_L"] + 240, g["skid_W"] + 240,
+        # Interior mirrored N-S (Rev 4): the intake takes air from the NORTH face,
+        # which is the shaded side and therefore the coolest air available, while
+        # the radiator discharge and the exhaust stay WEST - so nothing is blown at
+        # the outdoor cabinets and EL RED-03 stays closed. Genset in the middle,
+        # radiator end WEST; tank on the SOUTH wall; GRO on the NORTH wall beside
+        # the intake, next to the cabinets it feeds.
+        # Rev 7: the 110 % bund is gone - the tank is DOUBLE-SKINNED, so the
+        # interstitial space is the secondary containment and only a drip tray
+        # (kada) is needed. That is what frees the floor.
+        #
+        # Rev 7b: the skid is CENTRED in the free floor rather than pushed into
+        # the SW corner. It was drawn with its load-spreading frame flush against
+        # the west and south walls, which left no way to service two sides of the
+        # machine - and the container is empty, so there was never a reason for
+        # it. Free depth is 2180 - 740 (frame) = 1440, split evenly:
+        #
+        #   SOUTH  720 mm service corridor, full length, clear of the kada
+        #   NORTH  720 mm (520 clear where the GRO stands proud of the wall)
+        #   EAST   1155 mm to the wall - the alternator and control-panel end
+        #   WEST   60 mm: the radiator end, which discharges into the duct and
+        #          is not serviced from that face
+        #
+        # gx is held at ox+180 so the frame stops at ox+1790, just short of the
+        # kada at ox+1795 - the two never overlap in plan.
+        gx, gy = ox + 180, oy + 840
+        rect(msp, gx - 60, gy - 60, g["skid_L"] + 120, g["skid_W"] + 120,
              "Konstrukcija", color=5, lw=35)
         rect(msp, gx, gy, g["skid_L"], g["skid_W"], "Agregat", color=30, lw=50)
-        _txt(msp, "DEA 22 kVA / 17,6 kW, skid", gx + g["skid_L"] / 2,
+        _txt(msp, "DEA 18 kVA / 14,4 kW, skid", gx + g["skid_L"] / 2,
              gy + g["skid_W"] / 2, 1.9 * SC, layer="Tekst", color=7,
              align=TA.MIDDLE_CENTER)
         # radiator end (WEST) marked as a band across the skid
         rect(msp, gx, gy, 180, g["skid_W"], "Agregat", color=4, lw=35)
-        _txt(msp, "RADIJATOR", gx + 90, gy - 230, 1.4 * SC,
+        _txt(msp, "RADIJATOR", gx + 90, gy + g["skid_W"] + 130, 1.4 * SC,
              layer="Tekst", color=8, align=TA.CENTER)
 
         # radiator duct straight out the WEST wall + discharge louvre 600x600
@@ -266,27 +383,39 @@ def register(B):
              lw=35)
         solid_rect(msp, ox, dy_c - 300, t, 600, "Ventilacija", 4)
 
-        # intake louvre 500 wide in the SOUTH wall, east end
-        solid_rect(msp, ox + 2150, oy, v["intake_mm"][0], t, "Ventilacija", 4)
+        # intake louvre 500 wide in the NORTH wall, east end - clear of both the
+        # GRO inside and the outdoor cabinets outside (those sit at x 250..1770)
+        solid_rect(msp, ox + 2150, oy + CH - t, v["intake_mm"][0], t,
+                   "Ventilacija", 4)
 
-        # exhaust DN65 riser at the WEST wall, north of the duct
-        msp.add_circle((ox + t + 90, oy + 1350), 60,
+        # new GRO against the NORTH wall, west of the intake
+        grw, grd = 800, 200
+        rect(msp, ox + 350, oy + CH - t - grd, grw, grd, "Novi1", color=30, lw=50)
+        _txt(msp, "GRO", ox + 350 + grw / 2, oy + CH - t - grd / 2 - 55,
+             1.6 * SC, layer="Tekst", color=7, align=TA.CENTER)
+
+        # Exhaust DN50 riser at the WEST wall, NORTH of the radiator duct. The
+        # duct band moved with the skid to oy+850..oy+1450, so the riser had to
+        # move clear of it - it used to sit at oy+1100, which is now inside it.
+        exh_y = oy + 1800
+        msp.add_circle((ox + t + 90, exh_y), 60,
                        dxfattribs={"layer": "Ventilacija", "color": 1})
 
-        # Tank in its 110 % bund against the NORTH wall, set east of the west end so
-        # its mass lands over more secondary floor beams and clear of the radiator
-        # duct penetration. Its own spreading frame is drawn under the bund.
-        bx, by = ox + 1150, oy + CH - t - lay["W"]
-        rect(msp, bx - 120, by - 120, lay["L"] + 240, lay["W"] + 240,
-             "Konstrukcija", color=5, lw=35)
+        # Tank in its drip tray (kada) in the SE corner. The east door spans
+        # oy+700..oy+1600, so the tray stops exactly at its south jamb: the
+        # doorway and the route the 620 mm skid takes to its place both stay
+        # clear, which is the whole point of moving the tank here.
+        bx, by = ox + 1795, oy + t
         rect(msp, bx, by, lay["L"], lay["W"], "Agregat", color=1, lw=35)
         tx, ty = bx + (lay["L"] - tk["L"]) / 2, by + (lay["W"] - tk["W"]) / 2
         rect(msp, tx, ty, tk["L"], tk["W"], "Agregat", color=30, lw=35)
         _txt(msp, "spremnik 500 l", tx + tk["L"] / 2, ty + tk["W"] / 2,
              1.7 * SC, layer="Tekst", color=7, align=TA.MIDDLE_CENTER)
+        _txt(msp, "dvoplašni", tx + tk["L"] / 2, ty + tk["W"] / 2 - 230,
+             1.4 * SC, layer="Tekst", color=8, align=TA.CENTER)
 
-        # tank vent penetration, NORTH wall east end
-        msp.add_circle((ox + 2800, oy + CH - t / 2), 40,
+        # tank vent penetration, SOUTH wall east end
+        msp.add_circle((ox + 2800, oy + t / 2), 40,
                        dxfattribs={"layer": "Ventilacija", "color": 1})
 
         # door in the EAST wall with outward swing; room fan above it to the north
@@ -298,29 +427,39 @@ def register(B):
                     end_angle=90, dxfattribs={"layer": "Objekat", "color": 8})
         solid_rect(msp, ox + CW - t, oy + 1750, t, 315, "Ventilacija", 4)
 
-        # airflow arrows: in at SE low, across the room, out west through the duct
-        arrow([(ox + 2400, oy - 350), (ox + 2400, oy + 550)])
-        arrow([(ox + 2300, oy + 730), (gx + g["skid_L"] + 150, dy_c)])
+        # airflow arrows: in at the NE from the shaded face, down the aisle, out
+        # west through the radiator duct
+        arrow([(ox + 2400, oy + CH + 350), (ox + 2400, oy + CH - 550)])
+        arrow([(ox + 2300, oy + CH - 750), (gx + g["skid_L"] + 200, dy_c + 250)])
         arrow([(ox + t + 150, dy_c), (ox - 500, dy_c)])
+
+        # service clearances, called out on the drawing so no bidder closes them
+        _txt(msp, "servisni prostor 720", ox + 820, oy + 350, 1.5 * SC,
+             layer="Tekst", color=8, align=TA.CENTER)
+        _txt(msp, "servisni prostor 720", ox + 820, oy + 1690, 1.5 * SC,
+             layer="Tekst", color=8, align=TA.CENTER)
 
         dim_h(msp, ox, ox + CW, oy, SC, off=-800)
         dim_v(msp, oy, oy + CH, ox, SC, off=-800)
-        dim_h(msp, ox + 2150, ox + 2650, oy, SC, off=-350)
+        dim_h(msp, ox + 2150, ox + 2650, oy + CH, SC, off=350)
+        # A dimension chain for the clearances was tried on the east side and
+        # removed: that is where the door swings, and the chain crossed the arc.
+        # The two in-plan labels above and note 9 carry the figures instead.
 
         # Callouts stay short and stay on the sheet; the normative wording lives in
         # the notes below and in Prilog I 4.3.
-        leader(msp, (ox + 2400, oy + t / 2), "usis 500 × 700 (JUG, +0,30)",
-               900, -700, SC)
+        leader(msp, (ox + 2400, oy + CH - t / 2), "usis 500 × 700 (SJEVER, +0,30)",
+               900, 500, SC)
         leader(msp, (ox + t / 2, dy_c), "kanal + žaluzina 600 × 600 (ZAPAD)",
                -500, 1500, SC)
-        leader(msp, (ox + t + 90, oy + 1350), "izduv DN 65 (ZAPAD)", -500, -750, SC)
-        leader(msp, (bx + lay["L"], by + lay["W"] / 2), "tankvana ≥110 %",
-               700, -350, SC)
-        leader(msp, (ox + 2800, oy + CH), "oduška (SJEVER)", 500, 400, SC)
+        leader(msp, (ox + t + 90, exh_y), "izduv DN 50 (ZAPAD)", -500, 500, SC)
+        leader(msp, (bx + lay["L"] / 2, by), "korito (kada) 1150 × 640, rub 200",
+               400, -700, SC)
+        leader(msp, (ox + 2800, oy), "oduška (JUG)", 700, -400, SC)
         leader(msp, (ox + CW - t / 2, oy + 1900), "ventilator Ø315 (ISTOK)",
                600, 350, SC)
-        leader(msp, (gx - 120, gy - 120), "roštilj za raznošenje opterećenja",
-               -500, -400, SC)
+        leader(msp, (gx + 300, gy - 60), "roštilj za raznošenje opterećenja",
+               -700, -900, SC)
         # walls are referenced by cardinal name throughout the TD and Prilog I,
         # so name them on the plan itself
         # note: not tx/ty - those hold the tank origin, which the section reuses
@@ -332,7 +471,7 @@ def register(B):
             _txt(msp, label, lx, ly, 2.0 * SC, layer="Orijentacija", color=1,
                  align=al)
 
-        sxo, syo = 6600, 4300
+        sxo, syo = 6600, 3300
         H = C["height"]
         rect(msp, sxo, syo, CW, H, "Objekat", color=6, lw=50)
         _txt(msp, "PRESJEK 1–1  (pogled prema SJEVERU — ZAPAD lijevo)", sxo,
@@ -340,39 +479,46 @@ def register(B):
         msp.add_line((sxo - 500, syo), (sxo + CW + 500, syo),
                      dxfattribs={"layer": "Objekat", "color": 8, "lineweight": 50})
 
-        # genset elevation, radiator end at the WEST (left) wall
-        rect(msp, sxo + 450, syo, g["skid_L"], g["skid_H"], "Agregat", color=30, lw=50)
-        hatch_rect(msp, sxo + 450, syo, g["skid_L"], g["skid_H"], "Agregat",
+        # genset elevation, radiator end at the WEST (left) wall - same x as the plan
+        gxs = sxo + (gx - ox)
+        rect(msp, gxs, syo, g["skid_L"], g["skid_H"], "Agregat", color=30, lw=50)
+        hatch_rect(msp, gxs, syo, g["skid_L"], g["skid_H"], "Agregat",
                    "ANSI31", SC * 0.3, 30)
 
         # radiator duct + discharge louvre through the WEST wall
-        rect(msp, sxo + t, syo + 380, 450 - t, 640, "Ventilacija", color=4, lw=35)
+        rect(msp, sxo + t, syo + 380, gxs - sxo - t, 640, "Ventilacija", color=4,
+             lw=35)
         solid_rect(msp, sxo, syo + 400, t, 600, "Ventilacija", 4)
         arrow([(sxo + 350, syo + 700), (sxo - 500, syo + 700)])
 
-        # exhaust: flex -> silencer -> riser along the WEST wall, above the roof
-        msp.add_lwpolyline([(sxo + 900, syo + g["skid_H"]),
-                            (sxo + 900, syo + 1600), (sxo + 260, syo + 1600),
-                            (sxo + 260, syo + H + 380)],
+        # Exhaust: flex off the engine, then the silencer IN LINE on the horizontal
+        # run, then the riser up the WEST wall and through the roof. The silencer
+        # used to be drawn floating 50 mm above the run and overhanging its east
+        # end, which read as a component connected to nothing.
+        EY = syo + 1600
+        msp.add_lwpolyline([(sxo + 1100, syo + g["skid_H"]), (sxo + 1100, EY),
+                            (sxo + 260, EY), (sxo + 260, syo + H + 380)],
                            dxfattribs={"layer": "Ventilacija", "color": 1,
                                        "lineweight": 70})
-        rect(msp, sxo + 700, syo + 1650, 400, 260, "Ventilacija", color=1, lw=35)
-        _txt(msp, "prigušivač", sxo + 1180, syo + 1730, 1.5 * SC,
+        rect(msp, sxo + 480, EY - 130, 400, 260, "Ventilacija", color=1, lw=35)
+        _txt(msp, "prigušivač", sxo + 920, EY - 60, 1.5 * SC,
              layer="Tekst", color=8)
         _txt(msp, "izduv iznad krova", sxo + 400, syo + H + 200, 1.5 * SC,
              layer="Tekst", color=8)
 
-        # intake louvre on the SOUTH wall (in front of the section plane) - shown
-        # dashed at its true x-position and height
-        rect(msp, sxo + 2150, syo + 300, 500, 700, "Sakriveno", color=8)
-        _txt(msp, "usis (JUŽNI zid)", sxo + 2000, syo + 1120, 1.5 * SC,
-             layer="Tekst", color=8)
-        arrow([(sxo + 2400, syo + 650), (sxo + 2000, syo + 650)])
+        # intake louvre on the NORTH wall (behind the section plane) - shown dashed
+        # at its true x-position and height
+        # drawn in the Ventilacija colour, not dashed-hidden: the tank stands in
+        # front of it in this view and two nested dashed rectangles read as one
+        rect(msp, sxo + 2150, syo + 300, 500, 700, "Ventilacija", color=4, lw=35)
+        # above the 1020 mm genset silhouette and left of the tank outline
+        _txt(msp, "usis 500 × 700 (SJEVER, +0,30)", sxo + 1800, syo + 1120,
+             1.5 * SC, layer="Tekst", color=8, align=TA.RIGHT)
 
-        # tank behind the section plane (NORTH wall), dashed at its plan position -
-        # at 1310 mm it stands above the 1020 mm genset silhouette
+        # tank in front of the section plane (SOUTH wall), dashed at its plan
+        # position - at 1310 mm it stands above the 1020 mm genset silhouette
         rect(msp, sxo + (tx - ox), syo, tk["L"], tk["H"], "Sakriveno", color=8)
-        _txt(msp, "spremnik iza presjeka", sxo + (tx - ox), syo + tk["H"] + 110,
+        _txt(msp, "spremnik ispred presjeka", sxo + (tx - ox), syo + tk["H"] + 110,
              1.5 * SC, layer="Tekst", color=8)
 
         # room fan high on the EAST (right) wall
@@ -382,18 +528,16 @@ def register(B):
 
         dim_v(msp, syo, syo + H, sxo, SC, off=-700)
 
-        # below the container dimension line at oy-800 = 3500
-        note_block(msp, 700, 3150, SC, "NAPOMENE:", [
-            "1  FG Wilson P22-6 (Skid), TL 2019-08-14: hladnjak 1980 m³/h, sagorijevanje 90 m³/h,",
-            "    toplota u prostor 7,1 kW, maks. vanjski otpor 125 Pa.",
-            "2  Žaluzine zadovoljavaju: usis 500 × 700 (Δp≈16 Pa) + izlaz 600 × 600 (≈15 Pa) + kanal < 125 Pa.",
-            "3  Ventilator 1200 m³/h je DOPUNSKA ventilacija (min. 120 m³/h); protok hlađenja daje ventilator hladnjaka.",
-            "4  Izduv DN 65 usvojen (NO 50 zadovoljava protutlak, ali radi pri 33 m/s).",
-            "5  Pod je dimenzionisan na 10,00 kN/m² ravnomjerno raspodijeljeno (projekat lokacije, 4.4.2.3).",
-            "    Agregat 3,93 i pun spremnik 9,2 kN/m² su KONCENTRISANI — roštilj za raznošenje je OBAVEZAN.",
-            "6  RASPORED: usis JUG (+0,30), kanal/izlaz i izduv ZAPAD, oduška SJEVER, ventilator ISTOK;",
-            "    ≥3 m između usisa, izduva i oduške. Ništa ne izbacuje prema ormarima na SJEVERU.",
-            "7  UNOS: skid 620 mm kroz vrata 900 mm. Kontejner je PRAZAN.",
+        # below the container dimension line at oy-800 = 2800
+        note_block(msp, 700, 2400, SC, "NAPOMENE:", [
+            "1  Agregat FG Wilson P18-6 (Skid) ili ekvivalent, 18 kVA / 14,4 kW.",
+            "2  RASPORED (obavezujući): usis 500 × 700 SJEVER (+0,30); kanal i žaluzina 600 × 600",
+            "    te izduv DN 50 ZAPAD; oduška JUG; ventilator ISTOK. ≥3 m između usisa, izduva i oduške.",
+            "3  Roštilj za raznošenje opterećenja OBAVEZAN ispod skida i ispod korita.",
+            "4  Spremnik je DVOPLAŠNI; ispod njega korito (kada) 1150 × 640, rub 200 mm.",
+            "5  SERVISNI PROSTOR (obavezujući): 720 mm JUG, 720 mm SJEVER, 1155 mm ISTOK —",
+            "    ne zauzimati opremom ni skladištenjem.",
+            "6  Unos skida 620 mm kroz vrata 900 mm. Kontejner je PRAZAN.",
         ])
         return doc
 
@@ -441,7 +585,20 @@ def register(B):
         wire(spd2r, (pvdbl[0], pvdbl[1] - 300), 5)
         wire(pvdbr, issul, 5)
 
-        gr, _ = box(1600, Y - 6200, 2900, 1300, "DEA 22 kVA", "17,6 kW · skid", 30)
+        # Everything the LOT 2 contractor supplies and installs is shaded, so the
+        # supply boundary is readable off the diagram: the DEA, the KOA/ATS, and
+        # the GRO with its type 1+2 AC SPD. The PV side and the Huawei equipment
+        # are the Buyer's separate procurement and stay unshaded.
+        def lot2(x, y, w, h):
+            hatch_rect(msp, x, y, w, h, L, "ANSI31", SC * 4, 8)
+
+        for _x, _y, _w, _h in ((1600, Y - 6200, 2900, 1300),
+                               (5500, Y - 6200, 1900, 1300),
+                               (8400, Y - 6200, 2500, 1300),
+                               (8400, Y - 4300, 2500, 800)):
+            lot2(_x, _y, _w, _h)
+
+        gr, _ = box(1600, Y - 6200, 2900, 1300, "DEA 18 kVA", "14,4 kW · skid", 30)
         atsr, atsl = box(5500, Y - 6200, 1900, 1300, "KOA / ATS", "sklopka izvora", 30)
         grol, gror = box(8400, Y - 6200, 2500, 1300, "GRO",
                          "sekcije AGREGAT / SOLAR", 30)
@@ -462,23 +619,37 @@ def register(B):
         msp.add_lwpolyline([(17150, Y - 4900), (17150, Y - 1100)],
                            dxfattribs={"layer": L, "color": 7, "lineweight": 50})
 
-        msp.add_lwpolyline([(1600, Y - 7600), (18400, Y - 7600)],
+        # Earth bar raised so the bonding stubs actually reach the equipment they
+        # bond, and drawn as a yellow-green pair - the PE colour convention, and
+        # it separates the bar from every other line on the sheet at a glance.
+        EB = Y - 7000
+        msp.add_lwpolyline([(1600, EB), (18400, EB)],
                            dxfattribs={"layer": "Uzemljenje", "color": 2,
                                        "lineweight": 70})
+        msp.add_lwpolyline([(1600, EB - 90), (18400, EB - 90)],
+                           dxfattribs={"layer": "Uzemljenje", "color": 3,
+                                       "lineweight": 70})
         for x in (3050, 9650, 13200, 17150):
-            msp.add_lwpolyline([(x, Y - 7600), (x, Y - 7100)],
-                               dxfattribs={"layer": "Uzemljenje", "color": 2})
+            msp.add_lwpolyline([(x, EB), (x, Y - 6200)],
+                               dxfattribs={"layer": "Uzemljenje", "color": 2,
+                                           "lineweight": 50})
         _txt(msp, "postojeći prstenasti uzemljivač Fe/Zn 25×4 · R ≤ 10 Ω · nosači FN "
                   "vezani bakrenim užetom 50 mm² preko bimetalnih spojeva",
-             1600, Y - 8100, 2.0 * SC, layer="Tekst", color=8)
+             1600, EB - 620, 2.3 * SC, layer="Tekst", color=7)
 
-        note_block(msp, 1600, Y - 8900, SC, "NAPOMENE:", [
-            "1  Lokacija NIJE na mreži — DEA je jedini AC izvor; KOA/ATS je sklopka izvora, ne prebacivanje sa mreže.",
-            "2  Uzemljenje otočnog izvora TN-S: tačka spajanja N-PE u novom GRO, ne u postojećem PMO.",
-            "3  Prenaponska zaštita: AC tip 1+2 (objekat ima LPS), DC tip 2 po stringu, signalni vodovi EN 61643-21.",
-            "4  Zaštita u GRO mora isključiti prema IEC 60364-4-41 pri struji kvara ograničenoj pobudom generatora.",
-            "5  FN polja su unutar zone zaštite antenskog stuba h=38 m (EN 62305).",
-            "6  12 modula = 2 stringa × 6 (na 3 nosača × 4); PVDB ima 2 rute, po jedan DC odvodnik po stringu.",
+        # Key for the shading. x=7500 keeps it clear of the note lines on its
+        # left and well short of the title block, which starts near x=11500 -
+        # placing it at 13600 put it straight on top of the Investor's address.
+        hatch_rect(msp, 7500, Y - 8250, 900, 400, L, "ANSI31", SC * 4, 8)
+        rect(msp, 7500, Y - 8250, 900, 400, L, color=8)
+        _txt(msp, "isporuka i montaža — LOT 2", 8600, Y - 8180, 2.3 * SC,
+             layer="Tekst", color=7)
+
+        note_block(msp, 1600, Y - 8100, SC, "NAPOMENE:", h=2.3, lines=[
+            "1  Lokacija NIJE na mreži — DEA je jedini AC izvor; KOA/ATS je sklopka izvora.",
+            "2  Uzemljenje TN-S: spoj N-PE samo u novom GRO.",
+            "3  Odvodnici: AC tip 1+2, DC tip 2 po stringu, signalni vodovi EN 61643-21.",
+            "4  12 modula = 2 stringa × 6; PVDB ima 2 rute.",
         ])
         return doc
 

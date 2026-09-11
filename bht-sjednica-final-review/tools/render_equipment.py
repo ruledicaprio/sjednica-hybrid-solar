@@ -82,9 +82,9 @@ def render_layout() -> None:
         print("skip layout figure: build the drawings first (cad/build_drawings.py)")
         return
     dst = OUT / "layout_m01.png"
-    # window around the M-01 plan (container at 1900,4300 .. 4905,6600 plus its
+    # window around the M-01 plan (container at 1900,3600 .. 4905,5900 plus its
     # cardinal labels, airflow arrows and title) - move it if the plan moves
-    cad_render.render_window(str(dxf), str(dst), (1000, 3780, 5800, 7050),
+    cad_render.render_window(str(dxf), str(dst), (1000, 3080, 5800, 6350),
                              dpi=200, pad=0, skip_layers=("Okvir", "Kote"),
                              drop_leaders=True, text_scale=1.7, in_colour=True)
     print(f"{dst.name} <- M-01.dxf")
