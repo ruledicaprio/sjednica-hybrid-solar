@@ -56,11 +56,11 @@
  },
  "load": {
   "base_w": 1180,
-  "aux_w": 20,
+  "aux_w": 45,
   "cooling_w_max": 150,
   "cooling_t0_c": 20,
   "cooling_t1_c": 35,
-  "_src": "base_w: TK load of 1180 W nominal (RFI 27.04.2026; Prilog III site data). cooling_w_max: the same source gives 1330 W maximum 'with cooling', i.e. up to 150 W for cabinet cooling (ICC360 HXC300L heat exchanger plus the PC1500D-1 DC air conditioner of the battery compartment, rated ≤500 W). It is ramped linearly with ambient temperature from 20 to 35 °C; the ramp is an assumption. aux_w: SMU, BMS, rectifier/iSSU standby and fans, which are not in the TK figure - an assumption."
+  "_src": "base_w: TK load of 1180 W nominal (RFI 27.04.2026; Prilog III site data). cooling_w_max: the same source gives 1330 W maximum 'with cooling', i.e. up to 150 W for cabinet cooling (ICC360 HXC300L heat exchanger plus the PC1500D-1 DC air conditioner of the battery compartment, rated ≤500 W). It is ramped linearly with ambient temperature from 20 to 35 °C; the ramp is an assumption. aux_w: 20 W for the SMU, BMS, rectifier/iSSU standby and fans, which are not in the TK figure, plus 25 W for the always-on container loads the Investor put on the -48 V DC bus on 11.09.2026 (tower obstruction light LED, fire-detection panel and genset starter-battery charger through DC/DC, 48 V DC room fan; Prilog I §4.5 caps them at 25 W average) - both assumptions."
  },
  "battery": {
   "modules": 6,

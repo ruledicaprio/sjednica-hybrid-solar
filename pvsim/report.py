@@ -40,13 +40,20 @@ MONTHS = ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt",
           "nov", "dec"]
 
 
+def _git(*args):
+    return subprocess.run(["git", *args], cwd=config.ROOT, capture_output=True,
+                          text=True, check=True).stdout.strip()
+
+
 def _git_commit():
+    """HEAD, marked "-dirty" when pvsim's code or site files differ from it:
+    then the hash alone does not reproduce the numbers in kpis.json."""
     try:
-        return subprocess.run(["git", "rev-parse", "--short", "HEAD"],
-                              cwd=config.ROOT, capture_output=True, text=True,
-                              check=True).stdout.strip()
+        head = _git("rev-parse", "--short", "HEAD")
+        dirty = _git("status", "--porcelain", "--", "pvsim")
     except (OSError, subprocess.CalledProcessError):
         return None
+    return head + "-dirty" if dirty else head
 
 
 def _n(v, nd=0):

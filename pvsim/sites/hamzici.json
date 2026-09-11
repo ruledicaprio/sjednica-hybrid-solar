@@ -54,11 +54,11 @@
  },
  "load": {
   "base_w": 1180,
-  "aux_w": 20,
+  "aux_w": 45,
   "cooling_w_max": 150,
   "cooling_t0_c": 20,
   "cooling_t1_c": 35,
-  "_src": "Preliminary: the same 1180 W / 1330 W as Sjednica, until the measured Hamzići DC load arrives (user decision 2026-09-11). Cooling ramp and aux as sjednica.json. The ramp matters more here: July/August mean 24,7 °C."
+  "_src": "Preliminary: the same 1180 W / 1330 W as Sjednica, until the measured Hamzići DC load arrives (user decision 2026-09-11). Cooling ramp and aux (45 W including the always-on -48 V DC loads) as sjednica.json. The ramp matters more here: July/August mean 24,7 °C."
  },
  "battery": {
   "modules": 6,
