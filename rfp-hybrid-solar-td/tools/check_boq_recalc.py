@@ -296,7 +296,12 @@ def coverage(wb):
 SJEDNICA_FACTS = re.compile(r"1076|42,94|16,00 × 9,40|h=2,10|h=38|planinsk|11,6 kW|≈82 %|93 %|"
                             r"trase od 25 m|dužini 25 m|900 × 2000|istočne strane ograde|"
                             r"1,94 m|4\.4\.2\.3|720 mm|1155 mm|CENTRIRANO|JUGOISTOČNI ugao|"
-                            r"0,60 × 0,25|≈1,9 kPa|dužine do 15 m|\b[MSE]-0\d\b")
+                            r"0,60 × 0,25|≈1,9 kPa|dužine do 15 m|\b[MSE]-0\d\b|"
+                            # superseded Hamzići layout: Stulz and discharge on the east wall
+                            r"ISTOČNE strane je hladnjak|južnom kraju istočnog zida|"
+                            r"uz ISTOČNI zid kontejnera, sjeverno od agregata|"
+                            r"sa istočnog zida kontejnera|Stulz \(Tačka 5\.15\) na ISTOČNOM|"
+                            r"ugrađuje u ISTOČNI zid kontejnera, na mjestu")
 
 
 def check_sjednica(wb):
