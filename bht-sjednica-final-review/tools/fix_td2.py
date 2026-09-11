@@ -36,10 +36,10 @@ EDITS = [
      "transport, montažu, povezivanje i pričvršćenje DEA — SMJEŠTANJE U "
      "POSTOJEĆI KONTEJNER — uključujući ugradnju sistema za odvod dimnih "
      "gasova, žaluzina i ventilacije prostora agregata, u rasporedu prema "
-     "crtežu M-01 (Prilog III): usisna žaluzina na JUŽNOM zidu kontejnera "
+     "crtežu M-01 (Prilog III): usisna žaluzina na SJEVERNOM zidu kontejnera "
      "(donja ivica cca 0,30 m od poda), kanal hladnjaka sa izlaznom žaluzinom "
      "i izduvni sistem na ZAPADNOM zidu (završetak izduva iznad krova, sa "
-     "hvatačem iskri), odušna cijev spremnika na SJEVERNOM zidu — međusobna "
+     "hvatačem iskri), odušna cijev spremnika na JUŽNOM zidu — međusobna "
      "prostorna udaljenost usisa, izduva i odušne cijevi ≥3 m.",
      1),
     # Y-14: first fill aligned with BOQ 4.16 (500 l priced)

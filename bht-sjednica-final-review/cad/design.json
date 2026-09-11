@@ -35,9 +35,9 @@
   "kWp": 7.02,
   "tilt_deg": 45,
   "azimuth_deg": 180,
-  "bottom_edge": 1500,
-  "top_edge": 4736,
-  "above_fence": 2836
+  "bottom_edge": 500,
+  "top_edge": 3736,
+  "above_fence": 1636
  },
  "wind": {
   "site_qp_kNm2": 1.2,
@@ -57,8 +57,8 @@
   "verdict": "No catalogue tilt is compliant; tender requires certified site-specific static calculation pre-award.",
   "sail_area_m2_per_support": 10.55,
   "uls_uplift_kN_per_support": 18.1,
-  "overturning_kNm_per_support": 62.8,
-  "note": "3x4 (2 rows x 2 columns) adopted 2026-08-08 in place of 2x6: sail area per support drops from 15.91 to 10.55 m2 (-34%, not the -50% the BOQ OPCIJA text assumed). The freed wind budget was spent raising bottom_edge from 500 to 1500 mm so overturning per support (62.8 kNm) stays at/below the old 2x6 design's 64.3 kNm; uplift (18.1 kN) is well under the old 27.3 kN since it is height-independent."
+  "overturning_kNm_per_support": 42.6,
+  "note": "3x4 (2 rows x 2 columns) adopted 2026-08-08 in place of 2x6: sail area per support drops from 15.91 to 10.55 m2 (-34%, not the -50% the BOQ OPCIJA text assumed). Rev 7c (2026-08-12): bottom_edge returns to 500 mm on the Investor's instruction. The 1500 mm of 07-calculations F.6 was not a requirement - it was the freed wind margin deliberately SPENT as height, sized to bring overturning back up to (not past) the old 2x6 design's 64.3 kNm. Banking that margin instead is the safer choice: centroid 3.118 -> 2.118 m and overturning 62.8 -> 42.6 kNm per support (-32%), couple per strip 39.2 -> 26.6 kN over the 1600 mm spacing. Uplift is unchanged at 18.1 kN, being height-independent. NOTE the one thing this does not improve: at 45 deg the panel plane now crosses fence height 1600 mm from the bottom edge instead of 600, so the array's set-back from the fence must be re-confirmed when the supports are sited. Snow was the standing argument against a 500 mm bottom edge (02-construction), and 07-calculations A.3 already set it aside on the Investor's site knowledge - a wind-scoured bura-belt peak with 45 m/s gusts does not accumulate snow; that ruling is what makes this reversal consistent rather than new."
  },
  "foundation": {
   "strip_w_top": 450,
@@ -70,22 +70,47 @@
   "cover": 50,
   "supports": 3,
   "strips_total": 6,
+  "blinding_thk": 50,
+  "volume_m3_per_strip": 1.485,
+  "volume_m3_total": 8.91,
+  "blinding_m3_total": 0.54,
+  "excavation_m3_total": 10.35,
+  "backfill_m3_total": 0.89,
+  "spoil_m3_total": 9.45,
+  "_quantities": "strip_d 900 is the FULL DEPTH OF CONCRETE, not a trench depth with a thinner footing at the bottom - that is what S-02 draws (a 900 mm block, hatched solid) and what its note 2 states. Volume per strip = ((0.45+0.55)/2) x 0.90 x 3.30 = 1.485 m3. Excavation is taken to the underside of the blinding, 950 mm, at the base width 550: 1.724 m3/strip; backfill is only the taper wedge, 0.149 m3/strip, so nearly all the spoil is carted away. Rev 8 (2026-08-12) corrected BOQ 2.1/2.2/2.2a/2.3 to these figures; they had carried 0.41 m3/strip (a 450x275 footing) from an earlier lighter design, with the excavation and backfill still sized for a 900 mm trench.",
+  "_uplift_check": "The full-depth strip is what the wind case needs. Overturning 42.6 kNm per support over the 1600 mm strip spacing gives a 26.6 kN uplift couple on the windward strip; the strip's own weight 1.485 x 24 = 35.6 kN, factored 0.9, gives 32.1 kN - adequate on dead weight alone. The 0.41 m3 strip gives only 8.9 kN and is 17.7 kN short, which it could only recover from friction on the backfill - not a defensible assumption on karst. The chemical anchors carry uplift into the strip, not into the ground, so they do not close that gap.",
   "note": "Depth and reinforcement to be confirmed by the bidder's certified calculation for qp >= 1.20 kN/m2. 3 supports (was 2) = 6 strips total, one extra foundation pair + anchor set vs the 2x6 design."
  },
  "genset": {
-  "model": "FG Wilson P22-6 (Skid) ili ekvivalent",
-  "kVA": 22,
-  "kW": 17.6,
-  "engine": "Perkins 404D-22G, 4-cyl, naturally aspirated, 1500 rpm",
-  "alternator": "FG Wilson FGL10060, SHUNT excitation, IP23, class H",
+  "model": "FG Wilson P18-6 (Skid) ili ekvivalent",
+  "kVA": 18,
+  "kW": 14.4,
+  "kVA_prime": 16.5,
+  "kW_prime": 13.2,
+  "engine": "Perkins 404D-22G1, 4-cyl, in-line, naturally aspirated, 2.2 l, 1500 rpm",
+  "alternator": "FG Wilson FGL10040, SHUNT excitation, AVR R120, IP23, class H",
   "skid_L": 1550,
   "skid_W": 620,
   "skid_H": 1020,
   "radiator_end": "WEST",
-  "mass_dry_kg": 378,
-  "mass_wet_kg": 385,
-  "fuel_l_h_standby_100pct": 5.9,
-  "_source": "FG Wilson P22-6(Skid) technical data sheet, 2019-08-14 — EQUIPEMENT/GENSET/P22-6_FG_Wilson_full_datasheet_2019-08-14.pdf. Supersedes the 3-page web printout that carried no dimensions or weights."
+  "mass_dry_kg": 365,
+  "mass_wet_kg": 372,
+  "fuel_l_h_standby_100pct": 4.8,
+  "fuel_l_h_standby_75pct": 3.7,
+  "fuel_l_h_standby_50pct": 2.7,
+  "motor_starting_kVA_400V": 26,
+  "In_A_400V": 26.0,
+  "site_derate": {
+   "basis": "ISO 3046 / ISO 8528-1: -1 %/100 m above 100 m at 1076 m a.s.l. = -9.8 %, and -3 % for 40 C ambient against the 25 C reference. Factor 0.875.",
+   "standby_kW": 12.6,
+   "standby_kVA": 15.8,
+   "prime_kW": 11.6,
+   "prime_kVA": 14.4,
+   "rectifier_draw_kW": 12.5,
+   "verdict": "STANDBY is adequate (12.6 kW against a 12.5 kW draw) but has NO margin, and the site's real duty is PRIME (review/03-electrical Y-02: there is no utility, the set cycles on battery SoC), where the derated 11.6 kW is EXCEEDED. The rectifier AC input limit already required by BOQ 3.1 must therefore be stated as a NUMBER: cap at 9.5 kW = 82 % of the derated prime output. That also fixes the wet-stacking exposure of Y-03, since 9.5 kW is well above the 30 % minimum, and still leaves ~8.2 kW of charging after the 1.33 kW TK load. This is what the 13.5 kVA P13.5-6 could not do at all: its derated prime was 9.7 kW, below the draw."
+  },
+  "_source": "FG Wilson P18-6 (Skid) technical data sheet 2019-08-14 — EQUIPEMENT/GENSET/P18-6.pdf. The Investor adopted 18 kVA on 2026-08-12, returning to the original first choice. NOTE the skid envelope 1550x620x1020 is IDENTICAL to both superseded sets, so no drawing geometry moved - only mass, thermal and electrical figures. The alternator is still SHUNT and the data sheet states short-circuit capacity 0 % without the optional PMG/AUX winding, so the tender's PMG/AREP requirement stands and is now backed by the sheet itself.",
+  "_superseded": "P13.5-6 (Rev 7, 2026-08-11): 13.5 kVA/10.8 kW, Perkins 403D-15G 1.5 l, FGL10020, 302/308 kg, 4.0 l/h — WITHDRAWN because the site derate takes it to 9.7 kW prime, below the 12.5 kW rectifier draw. P22-6 (Rev 1-6): 22 kVA/17.6 kW, Perkins 404D-22G, FGL10060, 378/385 kg, 5.9 l/h."
  },
  "tank": {
   "litres": 500,
@@ -96,12 +121,14 @@
   "mass_empty_kg": 170,
   "mass_full_kg": 590,
   "_source": "FG Wilson 500 l indoor tank data supplied by the Investor 2026-08-11: 1050L x 600W x 1310H, 170 kg. Supersedes the earlier unverified 1200x700x800 estimate; full mass = 170 kg + 500 l diesel @ ~0.84 = ~590 kg over 0.63 m2 = 9.2 kN/m2.",
-  "bund": {
-   "L": 1600,
-   "W": 1060,
-   "upstand_mm": 330,
-   "volume_l": 560,
-   "basis": ">=110 % of 500 l = 550 l; 1.70 m2 x 0.33 m = 560 l (BOQ 4.3, 03-electrical Y-14). Tank 1050x600 sits inside with 275/230 mm margins."
+  "secondary_containment": "The tank is DOUBLE-SKINNED (dvoplasni) with interstitial leak monitoring, so the interstitial space IS the secondary containment and no 110 % bund is required. Investor's decision 2026-08-11. NOTE the arithmetic that decided it: a bund does not gain capacity from height, because the tank standing in it displaces the retention volume - only FREE area x upstand counts. The 2885x800x330 bund gave (2.308 - 0.63) x 0.33 = 554 l, clearing 550 l by 0.7 %; the earlier 1600x1060x330 gave only (1.696 - 0.63) x 0.33 = 352 l and never met 110 % at all. Any compact bund is arithmetically impossible: 1500x640 has 0.33 m2 free, so it would have to stand 1.67 m tall.",
+  "kada": {
+   "L": 1150,
+   "W": 640,
+   "rim_mm": 200,
+   "volume_gross_l": 147,
+   "volume_free_l": 21,
+   "basis": "Drip/spill tray under the tank - NOT a 110 % bund; secondary containment is the tank's own second skin. It catches fill and draw-off spillage and drains to a visible low point. Sized to the tank with 50/20 mm margins so the whole assembly stays inside the 640 mm strip SOUTH of the container door (door 900 wide, 700..1600 mm off the south wall), which is what keeps the doorway and the skid entry path clear."
   }
  },
  "ventilation": {
@@ -109,8 +136,9 @@
   "radiator_m3h_site_derated": 2151,
   "combustion_air_m3h": 90,
   "max_external_restriction_Pa": 125,
-  "heat_to_water_kW": 19.6,
-  "heat_radiated_to_room_kW": 7.1,
+  "max_combustion_air_restriction_kPa": 3.0,
+  "heat_to_water_kW": 15.2,
+  "heat_radiated_to_room_kW": 5.8,
   "intake_mm": [
    500,
    700
@@ -119,24 +147,31 @@
    600,
    600
   ],
-  "duct": "limeni kanal ≈6 m² od radijatora do izlazne žaluzine",
+  "duct": "limeni kanal od radijatora do izlazne žaluzine — kratki prelazni komad, radijator je uz zapadni zid",
+  "duct_area_m2": 1.0,
+  "_duct_area": "Developed sheet-metal area of the discharge duct. The radiator stands 60 mm off the WEST wall (access.service_clearance_mm.west) and the wall is 60 mm thick, so the duct is a transition piece ~0.2 m long from the radiator flange to the 600x600 louvre: 2.4 m perimeter x 0.2 m = 0.5 m2, rounded to 1.0 with the flanges and fittings. BOQ 4.5 carried 6 m2, inherited from the Mostar 'POTOCI' specification where the set stood in a hall away from the wall and the item read 10 m2. Corrected Rev 8 (2026-08-12) on the Investor's challenge.",
+  "exhaust_run_m": 5.0,
+  "exhaust_insulation_area_m2": 3.0,
+  "_exhaust_run": "1 m from the flexible connector to the silencer with one 90 deg bend, plus up to 4 m from the silencer to the termination above the roof (eave 2.63/2.89 m). Insulated OD = 60.3 + 2x50 mm rock wool + Al cladding = ~165 mm, circumference 0.52 m/m: 5.0 x 0.52 = 2.6 m2 plus ~0.4 m2 for the silencer = 3.0 m2. BOQ 4.12 carried 6 m2, which would need 12 m of pipe; the Mostar source item read 10 m2 for a 6 m run. Itemising the run in metres, as the Mostar item did, is what keeps this honest.",
   "room_fan_m3h": 1200,
   "room_min_m3h": 120,
-  "exhaust_flow_m3h": 234,
-  "exhaust_T_C": 505,
+  "exhaust_flow_m3h": 192,
+  "exhaust_T_C": 413,
   "exhaust_DN": 50,
-  "exhaust_DN_recommended": 65,
+  "exhaust_velocity_ms": 27.2,
+  "exhaust_back_pressure_kPa": 1.9,
   "max_back_pressure_kPa": 10.2,
   "layout": {
-   "intake_wall": "JUG - istocni kraj (x 2150-2650), donja ivica +300 mm od poda",
+   "intake_wall": "SJEVER - istocni kraj (x 2150-2650), donja ivica +300 mm od poda",
    "discharge_wall": "ZAPAD - limeni kanal pravo od radijatora kroz zid, zaluzina 600x600 na osi radijatora",
    "exhaust": "ZAPAD - flex + prigusivac, uspon uz zapadni zid, zavrsetak iznad krova sa hvatacem iskri",
    "room_fan_wall": "ISTOK - gore (donja ivica +1750 mm), sjeverno od vrata",
-   "tank_vent_wall": "SJEVER - istocni kraj, >=3 m prostorno od izduva i usisa",
-   "_rationale": "Cross-flow SE->W closes EL RED-03: previous layout put intake, discharge AND exhaust on the NORTH wall 1.4 m apart, next to the outdoor ICC330-H1/MTS9302 cabinets, with the tank standing in front of the intake. Now intake (S) and discharge/exhaust (W) are on opposite airflow ends, nothing discharges toward the cabinets, and the tank+bund sit clear on the NORTH wall."
+   "tank_vent_wall": "JUG - istocni kraj, >=3 m prostorno od izduva i usisa",
+   "gro_wall": "SJEVER - zapadni kraj, uz vanjski ormar ICC360-HA1-C1 koji napaja",
+   "_rationale": "Cross-flow NE->W. The original layout put intake, discharge AND exhaust on the NORTH wall 1.4 m apart, next to the outdoor ICC330-H1/MTS9302 cabinets, with the tank in front of the intake (EL RED-03). Rev 3 moved everything to a S->W cross-flow; Rev 4 mirrors the interior N-S so the INTAKE takes air from the NORTH face - the shaded side, so the coolest air available - while the radiator discharge and the exhaust stay WEST. Nothing is blown at the cabinets, so RED-03 stays closed, and the GRO now sits on the north wall beside the cabinets it feeds."
   },
-  "_verdict": "The tendered arrangement is ADEQUATE. Intake 500x700 gives 3.4 m/s and ~16 Pa; discharge 600x600 gives ~15 Pa; with the duct the total stays well inside the manufacturer's 125 Pa external-restriction budget. The 1200 m3/h axial fan is a supplementary room-ventilation fan (stated minimum 120 m3/h = 6 ACH), not the cooling path — the radiator's own fan moves the 1980 m3/h. DN50 exhaust meets the 10.2 kPa back-pressure limit (~2.6 kPa) but runs at 33 m/s; DN65 is recommended to stay under the customary 30 m/s.",
-  "_source": "Computed from the manufacturer data sheet; supersedes the estimates in 03-electrical.md RED-01/RED-04."
+  "_verdict": "The tendered arrangement is ADEQUATE. Radiator 1980 m3/h, density-corrected to 2151 at site, plus 90 m3/h combustion air = 2241 m3/h. At the customary 50 % louvre free area the intake 500x700 gives 3.56 m/s (~17 Pa) and the discharge 600x600 gives 3.46 m/s (~16 Pa); the duct is a short transition piece because the radiator sits against the west wall, so the total is far inside the manufacturer's 125 Pa external-restriction budget and the louvres do NOT need resizing - which also avoids churning BOQ 4.7/4.8. The 1200 m3/h axial fan is a supplementary room-ventilation fan (stated minimum 120 m3/h = 6 ACH), not the cooling path. DN50 exhaust runs at 27.2 m/s, still under the customary 30 m/s, with ~1.9 kPa against the 10.2 kPa limit: the DN65 recommendation made for the P22-6 (33 m/s) stays WITHDRAWN and the tender keeps NO 50 mm, which is what BOQ 4.11 always said.",
+  "_source": "Computed from the FG Wilson P18-6 data sheet 2019-08-14 (Rev 7, 2026-08-12); supersedes the P13.5-6 and P22-6 figures and the estimates in 03-electrical.md RED-01/RED-04. Radiator airflow is 1980 m3/h, the same as the P22-6 - the P18-6 shares its 2.2 l 404D engine and cooling pack - so the Rev 1 airflow work carries over unchanged; only the exhaust (192 m3/h at 413 C, cooler and slower than the P22-6's 234 at 505) and the combustion air (90 m3/h) are specific to this set. Back pressure scaled from the P13.5-6 result for the identical pipe run as rho x v^2."
  },
  "container": {
   "ext": [
@@ -148,20 +183,79 @@
    2885,
    2180
   ],
-  "height": 2400,
-  "_height_note": "Per the container type sheet; 02-construction Y-05 lists conflicting heights (2.40/2.80/2.89 m) - confirm on the mandatory site visit.",
+  "height": 2630,
+  "height_high_eave": 2890,
+  "_height_note": "Settled from the certified K2 facade drawing (SITE-PROJECT .../463 Graficki dio OBJEKAT/04 Fasade.dwg), which carries levels +2.63 and +2.89 with a 10 % mono-pitch roof. This closes 02-construction Y-05, which listed four conflicting heights; 2.40 m was an assumption and is wrong. The lower eave 2.63 m governs internal clearances.",
   "empty": true,
   "door": [
    900,
    2000
   ],
   "floor_capacity_kNm2": 10.0,
-  "floor_note": "Floor designed for a total (g+p) UDL of 10.00 kN/m2 - certified project of this K2 object, '04 AG dio.docx' 4.4.2.3 (secondary beams HOP 100x50x3 at 0.51 m, 5.10 kN/m'; primary 15.00 kN/m'). The 2.00 kN/m2 in the same project is the pedestrian live load on the walkable strip only. Genset wet 385 kg over 0.96 m2 = 3.93 kN/m2; full 500 l tank 590 kg over 0.63 m2 = 9.2 kN/m2; combined 975 kg. Both sit under 10.00 kN/m2 but act as concentrated loads on a few secondary beams, so a load-spreading grillage/frame under BOTH the skid and the bund is REQUIRED - to distribute onto the primary beams, not because capacity is exceeded."
+  "floor_note": "Floor designed for a total (g+p) UDL of 10.00 kN/m2 - certified project of this K2 object, '04 AG dio.docx' 4.4.2.3 (secondary beams HOP 100x50x3 at 0.51 m, 5.10 kN/m'; primary 15.00 kN/m'). The 2.00 kN/m2 in the same project is the pedestrian live load on the walkable strip only. Genset wet 372 kg over 0.96 m2 = 3.80 kN/m2 (P18-6; was 3.14 with the P13.5-6 and 3.93 with the P22-6); full 500 l tank 590 kg over 0.63 m2 = 9.2 kN/m2; combined 962 kg. Both sit under 10.00 kN/m2 but act as concentrated loads on a few secondary beams, so a load-spreading grillage/frame under BOTH the skid and the tank is REQUIRED - to distribute onto the primary beams, not because capacity is exceeded."
  },
  "access": {
   "skid_width_mm": 620,
   "door_clear_mm": 900,
   "gate_clear_mm": 1000,
-  "verdict": "FITS — 620 mm skid through a 900 mm door leaves 280 mm; height 1020 mm against a 2000 mm door. No roof panel removal or wall opening needed."
+  "verdict": "FITS — 620 mm skid through a 900 mm door leaves 280 mm; height 1020 mm against a 2000 mm door. No roof panel removal or wall opening needed.",
+  "service_clearance_mm": {
+   "south": 720,
+   "north": 720,
+   "north_at_GRO": 520,
+   "east": 1155,
+   "west": 60,
+   "basis": "Rev 7b (2026-08-12). The skid was drawn in the SW corner with its load-spreading frame flush against the west and south walls, leaving no way to service two sides. The container is empty, so there was no reason for it. Interior depth 2180 less the 740 mm frame leaves 1440, split evenly north and south. WEST is deliberately tight: that face is the radiator, which discharges into the duct through the wall and is not serviced from there. The frame stops at ox+1790, just short of the kada at ox+1795, so the two never overlap in plan. Carried on M-01 as two in-plan labels and normative note 9, and in BOQ 4.1."
+  }
+ },
+ "energy": {
+  "_source": "review/pvsim/kpis.json, written by `python -m pvsim report --site sjednica`; copied here by tools/sync_energy.py. Do not edit by hand.",
+  "kpis_sha256": "6f41a252150c983b546a16b1b7cb6bfcd86eb96c6aacb3abd9b27718e2837585",
+  "pvsim_commit": "b6d6f60",
+  "generated_utc": "2026-09-11T17:19:19+00:00",
+  "tilt_deg": 45,
+  "years": [
+   2005,
+   2023
+  ],
+  "pv_bus_kwh": 10137.377,
+  "specific_yield_bus": 1444.071,
+  "pv_used_kwh": 8893.645,
+  "curtailed_kwh": 1243.732,
+  "load_kwh": 10793.75,
+  "solar_fraction": 0.792,
+  "dec_pv_kwh": 560.339,
+  "dec_load_kwh": 911.4,
+  "genset_h_mean": 246.749,
+  "genset_h_p90": 307.357,
+  "genset_h_max": 327.184,
+  "starts_mean": 87.526,
+  "fuel_l_mean": 815.02,
+  "fuel_l_p90": 1015.208,
+  "fuel_l_max": 1080.7,
+  "refills_mean": 2.053,
+  "tank_years_mean": 0.613,
+  "longest_genset_free_days": 109.25,
+  "cycles_mean": 139.102,
+  "unmet_kwh_total": 0.0,
+  "validation": {
+   "pvcalc_E_y": 9692.2,
+   "pvsim_E_y": 9621.1,
+   "worst_month_dev": 0.0203,
+   "hourly_r": 0.99998
+  },
+  "limits_odluka": {
+   "genset_h_max": 250,
+   "tank_years_min": 1.0,
+   "_status": "superseded in Rev 9 by the simulated values (review/09-odluka-nosaci-nagib.md)"
+  }
+ },
+ "control": {
+  "_source": "Prilog I §4.6 (Rev 9): SMU settings the bidder sets and proves with evidence item 12; the same values are the pvsim base case.",
+  "dod_start": 0.85,
+  "soc_stop": 0.6,
+  "min_run_h": 1.0,
+  "charge_c_rate": 0.5,
+  "rect_cap_ac_kw": 9.5
  }
 }

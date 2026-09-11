@@ -1,0 +1,13 @@
+# Runtime: pvsim (PV + dispatch simulation) and the TD build tools
+# (bht-sjednica-final-review/, hamzici-hybrid-solar/, rfp-hybrid-solar-td/).
+# External, not pip: pandoc >= 3.10 (winget JohnMacFarlane.Pandoc),
+# ODA File Converter (DXF <-> DWG), LibreOffice (BOQ recalculation check).
+pvlib>=0.15.1
+pandas>=2.3
+numpy>=2.0
+matplotlib>=3.10
+requests>=2.32
+openpyxl>=3.1.5
+ezdxf>=1.4
+pymupdf>=1.28
+pillow>=10.0

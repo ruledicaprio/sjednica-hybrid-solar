@@ -57,6 +57,11 @@ bht-sjednica-final-review/SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m/
 bht-sjednica-final-review/EQUIPEMENT/
 # 80 MB pre-change snapshot, mostly the un-optimised 79.5 MB Prilog III
 bht-sjednica-final-review/TD-OUTPUT-BASELINE-20260807/
+# 16 MB export bundle of this repo, made for sending the package out by mail;
+# it is the repo packed into itself and would grow with every re-export
+bht-sjednica-final-review/sjednica-hybrid-solar.zip
+# LibreOffice lock files left behind while a document is open
+.~lock.*#
 # render previews and scratch CAD
 bht-sjednica-final-review/cad/_*.png
 bht-sjednica-final-review/cad/_frame_test.dxf
@@ -65,3 +70,20 @@ bht-sjednica-final-review/cad/_frame_test.dxf
 # their genset/container content (see KONTEJNER.oxps for the useful part instead)
 bht-sjednica-final-review/reference/P13_5_FG_Wilson_hybrid MLINISTE.dwg
 bht-sjednica-final-review/reference/P13_5_FG_Wilson_hybrid MLINISTE_2.dwg
+
+# --- pvsim: PVGIS responses are cached locally; only the small reference
+# responses under pvsim/sites/<id>/pvgis_ref/ (with their sha256 manifest) are
+# committed. Run outputs are copied into each site's review/pvsim/ by `report`.
+pvsim/cache/
+pvsim/out/
+
+# --- hamzici-hybrid-solar: ~850 MB of client inputs held locally, not committed
+# (same policy as the Sjednica site project above). The work product next to
+# them - cad/, review/, tools/ - is committed.
+# two versions of the certified 2017 site project (space- and underscore-named)
+hamzici-hybrid-solar/GP BS*/
+# vendor manuals and datasheets
+hamzici-hybrid-solar/EQUIPEMENT/
+# 08.09.2026 site photos, full resolution; this folder also holds two unrelated
+# items (mliniste-full.mp4, Icao9303/) that belong to other work
+hamzici-hybrid-solar/hamzici-photos/

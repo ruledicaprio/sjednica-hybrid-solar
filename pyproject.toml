@@ -1,13 +1,32 @@
 [build-system]
 requires = ["setuptools>=61.0"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
-name = "dxf-agent-workbench"
+name = "solar-rfp-engine"
 version = "0.1.0"
-description = "Agent-oriented CAD drawing processing"
+description = "Solar/hybrid-power engineering toolkit for tender (RFP) documents"
 readme = "README.md"
 requires-python = ">=3.10"
+dependencies = [
+    "pvlib>=0.15.1",
+    "pandas>=2.3",
+    "numpy>=2.0",
+    "matplotlib>=3.10",
+    "requests>=2.32",
+    "openpyxl>=3.1.5",
+    "ezdxf>=1.4",
+    "pymupdf>=1.28",
+    "pillow>=10.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
 
 [tool.setuptools.packages.find]
-where = ["src"]
+include = ["pvsim*"]
+
+[tool.pytest.ini_options]
+testpaths = ["pvsim/tests"]
+markers = ["network: calls the live PVGIS API (run with -m network)"]
+addopts = "-m 'not network'"

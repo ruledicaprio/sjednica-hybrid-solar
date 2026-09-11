@@ -34,7 +34,8 @@ from bht_frame import (A3_H, A3_W, MARGIN, MARGIN_L, TB_W, draw_frame, new_doc,
                        north_arrow, scale_bar, _txt)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(os.path.dirname(HERE), "TD-OUTPUT", "DWG")
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), "tools"))
+from paths import GRAFIKA as OUT                                    # noqa: E402
 
 GEO = json.load(open(os.path.join(HERE, "site_geometry.json"), encoding="utf-8"))
 
@@ -124,10 +125,12 @@ def legend(msp, x, y, scale, rows, title="LEGENDA", cols=1, col_w=None):
 
 
 def note_block(msp, x, y, scale, title, lines, h=2.1):
+    # colour 7, not the grey 8 it used to be: at note size the grey printed too
+    # faint to read on a plotted A3 sheet
     _txt(msp, title, x, y, 2.6 * scale, layer="Tekst", color=7)
     yy = y - 2.4 * scale
     for ln in lines:
-        _txt(msp, ln, x, yy, h * scale, layer="Tekst", color=8)
+        _txt(msp, ln, x, yy, h * scale, layer="Tekst", color=7)
         yy -= h * 1.45 * scale
     return yy
 
@@ -151,8 +154,11 @@ def site_plan(msp, ox, oy, scale, future=False, d=None):
     cy = sy + (S - CH) / 2.0
 
     # --- parcel boundary (~150 m2 leased) --------------------------------
+    # The plot is not centred on the compound: the compound sits near its north
+    # edge, which is what leaves the open ground to the south (the front area)
+    # for the PV array.
     pw, ph = 16000, 9400
-    px, py = ox + F / 2 - pw / 2, oy + F / 2 - ph / 2
+    px, py = ox + F / 2 - pw / 2, oy + F + 100 - ph
     msp.add_lwpolyline([(px, py), (px + pw, py), (px + pw, py + ph), (px, py + ph)],
                        close=True,
                        dxfattribs={"layer": "Sakriveno", "color": 8})
@@ -210,8 +216,13 @@ def site_plan(msp, ox, oy, scale, future=False, d=None):
     msp.add_lwpolyline(legs + [legs[0]], close=False,
                        dxfattribs={"layer": "Osovina", "color": 8})
 
-    # --- existing outdoor cabinets on the NORTH side ---------------------
-    cab = [("ICC330-H1", 700, 600), ("MTS9302", 600, 600)]
+    # --- outdoor cabinets on the NORTH side -------------------------------
+    # TWO cabinets stand here and both must be drawn: the hybrid power cabinet
+    # ICC360-HA1-C1 (per the Huawei quotation, replacing the ICC330-H1 this used
+    # to name) and the existing TK equipment cabinet MTS9302A, which is a
+    # separate procurement and never went away. Rev 7 dropped the second box by
+    # mistake when the pair collapsed to one name.
+    cab = [("ICC360-HA1-C1", 650, 650), ("MTS9302A", 600, 600)]
     bx = cx + 250
     for name, w, h in cab:
         by = cy + CH + 180
@@ -260,7 +271,7 @@ def sheet_s01():
     leader(msp, (cx + CW + 350, cy + CH / 2 + 250),
            "ULAZNA VRATA 900 × 2000 mm (ISTOČNA strana)", 2100, 1250, SC)
     leader(msp, (cx + 700, cy + CH + 480),
-           "postojeći vanjski ormari (SJEVER): Huawei ICC330-H1 + MTS9302",
+           "vanjski ormari (SJEVER): Huawei ICC360-HA1-C1 i MTS9302A",
            -3400, 1750, SC)
     leader(msp, (k["tower_c"][0] - 2100, k["tower_c"][1] - 2100),
            "noge rešetkastog antenskog stuba h=38 m,", -3050, -1450, SC)
@@ -280,18 +291,17 @@ def sheet_s01():
     scale_bar(msp, 1300, 3700, SC, total_m=5, step_m=1)
 
     legend(msp, 1300, 3050, SC, [
-        (8,   "postojeća ograda h=1,90 m sa kapijom (svijetla širina 1,00 m)"),
+        (8,   "postojeća ograda h=2,10 m sa kapijom (svijetla širina 1,00 m)"),
         (254, "postojeća AB temeljna ploča 5,40 × 5,40 m"),
         (6,   "postojeći kontejner za TK opremu — vrata na ISTOK"),
         (5,   "noge antenskog stuba, baza 4,20 × 4,20 m"),
-        (30,  "postojeći vanjski ormari (ICC330-H1 + MTS9302)"),
+        (30,  "vanjski ormari: ICC360-HA1-C1 (hibridni sistem) i MTS9302A (TK)"),
         (2,   "postojeći prstenasti uzemljivač Fe/Zn 25×4 mm"),
     ])
 
     note_block(msp, 6400, 3950, SC, "NAPOMENA:", [
         "Geometrija preuzeta iz ovjerenog projekta lokacije",
         "(SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m, 01 Situacija 1_200).",
-        "Kontejner 3005 × 2300 mm vanjski, paneli 60 mm — 6,29 m², obim 10,13 m.",
     ])
     return doc
 
