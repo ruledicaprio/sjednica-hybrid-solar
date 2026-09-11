@@ -275,27 +275,29 @@ zrak ili izduv prema SJEVERNOJ strani, gdje su vanjski ormari i usis svježeg zr
 
 #### 4.3.B Raspored otvora — BS Hamzići (crtež H-04)
 
-Izlaz toplog zraka hladnjaka ide kroz **postojeće otvore klima-uređaja Stulz** na
-istočnom zidu (Tačka 4.8). Projekat klimatizacije iz 2017. predviđa dva otvora
+Izlaz toplog zraka hladnjaka ide kroz **postojeće otvore klima-uređaja Stulz** u
+sredini južnog zida (Tačka 4.8). Projekat klimatizacije iz 2017. predviđa dva otvora
 300 × 700 mm; stvarne otvore ugrađenog uređaja Ponuđač mjeri pri obilasku.
 
 | Element | Zid i položaj |
 |---|---|
-| Usisna žaluzina 500 × 700 | **ZAPADNI zid**, novi otvor na osi agregata; donja ivica +0,30 m od poda |
-| Plenum hladnjaka + izlaz | **ISTOČNI zid, južni kraj** — kroz postojeće otvore klima-uređaja Stulz, spojene/proširene na **≥0,36 m² bruto**, sa fiksnom žaluzinom; nekorišteni dio otvora zatvara se sendvič panelom 60 mm iste izvedbe kao zid; plenum od pocinčanog lima, razvijena površina ≈1,5 m² |
-| Izduv | **ISTOČNI zid**, horizontalno na ≈+2,30 m, ispod platforme stuba; završetak ≥0,40 m od zida (Tačka 4.4) |
-| Agregat | duža osa istok–zapad, uz južni zid, hladnjak na istoku; servisna strana je sjeverna (do ≈2,0 m slobodno), južna strana je ≈0,23 m od zida — Ponuđač potvrđuje da su servisne tačke agregata dostupne sa sjeverne strane i zapadnog kraja |
-| Spremnik 500 l | uz **ISTOČNI zid**, sjeverno od agregata — ne u jugoistočnom uglu, gdje je plenum; izolovani izduv prolazi između spremnika i agregata, ≥0,30 m od spremnika |
-| Odušna cijev spremnika | principijelno kroz **SJEVERNI zid** istočno od ulaznih vrata, pa stojećom cijevi na ploči uz sjevernu ogradu, završetak na +2,80 m; ≥3 m od završetka izduva i od usisne žaluzine, ≥1 m od ormara Huawei; konačno prema elaboratu zaštite od požara |
+| Usisna žaluzina 500 × 700 | **ZAPADNI zid**, novi otvor uz alternator (sjeverni kraj agregata), sjeverno od spremnika; donja ivica +0,30 m od poda |
+| Plenum hladnjaka + izlaz | **JUŽNI zid, u sredini** — kroz postojeće otvore klima-uređaja Stulz, spojene/proširene na **≥0,36 m² bruto**, sa fiksnom žaluzinom; nekorišteni dio otvora zatvara se sendvič panelom 60 mm iste izvedbe kao zid; plenum od pocinčanog lima, razvijena površina ≈1,5 m² |
+| Hauba | vani na južnom zidu, 700 × 600 mm, od pocinčanog lima, zatvorenih bočnih strana i dna, sa rešetkom na vrhu (≈+1,30 m): topli zrak ide **NAVIŠE**, ne prema FN polju (≈0,77 m južnije); ≥1,0 m od nogu stuba |
+| Izduv | **ISTOČNI zid**, horizontalno na ≈+2,30 m, ispod platforme stuba; prigušivač u istočnom prolazu; završetak ≥0,40 m od zida (Tačka 4.4) |
+| Agregat | duža osa **SJEVER–JUG**, u sredini kontejnera, hladnjak na jugu; servisna strana je **istočna** (0,78 m), sjeverni kraj 0,97 m do GRO, zapadna strana 0,78 m (uz korito spremnika 0,14 m) — Ponuđač potvrđuje da su servisne tačke agregata dostupne sa istočne strane i sjevernog kraja |
+| Spremnik 500 l | u **JUGOZAPADNOM uglu**, uz južni i zapadni zid, 0,14 m od agregata; izduv je na istočnoj strani agregata |
+| Odušna cijev spremnika | principijelno kroz **JUŽNI zid** uz zapadni kraj, pa stojećom cijevi između kontejnera i južne ograde, završetak na +2,80 m; ≥3 m od završetka izduva i od usisne žaluzine, ≥1 m od ormara Huawei; konačno prema elaboratu zaštite od požara |
 | Ventilator prostora Ø315 | **ZAPADNI zid**, gore, sjeverno od usisne žaluzine; **izvlačni** (izbacuje zrak iz prostora) |
 | GRO | **SJEVERNI zid**, zapadno od ulaznih vrata; raspoloživi zid je 0,595 m, pa je **širina GRO ≤0,50 m** |
 | Huawei ICC360-HA1-C1 | vanjski ormar na ploči, sjeverno od kontejnera, između sjeverozapadne noge stuba i krila ulaznih vrata, vratima prema prolazu kapija–vrata; napaja se iz GRO kroz sjeverni zid |
 | Minimalna razdaljina | ≥3 m prostorno između usisne žaluzine, završetka izduva i odušne cijevi (H-04: završetak izduva–usis 3,2 m); izvlačni ventilator je izlazni otvor i ne ulazi u ovaj uslov |
 
-Ukrsno strujanje **usis ZAPAD → agregat → izlaz ISTOK**; hladnjak agregata je uz istočni
-zid, na mjestu otvora klima-uređaja. Topli zrak i izduv se ne usmjeravaju prema FN polju
-(jug) ni prema ulaznim vratima (sjever). Položaj otvora Stulz je procjena sa fotografije,
-pa je raspored na crtežu H-04 principijelan — Ponuđač ga potvrđuje na licu mjesta.
+Ukrsno strujanje **usis ZAPAD → agregat → izlaz JUG, hauba naviše**; hladnjak agregata je
+uz južni zid, na mjestu otvora klima-uređaja. Izlaz gleda prema FN polju, pa ga hauba
+usmjerava naviše; izduv ide na istok, dalje od polja i ulaznih vrata (sjever). Mjere
+otvora Stulz se uzimaju pri obilasku, pa je raspored na crtežu H-04 principijelan —
+Ponuđač ga potvrđuje na licu mjesta.
 
 ![Slika 6 — BS Hamzići: raspored opreme i otvora u kontejneru, crtež H-04 (Prilog III)](../TD-OUTPUT/grafika/prilog1/h04-raspored.png){width=100%}
 

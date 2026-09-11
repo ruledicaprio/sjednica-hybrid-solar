@@ -51,6 +51,8 @@ FORBIDDEN = bp1.FORBIDDEN + [
     ("AS 36 m", "stub na Hamzićima je 32 m"),
     ("Hamzići?", "zaostali upitnik iz nacrta"),
     ("1,94 m", "nadvišenje ograde na Hamzićima je 1,74 m: teren je 0,20 m ispod ploče"),
+    ("ISTOČNI zid, južni kraj", "Stulz je u sredini JUŽNOG zida (Naručilac 11.09.2026)"),
+    ("duža osa istok–zapad", "agregat na Hamzićima stoji po osi SJEVER–JUG"),
 ]
 REQUIRED = bp1.REQUIRED + [
     "493 m", "1,74 m", "h = 1,80 m", "3575 mm", "k.č. 109/1", "Stulz WDE80",

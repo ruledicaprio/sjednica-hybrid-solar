@@ -282,8 +282,8 @@ C.6). Razlike su u rasporedu otvora i izduvu.
 | **Ukupno kroz usis** | **2296 m³/h** |
 | Maks. vanjski otpor | **125 Pa** |
 
-Izlaz toplog zraka ide kroz **postojeće otvore klima-uređaja Stulz** na istočnom zidu
-(odluka Naručioca 11.09.2026.). Projekat klimatizacije iz 2017. predviđa dva otvora
+Izlaz toplog zraka ide kroz **postojeće otvore klima-uređaja Stulz** u sredini južnog
+zida (odluka Naručioca 11.09.2026.). Projekat klimatizacije iz 2017. predviđa dva otvora
 30/70 cm; ugrađeni WDE80 je veći uređaj, pa se stvarni otvori mjere pri obilasku.
 Uz 50 % slobodne površine žaluzina:
 
@@ -292,10 +292,14 @@ Uz 50 % slobodne površine žaluzina:
 | Oba otvora Stulz 300 × 700 zajedno | 0,42 m² | 0,210 m² | **3,0 m/s** | ≈12 Pa |
 | Izlaz 600 × 600 (spojeni/prošireni otvori) | 0,36 m² | 0,180 m² | 3,5 m/s | ≈17 Pa |
 | Usisna žaluzina 500 × 700, ZAPADNI zid | 0,35 m² | 0,175 m² | **3,6 m/s** | ≈18 Pa |
+| Hauba vani, rešetka na vrhu 700 × 600 | 0,42 m² | 0,210 m² | 3,0 m/s | ≈12 Pa |
 
 Izlazna površina mora biti **≥0,36 m² bruto**: jedan otvor 300 × 700 sam (0,21 m²) dao
 bi ≈6 m/s kroz žaluzinu. Plenum od hladnjaka do otvora ≈1,5 m² razvijene površine.
-Ukupni otpor ≲50 Pa — **unutar budžeta od 125 Pa**.
+Izlaz gleda prema poleđini FN polja (≈1,37 m od zida), pa je vani **hauba 700 × 600**
+zatvorenih bočnih strana i dna, sa rešetkom na vrhu (+1,30 m): topli zrak ide naviše kroz
+otvorenu rešetku platforme P I, a ne na polje (≈0,77 m od haube); od nogu stuba je 1,25 m.
+Ukupni otpor sa haubom ≲60 Pa — **unutar budžeta od 125 Pa**.
 
 ### C.2 Toplota u prostoriju
 
@@ -339,26 +343,27 @@ Prime potrošnja P18-6 (2,6 / 3,4 / 4,4 l/h pri 50 / 75 / 100 %); pri ograničen
 
 ### C.6 Raspored otvora
 
-Ukrsno strujanje **ZAPAD → ISTOK**:
+Ukrsno strujanje **ZAPAD → JUG**, hauba naviše:
 
 | Element | Zid | Napomena |
 |---|---|---|
-| Usis 500 × 700 | **ZAPAD** | donja ivica +0,30 m, na osi agregata |
-| Plenum + izlaz ≥0,36 m² | **ISTOK**, južni kraj | kroz postojeće otvore Stulz; višak otvora zatvoriti panelom 60 mm |
-| Izduv NO 50 | **ISTOK** | horizontalno na ≈+2,30 m, ispod platforme stuba; završetak ≥0,40 m od zida |
+| Usis 500 × 700 | **ZAPAD** | donja ivica +0,30 m, uz alternator (sjeverni kraj agregata), sjeverno od spremnika |
+| Plenum + izlaz ≥0,36 m² | **JUG**, u sredini | kroz postojeće otvore Stulz; višak otvora zatvoriti panelom 60 mm; vani hauba 700 × 600, rešetka na vrhu +1,30 m |
+| Izduv NO 50 | **ISTOK** | horizontalno na ≈+2,30 m, ispod platforme stuba; prigušivač u istočnom prolazu; završetak ≥0,40 m od zida |
 | Ventilator Ø315, izvlačni | **ZAPAD**, gore | sjeverno od usisa; izlazni otvor (C.3) |
-| Agregat | uz **JUG** | duža osa istok–zapad, hladnjak na istoku; servis sa sjeverne strane (do ≈2,0 m), južna strana ≈0,23 m od zida |
-| Spremnik 500 l | **ISTOK**, sjeverno od agregata | ne u jugoistočnom uglu (plenum); izolovani izduv prolazi između spremnika i agregata, ≥0,30 m od spremnika |
-| Oduška spremnika | kroz **SJEVER** istočno od vrata, stojeća cijev uz sjevernu ogradu, završetak +2,80 m | H-04: 3,0 m od završetka izduva, 4,6 m od usisa, 1,5 m od ormara Huawei; principijelno — konačno prema elaboratu zaštite od požara |
+| Agregat | u sredini, os **SJEVER–JUG** | hladnjak na jugu; servis sa istočne strane (0,78 m) i sjevernog kraja (0,97 m do GRO); zapadna strana 0,78 m, uz korito 0,14 m |
+| Spremnik 500 l | **JZ ugao** | uz južni i zapadni zid, 0,14 m od agregata; izduv je na istočnoj strani agregata |
+| Oduška spremnika | kroz **JUG** uz zapadni kraj, stojeća cijev između kontejnera i južne ograde, završetak +2,80 m | H-04: 3,1 m od završetka izduva, 3,1 m od usisa; principijelno — konačno prema elaboratu zaštite od požara |
 | GRO | **SJEVER**, zapadno od vrata | raspoloživi zid 0,595 m → širina GRO ≤0,50 m |
 | Ulazna vrata | **SJEVER** | 1,00 × 2,15 m |
 | Huawei ICC360-HA1-C1 | vani, **SJEVER** | vanjski ormar na ploči između sjeverozapadne noge stuba i krila vrata, kao na Sjednici; napaja se iz GRO kroz sjeverni zid |
 
 Na crtežu H-04 razmak od završetka izduva do sredine usisne žaluzine je **3,2 m** (≥3 m);
 izvlačni ventilator je izlazni otvor i ne ulazi u taj uslov. Hladnjak agregata je uz
-istočni zid, na mjestu otvora Stulz. Položaj otvora Stulz je procjena sa fotografije, pa
-je raspored u kontejneru na crtežu H-04 principijelan — Ponuđač ga potvrđuje na licu
-mjesta.
+južni zid, na mjestu otvora Stulz. Nijedan položaj spremnika ne ostavlja obje bočne strane
+agregata od 0,78 m slobodnim, pa spremnik zauzima JZ ugao, a servisna strana je istočna.
+Mjere otvora Stulz se uzimaju pri obilasku, pa je raspored u kontejneru na crtežu H-04
+principijelan — Ponuđač ga potvrđuje na licu mjesta.
 
 ### C.7 Demontaža klima-uređaja Stulz
 
@@ -457,7 +462,7 @@ računa sa 45 W pomoćne potrošnje na −48 V: 20 W za SMU, BMS i ispravljače 
 | Custom nosač | qp lokacije vs. kataloške deklaracije (B.1, B.2) | 0,69–0,96 > 0,52 kN/m² |
 | Usvojeni qp 1,20 kN/m² | jedna konstrukcija za obje lokacije (B.1) | moment 42,6 kNm |
 | Polje u južnom pojasu | zakup 12,00 × 12,50 m (B.4) | 3236 mm od raspoloživih 3575 |
-| Izlaz zraka kroz otvore Stulz | odluka Naručioca, protok 2206 m³/h (C.1) | ≥0,36 m² bruto, ≲50 Pa |
+| Izlaz zraka kroz otvore Stulz | odluka Naručioca, protok 2206 m³/h (C.1) | ≥0,36 m² bruto + hauba naviše, ≲60 Pa |
 | Horizontalni izduv | platforma stuba +3,0 m iznad krova (C.4) | NO 50, istočni zid |
 | Ograničenje ispravljača 9,5 kW | derating u prime režimu (D.5) | 77 % od 12,3 kW |
 | Baterije 6 × 150 Ah (48,6 kWh) | Odluka, Aneks 2 (A.6) | ≈230 h/god prema ≈280 h sa 28,8 kWh |
