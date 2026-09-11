@@ -1,351 +1,630 @@
-# PRILOG I TD — SPECIFIKACIJA ZAHTJEVA
+# Objedinjeni proračuni — BS Sjednica (Bileća)
 
-**Autonomni hibridni sistem napajanja — SJEDNICA (Bileća)**
-LOT 1: nosači fotonaponskih panela · LOT 2: dizel električni agregat u kontejneru
+**Verzija:** Rev 9, 11.09.2026.
+**Status:** radni proračun Naručioca uz tendersku dokumentaciju. **Nije zamjena za
+ovjereni statički i mašinski proračun** koji dostavlja ponuđač — ovdje su izvedene
+vrijednosti koje tenderska dokumentacija propisuje kao ulazne i granične.
 
-**Verzija:** Rev 8, 12.08.2026.
-
-Ovaj Prilog utvrđuje tehničke zahtjeve i dokaze koje Ponuđač dostavlja **UZ PONUDU**
-kao uslov kvalifikacije — ponuda koja ih ne sadrži smatra se neprihvatljivom.
-
-U slučaju neslaganja između dokumenata TD mjerodavni su redom: (1) Tenderska
-dokumentacija (TD), (2) Prilog I, (3) Prilog II (Predmjer), (4) Prilog III (grafički
-prilozi).
-
-Prilog III sadrži i preuzete stranice ranije dokumentacije, koje služe samo kao
-podloga; **mjerodavan raspored opreme i otvora u kontejneru je onaj sa crteža M-01.**
+**Lokacija:** φ = 42,9448° N, λ = 18,3236° E, **1076 m n.v.**, zakupljena parcela
+≈150 m², postojeći kontejner K2 3005 × 2300 mm, antenski stub h = 38 m.
 
 ---
 
-## 1. Osnovni parametri lokaliteta
+## A. Ambijentalni uslovi
 
-| Parametar | Vrijednost/Opis |
-|---|---|
-| Lokacija | Sjednica, Bileća, BiH |
-| Koordinate | 42,9448° N · 18,3236° E |
-| Nadmorska visina | 1076 m n.v. |
-| Priključak EES | **NE** |
-| Bilans potrošnje | Konstantno, 1180 W nazivno / 1330 W maksimalno, −48 V DC |
-| Zakupljeni prostor | ≈150 m² (16,00 × 9,40 m) |
-| Postojeći objekat | AB ploča 5,40 × 5,40 m, ograda h = 2,10 m, kapija 1,00 m |
-| Antenski stub | rešetkasti, h = 38 m, baza 4,20 × 4,20 m |
-| Kontejner | 3,00 × 2,30 m vanjski, zidni paneli 60 mm, bez opreme; ulazna vrata 900 × 2000 mm na ISTOČNOM zidu |
-| Nosivost poda kontejnera | 10,00 kN/m² ukupno (g+p), ravnomjerno raspodijeljeno — ovjereni projekat lokacije, „04 AG dio", tačka 4.4.2.3 |
-| Sistem napajanja | Huawei ICC360-HA1-C1 (PowerCube 1000) i MTS9302A, vanjski ormari smješteni uz SJEVERNI zid kontejnera |
-| Uzemljenje | postojeći prstenasti uzemljivač Fe/Zn 25 × 4 mm |
+### A.1 Gustoća zraka u funkciji visine i temperature
 
-### 1.1 Klimatski i geotehnički uslovi
+Barometarski: `p = 101325·(1 − 2,25577·10⁻⁵·h)^5,25588`, zatim `ρ = p / (287,05·T)`.
 
-| Uticaj | Projektna vrijednost | Napomena |
+| Stanje | p | ρ |
 |---|---|---|
-| **Vjetar** | **qp ≥ 1,20 kN/m²** (udar 3 s ≈ 45 m/s) | ovjereni projekat lokacije i BAS EN 1991-1-4 + BiH NA, sa orografijom — **mjerodavno dejstvo** |
-| Snijeg | prema BAS EN 1991-1-3 + BiH NA | pri nagibu 45° μ₁ = 0,4; uz opaženih ≈0,5 m visine snijega to je ≈0,6 kN/m², upola manje od vjetra. Provjera je obavezna, ali nije mjerodavna |
-| **Led** | radijalni 20 mm, gustina 300 kg/m³ | izložen planinski vrh; mjerodavan kao akrecija na profile i spojeve |
-| Temperatura | −25 °C do +50 °C | radni opseg opreme |
-| Gustina zraka | 1,04–1,09 kg/m³ na 1076 m | derating agregata i dimenzionisanje ventilacije |
-| Tlo | kamenito (krš); nosivost ≥100 kPa | Ponuđač potvrđuje geomehaničkim uvidom |
-| Smrzavanje | temeljna spojnica ispod dubine smrzavanja | Ponuđač navodi usvojenu dubinu u dnevniku/knjizi |
+| 0 m, +25 °C (referenca tehničkog lista) | 101,3 kPa | **1,184 kg/m³** |
+| 1076 m, +25 °C | 89,0 kPa | **1,040 kg/m³** |
+| 1076 m, −10 °C | 89,0 kPa | 1,179 kg/m³ |
+| 1076 m, +40 °C | 89,0 kPa | 0,991 kg/m³ |
+| 1076 m, za proračun vjetra (ovjereni projekat) | — | 1,0904 kg/m³ |
 
-## 2. Referentni standardi
+**Mjerodavno za:** derating hlađenja agregata (A.2), pritisak vjetra (B.1), gustoću
+izduvnih gasova (C.4).
 
-| Oblast | Standardi |
-|---|---|
-| Osnove proračuna | BAS EN 1990 |
-| Dejstva | BAS EN 1991-1-3 (snijeg), BAS EN 1991-1-4 (vjetar), sa BiH NA |
-| Beton i čelik | BAS EN 1992-1-1, BAS EN 1993-1-1, BAS EN 206, EN 10025-2, EN 10219 |
-| Geotehnika | BAS EN 1997-1 |
-| Izrada čeličnih konstrukcija | EN 1090-1, EN 1090-2 (EXC2) |
-| Antikorozivna zaštita | EN ISO 1461 |
-| Elektroinstalacije | IEC 60364 (tj. 60364-4-41), BAS EN 60529 |
-| Gromobranska zaštita | EN 62305-1 do -4 |
-| Prenaponska zaštita | EN 61643-11, EN 61643-21 |
-| Fotonaponski sistemi | IEC 62548, IEC 62852 |
-| Agregati | ISO 8528-1, ISO 8528-3, ISO 3046-1 |
-| Zaštita od požara | važeći propisi RS/BiH; elaborat zaštite od požara |
+### A.2 Derating agregata na 1076 m
 
-**Dokumentacija proizvođača opreme:** FG Wilson P18-6 (Skid) TDS 2019-08-14; Huawei
-PV Module Solution User Manual; Huawei MTS9300A Telecom Power Installation Guide;
-Huawei ICC360-HA1-C1 (PowerCube 1000) Installation Guide.
+Prema ISO 3046-1 / ISO 8528-1, orijentaciono −1 % snage na svakih 100 m iznad 100 m,
+uz dodatnih ≈−3 % za ambijent +40 °C u odnosu na referentnih +25 °C. Ukupni faktor
+**0,875**:
 
----
+| | tehnički list (25 °C, 100 m) | **na lokaciji (1076 m, 40 °C)** |
+|---|---|---|
+| Standby | 18 kVA / 14,4 kW | **15,8 kVA / 12,6 kW** |
+| Prime | 16,5 kVA / 13,2 kW | **14,4 kVA / 11,6 kW** |
 
-## 3. LOT 1 — Infrastruktura fotonaponskih panela
+Protok zraka hladnjaka raste obrnuto sa gustoćom: `1980 × 1,184/1,090 ≈ 2151 m³/h`.
+Ta vrijednost se koristi kao mjerodavni protok u C.1.
 
-### 3.1 Konfiguracija
+**Ponuđač je dužan dostaviti derating proizvođača za tačne uslove lokacije** — ovo je
+tenderski zahtjev, ne pretpostavka.
 
-| Parametar | Zahtjev |
-|---|---|
-| Broj PV nosača | 3 kom × 4 modula |
-| Broj PV stringova | 2 stringa × 6 modula (Voc ≈309 V, Imp 13,67 A) — po jedan string na svaku od dvije rute PVDB ormara; string se prostire preko dva nosača |
-| Broj PV modula | 12 × 585 Wp = 7,02 kWp; 4 modula po nosaču, 2 reda × 2 stupca, portret |
-| Tip PV modula | Huawei iPV585-M2A (2278 × 1134 × 30 mm) |
-| Nagib | fiksno 45° |
-| Azimut | 180° (JUG) |
-| Širina PV polja | 2305 mm (poprečna greda 2918 mm, bočni prepust 306,5 mm) |
-| Dužina PV polja po nagibu | 4576 mm (2 × 2278 mm) |
-| Horizontalna projekcija | 3236 mm pri 45° |
-| Donja / gornja ivica | **+0,50 m / +3,74 m** |
-| Nadvišenje ograde | 1,64 m iznad kote ograde h = 2,10 m |
-| Površina izloženosti vjetru | 10,55 m² po nosaču |
+### A.3 Snijeg i led
 
-### 3.2 Projektna opterećenja konstrukcije
+Koeficijent oblika pri nagibu 45°: **μ₁ = 0,4** prema EN 1991-1-3 §5.3.6 (linearno od
+0,8 pri 30° do 0 pri 60°).
 
-**Izrada konstrukcije:** zahtijeva se **CUSTOM IZRADA** konstrukcije dimenzionisana i
-dokazana za stvarna opterećenja i uticaje na lokalitetu. Nijedan kataloški nagib
-nosača tipa A nije usklađen sa qp lokacije (deklarisano 0,52–0,87 kN/m² prema
-zahtijevanih 1,20 kN/m²).
+Najveća visina snijega opažena na lokaciji je **≈0,5 m**. Pri gustoći slegnutog
+snijega 300 kg/m³ to je ≈1,5 kN/m² na tlu, odnosno na ravan panela:
 
-| Parametar | Zahtjev |
-|---|---|
-| Pritisak vjetra | qp ≥ 1,20 kN/m² (udar 3 s ≈ 45 m/s) |
-| Koeficijent sile | cf ≥ 1,5 pri 45° prema EN 1991-1-4 §7.3 |
-| Površina izloženosti vjetru | 10,55 m² po nosaču |
-| Sila podizanja po nosaču | ≥18,1 kN (GSN, γQ = 1,5 / γG,fav = 0,9) |
-| Horizontalna sila po nosaču | ≥13,4 kN (GSN) |
-| **Moment prevrtanja po nosaču** | **≥42,6 kNm (GSN)** |
-| **Spreg po temeljnoj traci** | **≥26,6 kN** pri razmaku traka 1600 mm |
-| Mjerodavno | podizanje (uplift) i prevrtanje, a NE nosivost tla |
+```
+s = μ₁ · Ce · Ct · sk = 0,4 · 1,0 · 1,0 · 1,5  ≈  0,6 kN/m²
+```
 
-### 3.3 Materijal i izrada konstrukcije
+**Mjerodavan je vjetar** — 1,20 kN/m² je dvostruko više. Pri 45° i donjoj ivici na
++0,50 m snijeg se na ravni panela ne zadržava, a izložen vrh u pojasu bure sa udarima
+45 m/s ga raznosi. Snijeg pritom djeluje naniže i **umanjuje** mjerodavni uzgon iz
+B.5, pa nije ni u jednoj kombinaciji nepovoljan.
 
-| Element | Zahtjev |
-|---|---|
-| Konstrukcijski čelik | S275JR (S355JR za stubove) prema EN 10025-2 |
-| Profili | šuplji profili prema EN 10219; stubovi min. RHS 80 × 80 × 4, rigle min. RHS 60 × 40 × 3, ili presjek sa dokazano najmanje jednakim otpornim momentom |
-| Antikorozivna zaštita | vruće cinčanje prema EN ISO 1461, min. 70 µm lokalno / 85 µm srednje (C4) |
-| Zavarivanje | EN 1090-2, klasa izvedbe EXC2; zavarivači prema EN ISO 9606-1 |
-| Označavanje | CE i izjava o svojstvima prema EN 1090-1 |
-| Konstrukcijski vijci | M16 klase 8.8, cinčani, prema EN 15048 |
-| Pričvršćenje modula | nehrđajući A2/A4; stezaljke za debljinu modula 30 mm |
-| Zaštita od krađe | antitheft matice na stezaljkama modula |
-| Moment pritezanja | prema uputstvu proizvođača (45 N·m za Huawei) |
+**Led je druga stvar.** Naledica se na ovoj koti stvara i zadržava tamo gdje se snijeg
+ne zadržava. Zahtjev ostaje **radijalni led 20 mm gustine 300 kg/m³** (Prilog I §1.1,
+predmjer 1.3) — mjerodavan je kao akrecija na profile, spojeve i kablove, a ne kao
+opterećenje ravni panela.
 
-### 3.4 Sidrenje
+Provjera snijega prema **BAS EN 1991-1-3 sa BiH nacionalnim aneksom** svejedno mora
+postojati u ovjerenom proračunu ponuđača.
 
-| Element | Zahtjev |
-|---|---|
-| Tip | hemijski (epoksidni/vinilesterski) anker M16 ili M20, sa ETA odobrenjem |
-| Materijal | vruće cinčan ili nehrđajući A4 |
-| Broj | min. 2 ankera po temeljnoj traci, odnosno 4 po nosaču |
-| Nosivost | karakteristična sila čupanja ≥30 kN po ankeru |
-| Dubina ugradnje | prema ETA za konkretnu podlogu (beton / stijena) |
-| **Projektna sila** | ukupno podizanje po nosaču ≥18,1 kN; **sila po traci od momenta prevrtanja ≥26,6 kN** pri razmaku traka 1600 mm — ovo je mjerodavno opterećenje sidrenja |
-| Dokazivanje | ispitivanje čupanjem (pull-out) na ≥10 % ugrađenih ankera, min. 2 po nosaču, do 1,5 × projektne sile, uz zapisnik ovjeren od nadzornog organa |
-| Alternativa | livena U-sidra M16/320 dozvoljena SAMO uz gravitacioni temelj ≥0,75 m³ po nosaču — moment prevrtanja i dalje zahtijeva provjeru |
+### A.4 Ciklusi smrzavanja
 
-### 3.5 Temelji nosača
+Na 1076 m temeljne trake su izložene ciklusima smrzavanja i odmrzavanja uz prisustvo
+vode, pa uz klasu čvrstoće mora biti propisana i klasa izloženosti. Usvojeno:
+**C30/37, XC4 + XF3, aerant 4–6 %**, na podlozi C12/15, armatura **B500B**, zaštitni
+sloj **50 mm**, dubina temeljenja **900 mm**.
 
-| Element | Zahtjev |
-|---|---|
-| Beton | C30/37, klasa izloženosti XC4 + XF3, aerant 4–6 %, Dmax 16, S3 |
-| Podložni beton | C12/15, d = 50 mm |
-| Armatura | B500B, zaštitni sloj ≥50 mm |
-| Geometrija | 2 trake po nosaču (×3 nosača = **6 traka ukupno**), 450 mm (gore) / 550 mm (dolje) × 3300 mm, **pune dubine 900 mm**, razmak 1600 mm, pravac SJEVER–JUG |
-| **Zapremina** | **1,485 m³ po traci → 8,91 m³ ukupno** |
-| Smještaj | **IZVAN ograđenog platoa**, južno od ograde. Odmak od ograde Ponuđač utvrđuje pri poziciranju nosača tako da ravan panela nigdje ne dodiruje ogradu, a konstrukcija u cijelosti ostane unutar zakupljene parcele 16,00 × 9,40 m |
-| Dubina smrzavanja | temeljna spojnica ispod dubine smrzavanja; Ponuđač navodi vrijednost |
+### A.5 Geometrija Sunca i decembarski prihvat
 
-**Traka se betonira punom dubinom rova.** Vlastita težina trake je dio dokaza
-sigurnosti na podizanje: `1,485 m³ × 24 kN/m³ × 0,9 = 32,1 kN` prema traženih 29,6 kN
-po traci. Traka manje zapremine tu provjeru ne zatvara vlastitom težinom.
+Visina Sunca u podne `= 90 − φ + δ`, φ = 42,9448°.
 
-### 3.6 Uzemljenje (LOT 1)
-
-- povezivanje **sva tri nosača** na postojeći prstenasti uzemljivač Fe/Zn 25 × 4 mm
-- vodič: bakarno uže ≥50 mm² prema EN 62305-3, Tabela 7, otporno na UV i ukopavanje
-- **NIJE dozvoljen** H07V-K 25 mm² (unutrašnji instalacioni vodič)
-- bimetalni (Cu/Fe-Zn) ukrsni komadi otporni na galvansku koroziju
-- kontinuitet spojeva ≤0,1 Ω; ukupni otpor uzemljenja ≤10 Ω
-- DC kablovi na razmaku ≥0,5 m od odvoda gromobranske instalacije
-
----
-
-## 4. LOT 2 — Dizel električni agregat i instalacije
-
-### 4.1 Agregat
-
-| Parametar | Zahtjev / referentna vrijednost |
-|---|---|
-| Snaga | 18 kVA / 14,4 kW standby, 400/230 V, 50 Hz |
-| Referentni tip | FG Wilson P18-6 ili ekvivalent |
-| Motor | Perkins 404D-22G1 ili ekvivalent, 4-cilindarski, 2,2 l, 1500 o/min |
-| Izvedba | za montažu u prostor (skid, bez vlastitog kućišta) |
-| Dimenzije | 1550 × 620 × 1020 mm (referentno ±5 %) |
-| Masa | 365 kg suho / 372 kg mokro (referentno) |
-| Derating | na 1076 m n.v. i temperaturu okoline do +40 °C (ISO 3046-1); Ponuđač dostavlja derating proizvođača |
-| **Uzbuda (OBAVEZNO)** | nezavisna pobuda — **PMG ili AREP/AUX** namotaj; trajna struja kratkog spoja **≥3 × In (≈78 A)** u trajanju ≥10 s prema ISO 8528-3. Standardna SHUNT pobuda **NIJE prihvatljiva** |
-| Antivibracioni elementi | gumeno-metalni oslonci, vlastita frekvencija ≤8 Hz, statički progib ≥5 mm, između skida i roštilja iz Tačke 4.2; **svi priključci na motor elastični** — izduv, hladnjak i **oba voda goriva** |
-
-![Slika 1 — FG Wilson P18-6 (Skid), bočni pogled (ilustrativno)](../TD-OUTPUT/grafika/prilog1/agregat-bocni.png){width=60%}
-
-![Slika 2 — FG Wilson P18-6 (Skid), čeoni pogled (generator) (ilustrativno)](../TD-OUTPUT/grafika/prilog1/agregat-celni.png){width=42%}
-
-### 4.2 Spremnik goriva i oslanjanje opreme
-
-- metalni, **dvoplašni**, zapremine **500 l**, sa nivo sondom i detekcijom curenja
-  goriva u međuplaštu
-- referentne dimenzije 1050 × 600 × 1310 mm, masa cca 170 kg — pun ≈590 kg na
-  0,63 m² = 9,2 kN/m²; unutar projektnih 10,00 kN/m²
-- **OBAVEZAN čelični ram/roštilj za raznošenje opterećenja** pod DEA i pod koritom sa
-  spremnikom, sa prenosom na primarne nosače podne konstrukcije. Opterećenja su
-  koncentrisana na mali broj sekundarnih nosača (HOP 100 × 50 × 3 na 0,51 m), dok se
-  10,00 kN/m² odnosi na ravnomjerno raspodijeljeno opterećenje
-- **sekundarnu zaštitu čini međuplašt** dvoplašnog spremnika sa sondom za detekciju
-  curenja, pa tankvana zapremine ≥110 % **NIJE zahtijevana**. Ispod spremnika se
-  izvodi **prihvatno korito (kada) 1150 × 640 mm, visina ruba 200 mm**, za prihvat
-  kapanja i prosipanja, sa vidljivim najnižim mjestom za kontrolu i pražnjenje
-- vanjski priključak za tankanje sa zaštitom od statičkog elektriciteta i
-  sprječavanjem prelijevanja
-- odušna cijev izvan kontejnera, sa plamenobranom, udaljena ≥3 m od izduva i usisa
-  zraka
-- protupožarni ventil na izlazu iz spremnika (topljivi osigurač ili solenoid),
-  aktiviran požarom i E-STOP-om
-- napajanje motora gorivom Cu cijevima NO 8 mm (polazni i povratni vod), sa
-  **fleksibilnim umetkom na oba voda neposredno uz motor**
-- sifon protiv povratnog toka
-
-![Slika 3 — Spremnik goriva 500 l, bočni izgled (ilustrativno)](../TD-OUTPUT/grafika/prilog1/spremnik-bocni.png){width=55%}
-
-![Slika 4 — Spremnik goriva 500 l, pogled od vrha (ilustrativno)](../TD-OUTPUT/grafika/prilog1/spremnik-odozgo.png){width=62%}
-
-### 4.3 Ventilacija i hlađenje
-
-Dimenzionisano prema tehničkom listu proizvođača. Mjerodavno ograničenje je
-**maksimalni vanjski otpor strujanju zraka od 125 Pa** za cjelokupnu putanju.
-
-| Parametar | Vrijednost |
-|---|---|
-| Zrak hladnjaka | 1980 m³/h (33 m³/min) — ostvaruje vlastiti ventilator hladnjaka; korigovano na gustinu lokacije 2151 m³/h |
-| Zrak za sagorijevanje | 90 m³/h; max. otpor usisa 3 kPa |
-| Maks. vanjski otpor | **125 Pa** (ukupno: usis + kanal + izlaz) |
-| **Toplota u prostor** | **5,8 kW** (uz 15,2 kW odvedenih rashladnom tečnošću i uljem) |
-| Usisna žaluzina | 500 × 700 mm (v ≈ 3,56 m/s, Δp ≈ 17 Pa) |
-| **Kanal hladnjaka** | prelazni komad od prirubnice hladnjaka do izlazne žaluzine, **razvijena površina ≈1,0 m²**, od pocinčanog lima d = 1 mm |
-| Izlazna žaluzina | 600 × 600 mm (v ≈ 3,46 m/s, Δp ≈ 16 Pa) |
-| Ventilator prostora | 1200 m³/h, Ø315, vođen termostatom i kontrolerom DEA, blokiran sa aktiviranjem gašenja požara |
-| Provjera | Izvođač dostavlja proračun pada pritiska ukupne putanje |
-
-**Raspored otvora** (prema crtežu M-01, Prilog III):
-
-| Element | Zid i položaj |
-|---|---|
-| Usisna žaluzina 500 × 700 | **SJEVERNI zid, istočni kraj**; donja ivica +0,30 m od poda. Sjeverna strana je zasjenjena i daje najhladniji usisni zrak; žaluzina se postavlja istočno od vanjskih ormara ICC360-HA1-C1/MTS9302A |
-| Kanal hladnjaka + izlazna žaluzina 600 × 600 | **ZAPADNI zid**, na osi hladnjaka agregata; kanal najkraćim putem od hladnjaka kroz zid |
-| Izduv | uz **ZAPADNI zid**, završetak iznad krova (Tačka 4.4) |
-| Odušna cijev spremnika | **JUŽNI zid**, istočni kraj |
-| Ventilator prostora Ø315 | **ISTOČNI zid**, gore (donja ivica ≈+1,75 m), sjeverno od ulaznih vrata |
-| Minimalna razdaljina | ≥3 m prostorno između usisa zraka, izduva i odušne cijevi |
-
-![Slika 5 — Raspored opreme i otvora u kontejneru, crtež M-01 (Prilog III)](../TD-OUTPUT/grafika/prilog1/m01-raspored.png){width=100%}
-
-Otvori se izvode kroz **ZIDNE PANELE** kontejnera. Raspored je ukrsni
-(**usis SJEVER → agregat → izlaz ZAPAD**). Nije dozvoljeno izvesti usis, izlaz i
-izduv na istom zidu, niti usmjeriti topli zrak ili izduv prema SJEVERNOJ strani, gdje
-su vanjski ormari i usis svježeg zraka. Nije dozvoljeno izvesti dovod zraka kroz
-ulazna vrata.
-
-### 4.4 Izduvni sistem
-
-| Parametar | Vrijednost |
-|---|---|
-| Protok izduvnih gasova | 192 m³/h (3,2 m³/min) pri 413 °C |
-| Maks. dozvoljeni protutlak | 10,2 kPa |
-| **Dijametar** | **NO 50** — pri 192 m³/h i 413 °C brzina je 27,2 m/s (< 30 m/s), protutlak ≈1,9 kPa uz dozvoljenih 10,2 kPa. Prečnik određuje brzina, ne protutlak |
-| Prigušivač | industrijski; **hvatač iskri obavezan** |
-| Fleksibilni priključak | neposredno iza motora |
-| Trasa i dužine | 1 m od elastičnog umetka do prigušivača sa jednim lukom 90°; do 4 m od prigušivača do izlaza, uspon uz **ZAPADNI zid** kontejnera |
-| Izolacija | kamena vuna d = 50 mm + Al lim d = 1 mm, razvijena površina **≈3,0 m²**; boja otporna na 600 °C |
-| Završetak | **iznad krova, usmjeren naviše**, sa kapom protiv upada padavina, ≥3 m od usisa zraka i odušne cijevi |
-| Provjera | Ponuđač dostavlja proračun protutlaka |
-
-### 4.5 Elektroinstalacije i zaštite
-
-Zahtijeva se **NEZAVISNA POBUDA** generatora (PMG ili AREP/AUX) sa 3 × In u trajanju
-≥10 s (Tačka 4.1), kao i zaštita zaštitnom strujnom sklopkom (RCD) kao glavnim
-sredstvom zaštite od indirektnog dodira.
-
-| Element | Zahtjev |
-|---|---|
-| Nazivna struja | **In = 26,0 A** pri 18 kVA / 400 V |
-| Struja kvara (SHUNT) | prva poluperioda ≈333 A (12,8 × In) → prelazna ≈169 A (6,5 × In) → **TRAJNA ≈13 A (0,5 × In)** — ne aktivira zaštitu (**ne zadovoljava**) |
-| **Struja kvara (PMG/AREP)** | **≥78 A (3 × In) trajno ≥10 s — ZAHTIJEVANO** |
-| Sistem zaštite | TN-S, jedinstvena tačka spajanja N i PE u novom GRO |
-| Glavna zaštita | 4p RCD 63 A / 300 mA, S-tip (selektivna) |
-| Krajnji strujni krugovi | 2 × RCBO 16 A / 30 mA, tip A (utičnice, rasvjeta) |
-| Sklopka izvora | 4p 63 A, položaji 1 – agregat / 0 – isključeno / 2 – rezerva |
-| SPD, AC strana | **tip 1 + 2** (Iimp ≥12,5 kA) — objekat ima vanjski LPS |
-| SPD, DC strana | tip 2 po stringu (Iimp ≥5 kA, Ucpv ≥425 V), na PVDB i na polju |
-| SPD, signalni vodovi | prema EN 61643-21 (obavezno za stub h = 38 m) |
-| Postojeći strujni krugovi | snimiti stanje i prevezati svih 7 postojećih krugova u novi GRO; signalna rasvjeta antenskog stuba (K7) na zasebnom nadziranom krugu |
-| AC kablovi | bezhalogeni, CPR ≥ Cca-s1b,d1,a1 |
-| DC kablovi | H1Z2Z2-K 6 mm²; priključak na iSSU presjekom 4 mm² |
-| Otpor uzemljenja | ≤10 Ω |
-
-### 4.6 Parametriranje upravljanja i nadzora (DEA + PV + baterije)
-
-- start agregata prema **stanju napunjenosti baterija (SoC)**, a ne prema ispadu mreže
-  — lokacija nema priključak EES
-- **ograničenje ulazne snage ispravljačkog sistema na maks. 9,5 kW dok agregat radi.**
-  Derativana prime snaga agregata na lokaciji je 11,6 kW, a neograničen ispravljački
-  sistem vuče ≈12,5 kW. Granica ujedno drži agregat iznad 30 % opterećenja i
-  sprječava mokri rad motora
-- prijenos alarma u sistem daljinskog nadzora: rad agregata, kvar, nivo goriva,
-  curenje goriva, požar, temperatura prostora
-- upravljačka jedinica kompatibilna sa postojećim sistemom napajanja (modul GIM01C1,
-  AC ulazni modul AIU03)
-
-### 4.7 Zaštita od požara
-
-- elaborat zaštite od požara za prostor sa 500 l dizel goriva — tokom primopredaje
-- detekcija: dimni i termički detektori; detekcija CO i NO₂
-- automatsko gašenje sredstvom za klasu B, sa **blokadom ventilacije pri aktivaciji**
-- protupožarni ventil na izlazu iz spremnika
-- E-STOP izvan kontejnera pored ulaznih vrata, prema ISO 13850 kategorija 0
-- oznake opasnosti, zabrana pušenja, oznaka kapaciteta goriva
-- najmanje dva aparata za gašenje odgovarajuće klase
-
-Elaborat zaštite od požara, protupožarni ventil na spremniku i blokada ventilacije pri
-aktivaciji gašenja **zasebno su iskazani u Prilogu II**.
-
----
-
-## 5. Dokazi koji se dostavljaju
-
-Dokazi koji se dostavljaju **uz ponudu** nose oznaku **PONUDA**; dokazi koji se
-dostavljaju **u toku realizacije** nose oznaku **REALIZACIJA**; dokazi koji se
-dostavljaju komisiji **tokom primopredaje** nose oznaku **PRIMOPREDAJA**.
-
-| Br. | Dokaz | LOT | Oznaka |
+| Datum | δ | Visina u podne | Nagib za normalnu upadnost |
 |---|---|---|---|
-| 1 | Statički proračun nosive konstrukcije i temelja za qp ≥ 1,20 kN/m² pri 45°, ovjeren i potpisan od ovlaštenog inženjera, sa dokazom na podizanje i prevrtanje | 1 | REALIZACIJA |
-| 2 | Tehnički nacrti konstrukcije i temelja | 1 | PONUDA |
-| 3 | Izjava o svojstvima prema EN 1090-1 i klasa izvedbe EXC2 | 1 | REALIZACIJA |
-| 4 | Atesti materijala (čelik) i potvrda o vrućem cinčanju (debljina sloja) | 1 | REALIZACIJA |
-| 5 | ETA certifikat i proračun za hemijska sidra | 1 | REALIZACIJA |
-| 6 | Zapisnik o ispitivanju ankera na čupanje (min. 10 %) | 1 | PRIMOPREDAJA |
-| 7 | Tehnički list (TDS) agregata sa dokazom o PMG/AREP nezavisnoj pobudi (3 × In, ≥10 s) | 2 | PONUDA |
-| 8 | Proračun pada pritiska ventilacije i protutlaka izduvnog sistema | 2 | REALIZACIJA |
-| 9 | Elaborat zaštite od požara za prostor sa rezervoarom 500 l | 2 | REALIZACIJA |
-| 10 | Atesti i certifikati za elektro opremu, CPR kablove i prenaponsku zaštitu (SPD) | 2 | REALIZACIJA |
-| 11 | Ispitni protokoli elektroinstalacija i otpora uzemljenja (≤10 Ω) | 2 | PRIMOPREDAJA |
-| 12 | Protokol o parametriranju i funkcionalnom ispitivanju integracije DEA–PV–baterija, uključujući postavljeno ograničenje od 9,5 kW | 2 | PRIMOPREDAJA |
+| 21.12. | −23,44° | **23,6°** | 66,4° |
+| 21.03. / 21.09. | 0° | 47,1° | 42,9° |
+| 21.06. | +23,44° | 70,5° | 19,5° |
 
-## 6. Ispitivanja i puštanje u rad
+Udio direktnog zračenja prihvaćen u podne 21. decembra, `cos(|h − (90 − nagib)|)`:
 
-| Ispitivanje | Kriterij |
+| Nagib | Upadni ugao | cos | Prihvat u decembru |
+|---|---|---|---|
+| 15° | 51,4° | 0,624 | 62 % |
+| 25° | 41,4° | 0,750 | 75 % |
+| 35° | 31,4° | 0,854 | 85 % |
+| **45° (usvojeno)** | **21,4°** | **0,931** | **93 %** |
+| 55° | 11,4° | 0,980 | 98 % |
+
+**Zaključak.** Zimski optimum ovdje je ≈ φ + 10…15 = **53–58°**, dakle 45° je već
+*ispod* decembarskog optimuma, a spuštanje na 35° košta oko 8 % decembarskog prinosa.
+Ali za otočni sistem sa baterijom od ≈1 dana nije mjerodavan samo decembar: agregat
+radi i u nizovima oblačnih dana u proljeće i jesen, gdje strmiji nagib gubi.
+Simulacija (A.6) daje pri 60° 617 kWh u decembru prema 560 kWh pri 45°, ali **300 h
+rada agregata godišnje prema 284 h** — strmiji nagib povećava rad agregata.
+**Usvojeni nagib: 45°** (odluka 11.09.2026., `review/09-odluka-nosaci-nagib.md`).
+
+### A.6 Energetski bilans — simulacija (pvlib + PVGIS-SARAH3, 2005–2023)
+
+Satni bilans na −48 V DC sabirnici za 19 godina, bez prekida: stanje baterija i nivo
+goriva prenose se iz godine u godinu, pa decembarski deficit koji se nastavi u januaru
+ostaje jedan deficit. Alat je `pvsim` u repozitoriju; ulazi i pretpostavke su u
+`pvsim/sites/sjednica.json` (svaka pretpostavka sa izvorom), rezultati u
+`review/pvsim/` (`kpis.json`, `energetski-bilans.md`, slike). Zamjenjuje raniju
+procjenu sa paušalnim performance ratio 0,80.
+
+| Ulaz | Vrijednost |
 |---|---|
-| Otpor uzemljenja | ≤10 Ω |
-| Kontinuitet zaštitnih vodiča | ≤0,1 Ω po spoju |
-| Ispitivanje čupanja ankera | ≥10 % ankera, do 1,5 × projektne sile |
-| Funkcionalno ispitivanje RCD | vrijeme i struja isključenja prema IEC 61008/61009 |
-| Ispitivanje ventilacije | izmjereni pad pritiska ≤125 Pa |
-| Funkcionalno ispitivanje agregata | automatski start/stop, zaštite, alarmi |
-| Probni rad | 72 h neprekidnog rada sa simulacijom opterećenja |
-| Mjerenje temperature prostora | pri radu agregata na nazivnom opterećenju |
+| Ozračenje | PVGIS v5.3 `seriescalc`, SARAH3 + ERA5 (temperatura, vjetar), satno; polje 45° jug; horizont iz DEM-a (≤5,7°, samo sjever) |
+| FN lanac | refleksija Martin-Ruiz (a_r 0,16); temperatura modula Faiman (26,9 / 6,2); model modula Huld c-Si (PVGIS); zaprljanje 1–2,5 % mjesečno; snijeg do 8 % u januaru; neusklađenost 0,3 %, LID 0,5 %; DC kablovi 0,78 % pri Imp (D.2); optimizatori 99,0 %; **iSSU S4875G2 po krivulji proizvođača** (Vin 330 V), 4 kW po modulu |
+| Potrošnja | 1180 W TK + 20 W pomoćna + hlađenje ormara do 150 W (linearno 20 → 35 °C) |
+| Baterija | 6 × ESM-48100A6 = 28,8 kWh; η punjenja i pražnjenja 97,5 %; punjenje do 0,5 C; donja granica 5 % |
+| Agregat | ispravljači ograničeni na 9,5 kW AC (η 96 %); start pri DOD 85 %, stop pri SoC 60 %, najkraći rad 1 h (Prilog I §4.6); gorivo P18-6 prime: 2,6 / 3,4 / 4,4 l/h pri 50 / 75 / 100 % |
 
-## 7. Garancija
+**Provjera prema PVGIS-u.** Isti model modula, sa PVGIS-ovim paušalnim gubitkom 14 %,
+daje 9 621 kWh/god prema 9 692 kWh/god iz PVGIS PVcalc (−0,7 %); nijedan mjesec ne
+odstupa više od 2,0 %, a satna korelacija sa PVGIS-ovom proizvodnjom je r = 1,0000.
+Specifični prinos je ispod fizičke granice od ≈1800 kWh/kWp.
 
-- garantni period minimalno **24 mjeseca** od zapisnika o primopredaji bez primjedbi
-- postgarantni period minimalno **5 godina**
-- spisak preporučenih rezervnih dijelova za 500 h rada agregata
-- dokumentacija izvedenog stanja i uputstva za pogon i održavanje
+**Gubici FN lanca (prosjek godine).**
+
+| Stavka | kWh/god | Gubitak |
+|---|---|---|
+| Ozračenje u ravni × kWp (STC) | 12 280 | |
+| Refleksija (IAM) | 11 920 | −2,94 % |
+| Temperatura i slabo svjetlo | 11 187 | −6,15 % |
+| Zaprljanje | 10 993 | −1,73 % |
+| Snijeg | 10 806 | −1,70 % |
+| Neusklađenost + LID | 10 720 | −0,80 % |
+| DC kablovi | 10 669 | −0,47 % |
+| Optimizatori | 10 562 | −1,00 % |
+| **iSSU S4875G2 → DC sabirnica** | **10 137** | −4,02 % |
+
+Na sabirnicu stiže **10 137 kWh/god** (1 444 kWh/kWp, 82,5 % od STC). Najveći
+pojedinačni gubitak nosi iSSU: fiksni gubitak mu je ≈44 W po modulu, a moduli dugo
+rade pri malom opterećenju.
+
+**Mjesečni bilans (prosjek 2005–2023).**
+
+| Mjesec | FN na sabirnici, kWh | Potrošnja, kWh | Agregat (DC), kWh | Agregat, h | Gorivo, l |
+|---|---|---|---|---|---|
+| jan | 591 | 893 | 403 | 44,2 | 146 |
+| feb | 632 | 812 | 325 | 35,6 | 118 |
+| mar | 853 | 892 | 261 | 28,6 | 94 |
+| apr | 892 | 864 | 184 | 20,2 | 67 |
+| maj | 949 | 895 | 140 | 15,3 | 51 |
+| jun | 999 | 874 | 82 | 9,0 | 30 |
+| jul | 1 108 | 913 | 40 | 4,4 | 15 |
+| aug | 1 092 | 912 | 51 | 5,6 | 19 |
+| sep | 957 | 869 | 126 | 13,8 | 45 |
+| okt | 890 | 894 | 208 | 22,8 | 75 |
+| nov | 613 | 864 | 356 | 39,0 | 129 |
+| dec | 560 | 893 | 416 | 45,6 | 151 |
+| **godina** | **10 137** | **10 575** | **2 590** | **284** | **938** |
+
+Oko 1 800 kWh/god FN proizvodnje se ljeti ne može iskoristiti jer su baterije pune;
+zimi i u oblačnim nizovima proljeća i jeseni razliku pokriva agregat.
+
+**Ključni pokazatelji (nagib 45°).**
+
+| Pokazatelj | Vrijednost |
+|---|---|
+| Solarni udio u potrošnji | 75,5 % |
+| **Rad agregata** | **284 h/god** prosjek · P90 345 h · najgora godina 359 h (2010) |
+| Startova agregata | 165/god prosjek, najviše 208 |
+| **Gorivo** | **938 l/god** prosjek · P90 1 140 l · najviše 1 187 l |
+| Dopuna spremnika 500 l (pri 20 %) | 2,4 puta godišnje, najkraći razmak 65 dana |
+| Najduže razdoblje bez rada agregata | 67 dana |
+| Ekvivalentnih ciklusa baterije | 227/god |
+| Rad ispod 30 % opterećenja | 0 h |
+| Nepokrivena potrošnja | 0 kWh u 19 godina |
+
+**Osjetljivost na postavke SMU i pretpostavke.**
+
+| Slučaj | DEA h/god prosjek | P90 | Najgora | Gorivo l/god | Startova/god |
+|---|---|---|---|---|---|
+| **Osnovni (Prilog I §4.6): stop SoC 60 %, punjenje 0,5 C** | **284** | **345** | **359** | **938** | **165** |
+| SMU bez parametriranja: stop SoC 90 %, 0,25 C | 356 | 429 | 445 | 1 079 | 113 |
+| Stop SoC 90 % | 317 | 380 | 392 | 1 046 | 114 |
+| Stop SoC 100 % | 328 | 397 | 405 | 1 079 | 104 |
+| Stop SoC 40 % | 268 | 327 | 349 | 884 | 262 |
+| Punjenje 0,25 C | 317 | 386 | 403 | 972 | 165 |
+| Punjenje 0,15 C | 497 | 604 | 623 | 1 149 | 155 |
+| Start pri DOD 70 % | 298 | 358 | 380 | 984 | 252 |
+| Potrošnja 1180 W stalno | 273 | 333 | 353 | 901 | 160 |
+| Potrošnja 1330 W stalno | 358 | 426 | 448 | 1 182 | 205 |
+
+**Zaključak.**
+
+- Granica od 250 h/god iz RFI i tvrdnja da spremnik od 500 l traje godinu dana
+  **nisu ostvarive ovim sistemom** — nijedna ispitana postavka ne daje manje od
+  ≈270 h i ≈880 l godišnje. Odluka (Aneks 2) i Prilog I zato navode simulirane
+  vrijednosti (odluka Naručioca 11.09.2026., `review/09-odluka-nosaci-nagib.md`).
+- Najveći uticaj ima **struja punjenja**: pri 0,15 C agregat radi ≈500 h/god. Zato
+  Prilog I §4.6 traži da struja punjenja ne ograničava agregat ispod 9,5 kW.
+- **Agregat je konstrukcijski neophodan**: pokriva ≈25 % potrošnje, najviše od
+  novembra do februara.
+
+---
+
+## B. Konstrukcija — nosači FN panela
+
+### B.1 Proračunski pritisak vjetra
+
+Osnovni udar 3 s ≈ **45 m/s**, ρ = 1,0904 kg/m³:
+
+```
+qp = 0,5 · 1,0904 · 45²  ≈  1,10 kN/m²   →  usvojeno qp ≥ 1,20 kN/m²
+```
+
+### B.2 Kataloški nosači i opterećenje lokacije
+
+Kataloški nosači tipa A deklarisani su na sljedeće udare, odnosno pritiske:
+
+| Nagib | Deklarisani udar | Deklarisani qp | vs. lokacija 1,20 kN/m² |
+|---|---|---|---|
+| 15° | 40 m/s | 0,87 kN/m² | **ne zadovoljava** |
+| 25° | 40 m/s | 0,87 kN/m² | **ne zadovoljava** |
+| 35° | 35 m/s | 0,67 kN/m² | **ne zadovoljava** |
+| 45° | 31 m/s | 0,52 kN/m² | **ne zadovoljava** |
+
+**Zaključak:** nijedan kataloški nagib nije usklađen sa lokacijom. Nosač je zato
+**CUSTOM IZRADA**, a tender traži **ovjereni statički proračun za lokaciju prije
+dodjele ugovora**. Kataloške konvencije (marže, prepusti) zadržane su samo kao
+geometrijska referenca.
+
+### B.3 Geometrija polja
+
+| | |
+|---|---|
+| Modul | Huawei iPV585-M2A, **2278 × 1134 × 30 mm, 32,0 kg** |
+| Raspored | **2 reda × 2 kolone, portret** — 4 modula po nosaču |
+| Širina polja | **2305 mm** |
+| Dužina polja po nagibu | **4576 mm** (2 × 2278) |
+| Horizontalna projekcija pri 45° | **3236 mm** |
+| Broj nosača | **3** (PV-1, PV-2, PV-3) → ukupno **12 modula = 7,02 kWp** |
+| Masa nosača (procjena) | ≈110 kg — potvrđuje izrađivač proračunom |
+
+### B.4 Visinski položaj polja
+
+| | |
+|---|---|
+| **Donja ivica** | **+0,50 m** od nivoa terena |
+| **Gornja ivica** | **+3,74 m** (0,50 + 3,236) |
+| Kota ograde | +2,10 m (ovjereni projekat, `04 Ograda`) |
+| **Nadvišenje ograde** | **1,64 m** |
+
+> **Otvoreno pitanje.** Pri 45° ravan panela presijeca kotu ograde na **1600 mm** od
+> donje ivice. **Odmak polja od ograde mora se utvrditi pri poziciranju nosača**, tako
+> da ravan panela nigdje ne dodiruje ogradu, a konstrukcija u cijelosti ostane unutar
+> zakupljene parcele 16,00 × 9,40 m.
+
+### B.5 Dejstva vjetra po nosaču pri 45°
+
+| | |
+|---|---|
+| Površina izložena vjetru | **10,55 m²** (2305 × 4576 mm) |
+| Krak težišta iznad terena | **2,118 m** |
+| **ULS uzgon** | **18,1 kN** — ne zavisi od visine |
+| **Horizontalna sila** | **13,4 kN** |
+| **Moment prevrtanja** | **42,6 kNm** |
+| **Spreg po traci**, razmak 1600 mm | **26,6 kN** |
+
+Krak težišta: `c = b + (4,576/2)·sin45° = b + 1,618 m`.
+Moment: `M = 1,5 · F_h · c`, uz `F_h = 13,4 kN`.
+
+**Mjerodavni su uzgon i prevrtanje, a ne nosivost tla.**
+
+### B.6 Temelji
+
+| | |
+|---|---|
+| Broj nosača | 3 |
+| Traka po nosaču | 2 → **ukupno 6 traka** |
+| Dimenzija trake | **450 (gore) / 550 (dolje) × 3300 mm**, **puna dubina 900 mm** |
+| **Zapremina trake** | **1,485 m³** → ukupno **8,91 m³** C30/37 |
+| Razmak traka (poprečno) | **1600 mm** |
+| Razmak grupa ankera | 1200 mm |
+| Beton | **C30/37 (XC4 + XF3, aerant 4–6 %)** na podlozi C12/15 |
+| Armatura | **B500B**, zaštitni sloj 50 mm |
+| Ankeri | **M16–M20 hemijski (rezinski)**, za kraški vapnenac — nije kataloški dio |
+
+**Zašto traka ide punom dubinom.** Spreg iz B.5 daje **26,6 kN** uzgona na navjetrenu
+traku. Uz `γG,stb = 0,9` stabilizujuća težina mora biti ≥29,6 kN:
+
+```
+puna traka   1,485 m³ × 24 kN/m³ × 0,9  =  32,1 kN     ZADOVOLJAVA
+```
+
+Traka manje zapremine ne zatvara ovu provjeru vlastitom težinom i morala bi je
+posuditi od trenja o zasip, što na kršu nije dokaz. Ankeri prenose uzgon u traku, ne
+u tlo, pa tu razliku ne pokrivaju.
+
+Izvedene količine (predmjer LOT 1, sekcija 2), po traci i ukupno za 6 traka:
+
+| | po traci | ukupno |
+|---|---|---|
+| Iskop (širina 550, dubina 950 mm) | 1,725 m³ | **10,35 m³** |
+| Podložni beton C12/15, d = 50 mm | 0,091 m³ | **0,54 m³** |
+| Beton C30/37 | 1,485 m³ | **8,91 m³** |
+| Zatrpavanje (klin uz kosinu) | 0,149 m³ | **0,89 m³** |
+| Odvoz viška | — | **9,45 m³** |
+
+Dubina i armatura se **potvrđuju ovjerenim proračunom ponuđača** za qp ≥ 1,20 kN/m².
+Temelji se izvode **IZVAN ograđenog platoa**.
+
+### B.7 Pod kontejnera i unos opreme
+
+| | |
+|---|---|
+| Nosivost poda (g+p, ravnomjerno) | **10,00 kN/m²** — ovjereni projekat, „04 AG dio" 4.4.2.3 |
+| Agregat mokro | 372 kg / 0,96 m² = **3,80 kN/m²** |
+| Pun spremnik 500 l | 590 kg / 0,63 m² = **9,2 kN/m²** |
+| Ukupna masa u kontejneru | **962 kg** |
+
+Obje vrijednosti su ispod 10,00 kN/m², ali su **koncentrisana opterećenja na malom
+broju sekundarnih nosača**, dok se 10,00 kN/m² odnosi na ravnomjerno raspodijeljeno
+opterećenje. Zbog toga je **čelični roštilj za raznošenje opterećenja OBAVEZAN** —
+ispod skida **i** ispod korita — sa prenosom na primarne nosače.
+
+Vrijednost **2,00 kN/m²** iz istog projekta je pokretno opterećenje prohodnog dijela
+poda i **nije mjerodavna** za oslanjanje opreme.
+
+**Unos:** skid širine **620 mm** kroz vrata **900 × 2000 mm** — ostaje 280 mm zazora;
+visina skida 1020 mm. **Nije potrebno skidati krovni panel ni otvarati zid.**
+
+---
+
+## C. Mašinski dio — agregat
+
+Referentni agregat: **FG Wilson P18-6 (Skid) ili ekvivalent**, tehnički list
+2019-08-14. Motor **Perkins 404D-22G1**, 4-cilindarski, linijski, atmosferski, 2,2 l,
+1500 o/min. Generator **FG Wilson FGL10040**, IP23, klasa izolacije H, AVR R120.
+Skid **1550 × 620 × 1020 mm**, 365 kg suho / **372 kg mokro**.
+
+### C.1 Zrak za hlađenje
+
+| | |
+|---|---|
+| Protok hladnjaka (tehnički list) | **1980 m³/h** (33 m³/min) |
+| Korigovano na gustoću lokacije | **2151 m³/h** |
+| Zrak za sagorijevanje | **90 m³/h** (1,5 m³/min) |
+| **Ukupno kroz usis** | **2241 m³/h** |
+| Maks. vanjski otpor (tehnički list) | **125 Pa** |
+| Maks. otpor usisa za sagorijevanje | 3 kPa |
+
+Žaluzine, uz uobičajenih 50 % slobodne površine:
+
+| | Bruto | Slobodno | Brzina | Δp |
+|---|---|---|---|---|
+| Usisna žaluzina | 500 × 700 = 0,35 m² | 0,175 m² | **3,56 m/s** | ≈17 Pa |
+| Izlazna žaluzina | 600 × 600 = 0,36 m² | 0,180 m² | **3,46 m/s** | ≈16 Pa |
+
+Ukupno ≈33 Pa — **duboko unutar budžeta od 125 Pa**, pa se žaluzine ne smanjuju.
+
+**Limeni kanal.** Hladnjak stoji **60 mm** od zapadnog zida (zid 60 mm), pa kanal nije
+razvod nego **prelazni komad** od prirubnice hladnjaka do žaluzine 600 × 600 mm:
+razvijena dužina ≈0,2 m × 2,4 m opsega ≈ 0,5 m², sa prirubnicama i fazonskim komadima
+**≈1,0 m²**. Doprinos padu pritiska je zanemariv.
+
+### C.2 Toplotni bilans u prostoriji
+
+| | |
+|---|---|
+| Toplota odvedena rashladnom tečnošću i uljem | 15,2 kW |
+| **Toplota zračena u prostoriju** | **5,8 kW** |
+
+Toplotu iz prostorije odnosi struja zraka hladnjaka; **ventilator hladnjaka je
+rashladni put**, ne prostorni ventilator.
+
+### C.3 Dopunska ventilacija prostorije
+
+Aksijalni ventilator **1200 m³/h, Ø315 mm**, termostatski upravljan, u ISTOČNOM zidu.
+Minimalna propisana prostorna ventilacija **120 m³/h** (6 izmjena zraka na sat).
+**Ovaj ventilator nije dio rashladnog puta** — on je dopuna.
+
+### C.4 Izduvni sistem
+
+| | |
+|---|---|
+| Protok izduvnih gasova (standby, 50 Hz) | **192 m³/h** (3,2 m³/min) |
+| Temperatura izduva | **413 °C** |
+| Usvojeni prečnik | **NO 50** |
+| **Brzina** | **27,2 m/s** — ispod uobičajenih 30 m/s ✔ |
+| **Protutlak** | **≈1,9 kPa** uz dozvoljenih **10,2 kPa** ✔ |
+
+**Prečnik određuje brzina, ne protutlak** — protutlak ima petostruku rezervu, a brzina
+je ta koja se približava granici.
+
+Trasa i količine:
+
+| | |
+|---|---|
+| Elastični umetak → prigušivač, sa jednim lukom 90° | **1 m** |
+| Prigušivač → izlaz iznad krova | **do 4 m** |
+| Vanjski prečnik izolacije (NO 50 + 2 × 50 mm vune + Al lim) | ≈165 mm |
+| **Površina izolacije i opšava** | 5,0 m × 0,52 m + prigušivač ≈ **3,0 m²** |
+
+Završetak je **iznad krova, usmjeren naviše**, sa hvatačem iskri i kapom protiv upada
+padavina.
+
+### C.5 Gorivo
+
+Agregat radi u prime režimu (D.5), pa je mjerodavna potrošnja iz tehničkog lista
+P18-6 za prime snagu 13,2 kW:
+
+| Opterećenje (prime) | Potrošnja, 50 Hz |
+|---|---|
+| 100 % | 4,4 l/h |
+| **75 %** | **3,4 l/h** |
+| 50 % | 2,6 l/h |
+
+Pri ograničenju ispravljača na 9,5 kW agregat daje ≈9,5 kW (≈72 % prime), dakle
+≈3,3 l/h.
+
+| | |
+|---|---|
+| Očekivani godišnji rad (A.6) | **≈280 h/god**; u 9 od 10 godina do ≈350 h, najviše ≈360 h |
+| Očekivana godišnja potrošnja (A.6) | **≈940 l/god**; najviše ≈1 190 l |
+| Spremnik **500 l**, dopuna pri 20 % (SMU „Refuel THR") | ≈400 l, tj. ≈120 h rada između dopuna — **dva do tri puta godišnje** |
+| **Prvo punjenje** | **250 l** (spremnik se pri primopredaji ne puni do vrha) |
+
+Raniji tekst ovdje je navodio „do 250 h/god" i ≈925 l/god — dakle ni tada spremnik od
+500 l nije bio godišnja zaliha.
+
+### C.6 Spremnik i sekundarna zaštita
+
+Spremnik **dvoplašni, 500 l**, 1050 × 600 × 1310 mm, 170 kg prazan / ≈590 kg pun, sa
+nivo sondom i **sondom za detekciju curenja u međuplaštu**.
+
+**Tankvana zapremine 110 % NIJE zahtijevana**, jer međuplašt dvoplašnog spremnika
+jeste sekundarna zaštita. Ispod spremnika se izvodi samo **prihvatno korito (kada)
+1150 × 640 mm, visina ruba 200 mm**, za prihvat kapanja i prosipanja pri punjenju i
+pretakanju, sa vidljivim najnižim mjestom za kontrolu i pražnjenje.
+
+> Tankvana ne dobija zapreminu visinom, jer spremnik koji u njoj stoji istiskuje
+> zapreminu zadržavanja — računa se samo **slobodna površina × visina ruba**. Uz
+> slobodnu površinu od 0,33 m², koliko je ostaje u raspoloživom pojasu, rub bi morao
+> biti visok **1,67 m** da se dosegne 110 %. Zato dvoplašni spremnik, a ne tankvana.
+
+### C.7 Raspored otvora i servisni prostor
+
+Ukrsno strujanje **SJEVER → ZAPAD**:
+
+| Element | Zid | Napomena |
+|---|---|---|
+| Usis 500 × 700 | **SJEVER**, istočni kraj | donja ivica +0,30 m; zasjenjena strana, najhladniji zrak |
+| Kanal + izlazna žaluzina 600 × 600 | **ZAPAD** | na osi hladnjaka, prelazni komad |
+| Izduv NO 50 | **ZAPAD** | uspon uz zid, iznad krova |
+| Oduška spremnika | **JUG**, istočni kraj | ≥3 m od izduva i usisa |
+| Ventilator Ø315 | **ISTOK**, gore | donja ivica ≈+1,75 m |
+| GRO | **SJEVER** | uz vanjski ormar koji napaja |
+
+Izlaz toplog zraka i izduv **nisu** na sjevernoj strani, pa se vanjski ormari
+**ICC360-HA1-C1** (sa aktivnim hlađenjem) i **MTS9302A** ne izlažu toplom zraku.
+
+**Servisni prostor oko agregata** — agregat je centriran u slobodnom prostoru:
+
+| Strana | Slobodno |
+|---|---|
+| JUG | **720 mm** |
+| SJEVER | **720 mm** (520 mm na dijelu gdje je GRO) |
+| ISTOK | **1155 mm** |
+| ZAPAD | 60 mm — hladnjak, izduvava u kanal, ne servisira se s te strane |
+
+Unutrašnja dubina 2180 mm umanjena za 740 mm (roštilj) ostavlja 1440 mm, podijeljeno
+na pola. **Ovi prolazi se ne smiju zauzimati opremom niti skladištenjem.**
+
+Skid stoji na **antivibracionim gumeno-metalnim osloncima** (vlastita frekvencija
+≤8 Hz, statički progib ≥5 mm) između skida i roštilja. Zbog toga svi priključci na
+motor moraju biti elastični: izduv preko elastičnog umetka, hladnjak preko ceradnog
+spoja, a **vod goriva preko fleksibilnog umetka na polaznom i povratnom vodu** — kruta
+Cu cijev NO 8 na priključku motora koji se pomiče zamara se i puca.
+
+---
+
+## D. Elektro dio
+
+### D.1 String FN panela
+
+| | |
+|---|---|
+| 6 × iPV585-M2A | Voc **309,3 V**, Vmp **256,7 V**, Imp 13,67 A, Isc 14,40 A |
+| Prozor iSSU S4875G2 | 85–435 V DC, maks. 25 A, maks. 4000 W |
+| Provjera | 257 V ✔ · 13,67 A ✔ · 3510 W ✔ |
+| Optimizator SUN2000-600W-P | Vout 0–80 V, **Iout maks. 15 A** → 13,67 A ✔ |
+| PVDB500-15-2B | 100–500 V, **maks. 15 A po ruti**, 2 rute → 1 string po ruti ✔ |
+| Huawei pravilo za string | iPV540/585/630: **3–12 modula po stringu** → 6 ✔ |
+
+**12 modula = 2 stringa × 6**, a ne 3 × 4: PVDB ima dva izlaza, a 6 × 51,55 V = 309 V
+Voc je unutar prozora iSSU. String time obuhvata dva nosača.
+
+> **Napomena koju tender ne smije ostaviti otvorenom:** iSSU se povezuje **isključivo**
+> na iPV module sa optimizatorima. Obični 585 W moduli tražili bi SSU S4875G6 i drugo
+> pravilo za string (3–7 modula ispod −10 °C).
+
+### D.2 DC kabl
+
+```
+6 mm² Cu, 25 m u jednom smjeru, Imp 13,67 A
+ΔU = 2 · 25 · 13,67 · 0,0175 / 6 = 1,99 V = 0,78 % od 257 V     ZADOVOLJAVA (<1 %)
+```
+
+Presjek je predimenzionisan; **ograničenje je stezaljka, a ne kabl** — ulazna
+stezaljka iSSU traži **tačno 4 mm²**, pa je na ormaru potreban prelaz.
+
+### D.3 DC potrošnja
+
+| | pri 53,5 V | pri 48,0 V |
+|---|---|---|
+| 1180 W nazivno | 22,1 A | 24,6 A |
+| 1330 W maksimalno | 24,9 A | 27,7 A |
+
+Godišnje 10 337 kWh pri stalnih 1180 W; simulacija (A.6) dodaje hlađenje ormara i
+pomoćnu potrošnju, pa računa sa 10 575 kWh/god, u decembru 893 kWh.
+
+### D.4 AC strana agregata — pobuda i struja kvara
+
+| | |
+|---|---|
+| Nazivna struja pri 18 kVA / 400 V | **In = 26,0 A** |
+| Traženo 3 × In, 10 s (ISO 8528-3) | **≈78 A** |
+| Trajna struja kvara sa SHUNT pobudom | **≈13 A (0,5 × In)** — **ISPOD** nazivne struje |
+
+**Standardna SHUNT pobuda nije prihvatljiva.** Kod nje se pri kvaru napon na
+stezaljkama uruši, pobuda nestaje, i trajna struja kvara padne ispod nazivne — ne može
+aktivirati nijednu prekostrujnu zaštitu. Tehnički list referentnog P18-6 na strani 4
+navodi **Short Circuit Capacity 0 %** u standardnoj izvedbi, a traženu trajnu struju
+kvara daje tek opciona **PMG / AUX** pobuda. **Zahtjev za nezavisnom pobudom (PMG ili
+AREP/AUX) time je potvrđen samim tehničkim listom.**
+
+Posljedica za zaštitu: na otočnom izvoru struja kvara ne može pouzdano isključiti
+MCB, pa se zaštita od indirektnog dodira oslanja na **RCD** prema IEC 60364-4-41.
+
+### D.5 Ograničenje ulazne snage ispravljača — **mjerodavno**
+
+| | |
+|---|---|
+| Ispravljački sistem 3 × R4875G5 | 12 kW DC → **≈12,5 kW na AC strani** |
+| Derativana snaga agregata, standby | **12,6 kW** — bez ikakve rezerve |
+| Derativana snaga agregata, **prime** | **11,6 kW** — **premašeno** |
+
+Lokacija **nije na mreži** i agregat radi ciklično po stanju napunjenosti baterija
+(SoC), pa je mjerodavan **PRIME režim**, a ne standby. Neograničeno opterećenje od
+12,5 kW premašuje raspoloživu snagu.
+
+**Usvojeno: ulazna snaga ispravljačkog sistema ograničava se u kontroleru na
+maks. 9,5 kW dok radi agregat** (≈82 % derativane prime snage). To ostavlja ≈8,2 kW
+za punjenje baterija iznad TK potrošnje od 1,33 kW i istovremeno drži agregat iznad
+minimalnog opterećenja od 30 %, čime se sprječava mokri rad motora (cilindarsko
+glaziranje). **Ponuđač dokazuje usklađenost proračunom deratinga za lokaciju.**
+
+Brojka **9,5 kW** mora stajati u predmjeru (Tačke 3.1 i 5.7) — opisni zahtjev
+„ograničiti ulaznu snagu" bez broja ne obavezuje nikoga.
+
+### D.6 Uzemljenje i zaštita od munje
+
+| | |
+|---|---|
+| Traženi presjek vodiča | **Cu 50 mm²** prema EN 62305-3, tabela 7 |
+| Postojeći prstenasti uzemljivač | Fe/Zn 25 × 4 mm — **obavezni bimetalni spojevi** Cu/Fe-Zn |
+| Ciljani otpor rasprostiranja | **≤10 Ω** |
+| Razmak kabla od odvoda munje | **≥0,5 m** |
+| FN polja vs. zona zaštite stuba | **unutar** zone kotrljajuće sfere (7,5 m stvarno prema 10,68 m zaštićenog poluprečnika pri LPL I) → **nisu potrebne dodatne hvataljke** |
+
+Sistem uzemljenja **TN-S**; tačka spajanja **N i PE samo u novom GRO**.
+
+### D.7 Prenaponska zaštita
+
+Objekat ima vanjski sistem zaštite od munje (antenski stub h = 38 m) i separacija nije
+održana, pa **tip 2 sam po sebi nije dovoljan**:
+
+- **AC porijeklo: kombinovani TIP 1 + 2** prema EN 61643-11, Iimp ≥12,5 kA (10/350 µs)
+  po polu, Up ≤1,5 kV, 4p, sa daljinskom signalizacijom
+- **DC, po stringu: tip 2** — u PVDB ormaru
+- **Signalni i komunikacioni vodovi: EN 61643-21**, na oba kraja dionice
+
+---
+
+## E. Šta šta određuje — sažetak
+
+| Veličina | Određuje je | Vrijednost |
+|---|---|---|
+| Nagib 45° | godišnji rad agregata (A.5, A.6) — 60° daje više u decembru, a ukupno više rada DEA | 284 h pri 45° prema 300 h pri 60° |
+| Custom nosač | qp lokacije vs. kataloške deklaracije (B.2) | nijedan nagib ne prolazi |
+| Donja ivica +0,50 m | vjetar je mjerodavan, snijeg nije (A.3) | moment 42,6 kNm |
+| Puna dubina temeljne trake | spreg od uzgona po traci (B.6) | 32,1 > 29,6 kN |
+| Prečnik izduva NO 50 | brzina, ne protutlak (C.4) | 27,2 m/s < 30 |
+| Roštilj za raznošenje | koncentrisano vs. ravnomjerno opterećenje (B.7) | OBAVEZAN |
+| Ograničenje ispravljača 9,5 kW | derating u prime režimu (D.5) | 11,6 kW raspoloživo |
+| PMG/AREP pobuda | struja kvara ispod In kod SHUNT (D.4) | 0 % po tehničkom listu |
+| Spremnik 500 l | simulirani rad ≈280 h i ≈940 l/god (A.6, C.5) | ≈120 h rada između dopuna, 2–3 dopune godišnje |
+| Stop SoC 60 %, punjenje do granice BMS-a | osjetljivost simulacije (A.6) | ≈20 % manje rada DEA nego bez parametriranja |
+
+---
+
+## F. Otvorene stavke
+
+1. **Odmak polja od ograde** utvrđuje se pri poziciranju nosača (B.4) — ravan panela
+   siječe kotu ograde na 1600 mm od donje ivice.
+2. **Ovjereni statički proračun nosača i temelja** za qp ≥ 1,20 kN/m² — uslov prije
+   dodjele ugovora, ne isporuka nakon nje.
+3. **Derating agregata za tačne uslove lokacije** iz podataka proizvođača (A.2, D.5).
+4. **Integracija DC odvodnika tipa 2 u PVDB500-15-2B** nije dokazana nijednim
+   dokumentom u paketu — stavka ostaje zasebno iskazana dok se ne potvrdi.
+5. **Kapacitet baterija**: Naručilac navodi 150 Ah, a ponuda na dosjeu 6 × ESM-48100A6.
+   Nijedan generisani dokument ne navodi kapacitet i baterije su zasebna nabavka, pa
+   se ništa ne mijenja do dostavljanja revidirane ponude.
+6. **Masa nosača (≈110 kg)** je procjena — potvrđuje je proračun izrađivača.
+7. **Procijenjena vrijednost LOT 1** (15.000 KM) računata je na raniju zapreminu
+   temeljnih traka; puna dubina iz B.6 nosi 8,91 m³ betona umjesto 2,44 m³.
+8. **Struja punjenja baterija** (Prilog I §4.6): simulacija (A.6) pretpostavlja 0,5 C;
+   najveću struju punjenja modula ESM-48100A6 potvrđuje proizvođač. Pri 0,25 C rad
+   agregata raste na ≈320 h/god.
+9. **Stvarna potrošnja** 1180 W / 1330 W je iz RFI; pri stalnih 1330 W rad agregata je
+   ≈360 h/god (A.6, osjetljivost).
+
+---
+
+*Izvedene vrijednosti se održavaju u `cad/design.json`; crteži S-01…S-03, M-01 i E-01
+formatiraju kote direktno iz tog fajla. Historija izmjena je u `00-change-log.md`.*

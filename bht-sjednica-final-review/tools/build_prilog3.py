@@ -82,10 +82,15 @@ K2_SHEETS = [
     (os.path.join(ELEC, "3.5.2 Jednopolna sema GRO.dwg"), "Jednopolna šema GRO", True),
 ]
 
-# Pages lifted unchanged out of the previous annex, matched by drawing number.
-# The separator in those codes is a soft hyphen in the source PDF, so match on
-# any single non-alphanumeric character rather than a literal dash.
-KEEP_FROM_OLD = {"INFO-01": "site photo", "INFO-02": "solar irradiation"}
+# Pages lifted out of the previous annex, matched by drawing number. Only the
+# site photo is still inherited; INFO-02 is rebuilt from the pvsim run
+# (info_pv_page) since Rev 9.
+KEEP_FROM_OLD = {"INFO-01": "site photo"}
+
+# Page layout of this annex since Rev 8: cover, photo, site data, S-01..E-01,
+# the seven K2 sheets, INFO-02. --k2-from-existing reuses the photo and K2
+# pages from it, so the annex can be rebuilt without the 232 MB site project.
+LAYOUT = {"pages": 16, "photo": 1, "k2": range(8, 15)}
 
 
 # --------------------------------------------------------------------------
@@ -374,6 +379,9 @@ def site_data_page(doc):
 
     d = json.load(open(os.path.join(BASE, "cad", "design.json"), encoding="utf-8"))
     g, a, m, tk, c = d["genset"], d["array"], d["module"], d["tank"], d["container"]
+    if "energy" not in d:
+        raise SystemExit("design.json has no energy block - run tools/sync_energy.py")
+    e = d["energy"]
     fence = 2.10                       # certified 04 Ograda.dwg (Rev 6)
 
     page = doc.new_page(width=595, height=842)
@@ -412,14 +420,21 @@ def site_data_page(doc):
         ("Snaga potrošača", "1.180 W nazivno / 1.330 W maksimalno (sa hlađenjem)"),
         ("Sistem napajanja", "Hibridni: FN moduli (primarni) + LFP baterije + "
                              "DEA (rezervni)"),
-        ("FN konfiguracija", f"{a['modules_total']} × {m['model'].split('/')[-1].strip()} "
+        ("FN konfiguracija", f"{a['modules_total']} × "
+                             f"{m['model'].split('/')[0].replace('Huawei', '').strip()} "
                              f"({a['kWp']:.2f} kWp), fiksni nagib {a['tilt_deg']}°, "
-                             f"bifacijalni".replace(".", ",")),
-        ("DEA", f"{g['kVA']:g} kVA / {g['kW']} kW stand-by (ISO 8528-3), skid "
-                f"izvedba u kontejneru".replace(".", ",")),
+                             f"azimut 180° (jug); monofacijalni iPV moduli sa "
+                             f"optimizatorima".replace(".", ",")),
+        ("DEA", f"{g['kVA']:g} kVA / {g['kW']} kW stand-by (ISO 8528-3), rad u prime "
+                f"režimu, ulaz ispravljača ograničen na "
+                f"{d['control']['rect_cap_ac_kw']} kW; skid izvedba u kontejneru"
+                .replace(".", ",")),
         ("Spremnik goriva", f"Dvoplašni, {tk['litres']} l, sa nivo sondom i "
                             f"detekcijom curenja"),
-        ("Maks. rad DEA", "250 h/god (standby režim prema ISO 8528)"),
+        ("Očekivani rad DEA", f"≈{r10(e['genset_h_mean'])} h/god (9 od 10 godina "
+                              f"≤{r10(e['genset_h_p90'])} h), gorivo "
+                              f"≈{r10(e['fuel_l_mean'])} l/god — simulacija pvsim, uz "
+                              f"parametriranje SMU iz Priloga I, Tačka 4.6"),
     ]
 
     x0, x1, x2 = 50, 195, 545
@@ -475,6 +490,106 @@ def site_data_page(doc):
     return page
 
 
+def r10(v):
+    """Round half up to the nearest 10 - the '≈' figures in the prose."""
+    return int(v / 10 + 0.5) * 10
+
+
+def num(v, nd=0):
+    return f"{v:,.{nd}f}".replace(",", " ").replace(".", ",")
+
+
+def info_pv_page(doc):
+    """INFO-02, rebuilt from the pvsim run: production and energy balance.
+
+    The page it replaces was a clear-sky irradiance map from the old simulation,
+    stamped NISU MJERODAVNE since Rev 1 because the report behind it was out by
+    an order of magnitude. Here the figures come from review/pvsim/ (written by
+    `python -m pvsim report`) and the numbers from kpis.json, set as text so
+    check_consistency can read the page.
+    """
+    import hashlib
+    import json
+
+    kp = os.path.join(BASE, "review", "pvsim", "kpis.json")
+    raw = open(kp, "rb").read()
+    d = json.loads(raw.decode("utf-8"))
+    design = json.load(open(os.path.join(BASE, "cad", "design.json"), encoding="utf-8"))
+    t = f"{design['array']['tilt_deg']:g}"
+    k, v = d["tilts"][t]["kpis"], d["validation"][t]
+    c = d["inputs"]["control"]
+    fig = os.path.join(BASE, "review", "pvsim", "fig")
+
+    page = doc.new_page(width=1190.55, height=841.89)          # A3 landscape
+    fonts = {}
+    for tag, fname in (("bht", "arial.ttf"), ("bhtb", "arialbd.ttf")):
+        p = os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts", fname)
+        if os.path.exists(p):
+            page.insert_font(fontname=tag, fontfile=p)
+            fonts[tag] = True
+    reg = "bht" if "bht" in fonts else "helv"
+    bold = "bhtb" if "bhtb" in fonts else "hebo"
+    orange, grey, ink = (0.96, 0.51, 0.12), (0.35, 0.35, 0.35), (0.04, 0.04, 0.04)
+
+    page.insert_text(fitz.Point(40, 40), "BH TELECOM d.d. SARAJEVO   |   BS SJEDNICA "
+                     "(BILEĆA)   |   PRILOG III", fontname=reg, fontsize=9, color=grey)
+    page.insert_text(fitz.Point(40, 68), "FN simulacija — proizvodnja i energetski "
+                     "bilans (informativno)", fontname=bold, fontsize=17, color=ink)
+    page.draw_line(fitz.Point(40, 78), fitz.Point(1150, 78), color=orange, width=1.6)
+
+    page.insert_image(fitz.Rect(40, 92, 585, 392),
+                      filename=os.path.join(fig, f"f1_bilans_t{t}.png"))
+    page.insert_image(fitz.Rect(605, 92, 1150, 432),
+                      filename=os.path.join(fig, f"f4_dea_godine_t{t}.png"))
+
+    rows = [
+        ("Polje", f"12 × iPV585-M2A = 7,02 kWp, nagib {t}°, azimut 180° (jug)"),
+        ("FN na DC sabirnici (−48 V)", f"{num(k['pv_bus_kwh'])} kWh/god · "
+                                       f"{num(k['specific_yield_bus'])} kWh/kWp"),
+        ("Potrošnja", f"{num(k['load_kwh'])} kWh/god (1180 W + hlađenje ormara i "
+                      f"pomoćna potrošnja)"),
+        ("Decembar", f"FN {num(k['dec_pv_kwh'])} kWh prema potrošnji "
+                     f"{num(k['dec_load_kwh'])} kWh"),
+        ("Solarni udio u potrošnji", f"{num(100 * k['solar_fraction'], 1)} %"),
+        ("Rad DEA", f"prosjek {num(k['genset_h_mean'])} h/god · 9 od 10 godina "
+                    f"≤{num(k['genset_h_p90'])} h · najviše {num(k['genset_h_max'])} h"),
+        ("Gorivo", f"prosjek {num(k['fuel_l_mean'])} l/god · dopuna spremnika 500 l "
+                   f"{num(k['refills_mean'], 1)} puta godišnje"),
+        ("Nepokrivena potrošnja", f"{num(k['unmet_kwh_total'])} kWh u "
+                                  f"{k['n_years']} godina"),
+        ("Provjera prema PVGIS-u", f"PVcalc {num(v['pvcalc_E_y'])} kWh/god, pvsim sa "
+                                   f"istim gubicima {num(v['pvsim_E_y'])} kWh/god; "
+                                   f"najveće mjesečno odstupanje "
+                                   f"{num(100 * v['worst_month_dev'], 1)} %"),
+    ]
+    x0, x1, x2, y = 40, 250, 800, 452
+    for label, value in rows:
+        page.draw_rect(fitz.Rect(x0, y, x2, y + 24), color=(0.75, 0.75, 0.75), width=0.6)
+        page.draw_line(fitz.Point(x1, y), fitz.Point(x1, y + 24),
+                       color=(0.75, 0.75, 0.75), width=0.6)
+        for rect, txt, font in ((fitz.Rect(x0 + 6, y + 6, x1 - 4, y + 24), label, bold),
+                                (fitz.Rect(x1 + 6, y + 6, x2 - 4, y + 24), value, reg)):
+            if page.insert_textbox(rect, txt, fontname=font, fontsize=9) < 0:
+                raise SystemExit(f"INFO-02: {txt[:50]!r} nije stalo")
+        y += 24
+
+    note = (f"Satna simulacija energetskog bilansa na −48 V DC sabirnici za "
+            f"{k['years'][0]}–{k['years'][1]} (pvlib + PVGIS-SARAH3), uz "
+            f"parametriranje SMU iz Priloga I, Tačka 4.6: start pri DOD "
+            f"{num(100 * c['dod_start'])} %, zaustavljanje pri SoC "
+            f"{num(100 * c['soc_stop'])} %, ograničenje ispravljača 9,5 kW. "
+            f"Metoda, gubici, osjetljivost i pretpostavke: Proračuni, dio A.6. "
+            f"Vrijednosti su informativne i ne mijenjaju zahtjeve Priloga I. "
+            f"Izvor: review/pvsim/kpis.json (sha256 "
+            f"{hashlib.sha256(raw).hexdigest()[:12]}, pvsim commit {d['git_commit']}).")
+    page.insert_textbox(fitz.Rect(820, 452, 1150, 690), note, fontname=reg,
+                        fontsize=8.5, color=grey)
+    page.draw_rect(fitz.Rect(1030, 760, 1150, 800), color=ink, width=0.8)
+    page.insert_textbox(fitz.Rect(1030, 770, 1150, 800), "INFO-02", fontname=bold,
+                        fontsize=14, align=1)
+    return page
+
+
 def strip_entity(page):
     """Drop the entity from the municipality row - the Investor wants the
     opština named on its own."""
@@ -504,33 +619,50 @@ def old_pages_by_code(src):
     return found
 
 
-def main():
+def main(argv=None):
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--k2-from-existing", action="store_true",
+                    help="reuse the photo and the seven K2 sheets of the current "
+                         "annex instead of re-plotting them from the site project")
+    args = ap.parse_args(argv)
+
     if not os.path.exists(OUT):
         raise SystemExit(f"previous annex missing: {OUT}")
     src = fitz.open(OUT)
-    codes = old_pages_by_code(src)
-    missing = [c for c in KEEP_FROM_OLD if c not in codes]
-    if missing:
-        raise SystemExit(f"cannot find {missing} in the previous annex")
-    # "1. OPŠTI PODACI O LOKACIJI" is the only other inherited page kept
-    opsti = next(
-        i
-        for i in range(src.page_count)
-        if "OPŠTI PODACI O LOKACIJI" in page_text(src[i])
-    )
 
-    names, tmp = to_dxf([p for p, _, _ in K2_SHEETS])
-    plots = []
-    for source, caption, crop in K2_SHEETS:
-        pdf = os.path.join(tmp, os.path.basename(names[source])[:-4] + ".pdf")
-        dropped = plot_a3(names[source], pdf, crop=crop)
-        plots.append((pdf, caption))
-        note = f"cropped {dropped} stray entities" if crop else "full sheet"
-        print(f"  plotted {caption:34s} ({note})")
+    tmp = None
+    if args.k2_from_existing:
+        if src.page_count != LAYOUT["pages"]:
+            raise SystemExit(f"--k2-from-existing expects the {LAYOUT['pages']}-page "
+                             f"layout, the current annex has {src.page_count}")
+        for i in LAYOUT["k2"]:
+            if abs(src[i].rect.width * 25.4 / 72 - 420) > 2:
+                raise SystemExit(f"page {i + 1} of the current annex is not an A3 "
+                                 f"K2 sheet")
+        k2 = [(src, i) for i in LAYOUT["k2"]]
+        print(f"  K2 sheets: {len(k2)} reused from the current annex")
+    else:
+        names, tmp = to_dxf([p for p, _, _ in K2_SHEETS])
+        k2 = []
+        for source, caption, crop in K2_SHEETS:
+            pdf = os.path.join(tmp, os.path.basename(names[source])[:-4] + ".pdf")
+            dropped = plot_a3(names[source], pdf, crop=crop)
+            k2.append((fitz.open(pdf), 0))
+            note = f"cropped {dropped} stray entities" if crop else "full sheet"
+            print(f"  plotted {caption:34s} ({note})")
 
     out = fitz.open()
     cover_page(out)
-    portrait_page(out, src, codes["INFO-01"])
+    photo = src[LAYOUT["photo"]]
+    if photo.rect.width < photo.rect.height:            # already the A4 photo page
+        out.insert_pdf(src, from_page=LAYOUT["photo"], to_page=LAYOUT["photo"])
+    else:                                               # a pre-Rev 3 annex
+        codes = old_pages_by_code(src)
+        if "INFO-01" not in codes:
+            raise SystemExit("cannot find INFO-01 in the previous annex")
+        portrait_page(out, src, codes["INFO-01"])
     site_data_page(out)
     print("  site-data page: set from cad/design.json (no longer inherited)")
     for n in ("S-01", "S-02", "S-03", "M-01", "E-01"):
@@ -538,9 +670,10 @@ def main():
         if not os.path.exists(p):
             raise SystemExit(f"missing plot {p} - run cad/export.py first")
         out.insert_pdf(fitz.open(p))
-    for pdf, _ in plots:
-        out.insert_pdf(fitz.open(pdf))
-    out.insert_pdf(src, from_page=codes["INFO-02"], to_page=codes["INFO-02"])
+    for pdf, i in k2:
+        out.insert_pdf(pdf, from_page=i, to_page=i)
+    info_pv_page(out)
+    print("  INFO-02: rebuilt from review/pvsim (kpis.json + figures)")
 
     out.set_metadata(
         {
@@ -563,7 +696,8 @@ def main():
     )
     n = out.page_count
     out.close()
-    shutil.rmtree(tmp, ignore_errors=True)
+    if tmp:
+        shutil.rmtree(tmp, ignore_errors=True)
     print(
         f"\nPrilog III: {n} pages, {before / 1e6:.1f} MB -> "
         f"{os.path.getsize(OUT) / 1e6:.2f} MB"

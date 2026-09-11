@@ -1104,3 +1104,60 @@ profile i spojeve, jer se led na ovoj koti zadržava tamo gdje se snijeg ne zadr
 
 Sigurnosne kopije prije Rev 8 su u `review/backup-rev7/`, **izvan** `TD-OUTPUT/` —
 strani fajlovi u isporučnom folderu su tačno ona zamka koja je zatvorena u §25.
+
+---
+
+## §27 — Rev 9 (11.09.2026.): energetski bilans iz simulacije, granice rada agregata
+
+### Energetske vrijednosti dolaze samo iz simulacije
+
+Sve solarne brojke u paketu su do Rev 9 bile procjena (performance ratio 0,80 →
+„10,1–10,9 MWh", „560–600 kWh u decembru", „110–190 h/god") ili stranica INFO-02 sa
+oznakom „NISU MJERODAVNE". Od Rev 9 izvor je `pvsim` (pvlib + PVGIS-SARAH3, satno
+2005–2023): FN lanac sa gubicima po komponentama i satni bilans baterija / agregat za
+19 godina. Model je provjeren prema PVGIS-u: satna korelacija r = 1,0000, godišnje
+−0,7 %, mjesečno ≤2,0 %. Rezultati su u `review/pvsim/` (`kpis.json`,
+`energetski-bilans.md`, slike) i ne prepisuju se ručno.
+
+### Nalaz: granice iz Odluke nisu ostvarive
+
+Odluka (Aneks 2) je navodila najviše 250 h/god rada agregata i spremnik od 500 l koji
+traje najmanje godinu. Simulacija daje **≈280 h i ≈940 l godišnje** i uz postavke SMU
+koje rad agregata svode na najmanju mjeru, a bez njih ≈360 h i ≈1 080 l. Nijedna
+ispitana postavka ne daje manje od ≈270 h i ≈880 l. Naručilac je 11.09.2026. odlučio
+da se tvrdnje zamijene simuliranim vrijednostima, uz obavezno parametriranje SMU
+(`review/09-odluka-nosaci-nagib.md`).
+
+### Izmjene
+
+| Fajl | Izmjena |
+|---|---|
+| `2.1 Prijedlog Odluke …docx` | Aneks 2: odlomak o 250 h i „godinu između dopuna" zamijenjen odobrenim tekstom (≈280 h, ≈940 l, dvije do tri dopune godišnje). LOT 2: „stand-by … P22-6" → prime režim, ograničenje 9,5 kW, P18-6. LOT 1: „2 (dva) nosača" → „3 (tri)". OOXML izmjena, `tools/fix_odluka_rev9.py` |
+| `3. Prilog I …docx` | §4.6: obavezno parametriranje SMU (start DOD 85 %, stop SoC 60 %, struja punjenja do granice BMS-a, najkraći rad 1 h); dokaz 12 proširen; novi §8 „Očekivani energetski bilans (informativno)" sa dvije slike — ukupno 7 slika |
+| `3.2 Prilog III …pdf` | naslovna strana dobila logo (od Rev 8 je izostajao); opšti podaci: „bifacijalni" → monofacijalni iPV sa optimizatorima, „Maks. rad DEA 250 h/god" → očekivani rad iz simulacije; INFO-02 nanovo sastavljena iz simulacije, sa tekstom koji provjera čita |
+| `proracuni_BS_Sjednica_Bileca.pdf / .md` | PDF sada ima tekstualni sloj (ranije slike iz jsPDF-a, nevidljive za provjeru); `.md` je bio izvor Priloga I pod pogrešnim imenom — zamijenjen izvorom proračuna. `tools/build_proracuni.py` |
+| `review/07-proracuni.md` | A.5: zaključak o nagibu prema godišnjem radu agregata; A.6 zamijenjen simulacijom (ulazi, provjera, gubici, mjesečni bilans, pokazatelji, osjetljivost); C.5 prema prime potrošnji i simulaciji; D.3, E i F dopunjeni |
+| `cad/design.json` | novi blokovi `energy` (iz `kpis.json`, sa sha256) i `control` (postavke SMU) — `tools/sync_energy.py` |
+
+### Nosači i nagib ostaju
+
+Sjednica ostaje 3 × 4 pri 45°. Nagib 60° daje više u decembru (617 prema 560 kWh), ali
+agregat radi više (300 prema 284 h/god), a moment prevrtanja raste za 44–72 %. Crteži,
+predmjer i Prilog I §3 se ne mijenjaju.
+
+### Provjere
+
+- Prije izmjena: Prilog I i svih pet crteža Rev 8 reprodukovani su u radnom folderu i
+  identični su isporučenim (razlikuju se samo vremenske oznake).
+- `build_prilog1.py`: 7 slika, 20 zabranjenih vrijednosti odsutno, 32 obavezne
+  prisutne.
+- `build_prilog3.py --k2-from-existing`: 16 stranica; K2 listovi preuzeti iz
+  postojećeg priloga, pa projekat lokacije (232 MB) nije potreban.
+- `build_proracuni.py`: 11 stranica sa tekstom.
+- `check_consistency.py`: čita 14 dokumenata, među njima prvi put i proračune; nova
+  pravila za DOD 85 % · SoC 60 % · ≈280 h · ≈940 l i zabrane za staru procjenu
+  prinosa, „bifacijal", 250 h kao osnovu, „godinu između dopuna", P22-6 i „2 (dva)
+  nosača". Rezultat: **2 greške, obje su procijenjene vrijednosti (LOT 2 i ukupno)
+  koje Naručilac tek dostavlja.**
+- Stranice Priloga III (naslovna, opšti podaci, INFO-02), Priloga I (§4.6, §8),
+  Odluke i proračuna (A.6, C.5) renderovane i pregledane.

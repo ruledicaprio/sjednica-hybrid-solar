@@ -188,23 +188,31 @@ def f4_years(years, limits, tank_l, title, path):
     _style()
     fig, (a1, a2) = plt.subplots(2, 1, figsize=(6.9, 4.2), sharex=True)
     x = years.index.to_numpy()
+    # The 250 h line is the RFI figure the design was first judged against; since
+    # Rev 9 the TD no longer states it as a limit, so it is labelled as what it is.
     for ax, col, lim, lim_label, unit in (
-            (a1, "genset_h", limits["genset_h_max"], f"granica {limits['genset_h_max']} h",
+            (a1, "genset_h", limits["genset_h_max"], f"RFI: {limits['genset_h_max']} h",
              "rad DEA, h / god"),
             (a2, "fuel_l", tank_l, f"spremnik {tank_l} l", "gorivo, l / god")):
         v = years[col].to_numpy()
+        mean, top = v.mean(), max(v.max(), lim) * 1.16
         ax.bar(x, v, 0.62, color=ORANGE)
         ax.axhline(lim, color=INK, lw=1.2)
-        ax.text(x[-1] + 0.45, lim, lim_label, va="center", fontsize=7, color=INK)
+        ax.axhline(mean, color=MUTED, lw=0.8)
+        # two reference lines close together: the upper label sits above its
+        # line and the lower one below, instead of printing over each other
+        close = abs(mean - lim) < 0.08 * top
+        va_lim = ("bottom" if lim > mean else "top") if close else "center"
+        va_mean = ("bottom" if mean >= lim else "top") if close else "center"
+        ax.text(x[-1] + 0.45, lim, lim_label, va=va_lim, fontsize=7, color=INK)
+        ax.text(x[-1] + 0.45, mean, f"prosjek {num(mean)}", va=va_mean, fontsize=7,
+                color=MUTED)
         i = int(np.argmax(v))
         ax.annotate(num(v[i]), (x[i], v[i]), xytext=(0, 2), textcoords="offset points",
                     ha="center", fontsize=7.5, color=INK2)
-        ax.axhline(v.mean(), color=MUTED, lw=0.8)
-        ax.text(x[-1] + 0.45, v.mean(), f"prosjek {num(v.mean())}", va="center",
-                fontsize=7, color=MUTED)
         ax.set_ylabel(unit)
         _yfmt(ax)
-        ax.set_ylim(0, max(v.max(), lim) * 1.16)
+        ax.set_ylim(0, top)
     a1.set_title(title)
     a2.set_xticks(x, [str(y) for y in x], rotation=90, fontsize=7)
     return _save(fig, path)
@@ -250,7 +258,7 @@ def f6_tilts(results, site_name, limits, path):
     fig, axes = plt.subplots(1, 3, figsize=(6.9, 2.6))
     panels = (("pv_bus_kwh", "FN na sabirnici, kWh/god", None),
               ("dec_pv_kwh", "FN u decembru, kWh\nlinija = potrošnja", "dec_load_kwh"),
-              ("genset_h_mean", f"DEA, h/god\nlinija = granica {limits['genset_h_max']} h",
+              ("genset_h_mean", f"DEA, h/god\nlinija = RFI {limits['genset_h_max']} h",
                "genset"))
     for ax, (key, label, ref) in zip(axes, panels):
         for i, t in enumerate(tilts):

@@ -69,14 +69,14 @@
   "soc_floor": 0.05,
   "eta_charge": 0.975,
   "eta_discharge": 0.975,
-  "charge_c_rate": 0.25,
-  "_src": "6 x Huawei ESM-48100A6, 48 V / 100 Ah = 4,8 kWh each (ICC360-HA1-C1 installation guide, table 2-24; Huawei quotation for Sjednica). Efficiencies (95 % round trip), the 0,25 C charge limit and the 5 % BMS floor are NOT in any vendor file on hand. They are assumptions typical for LFP telecom modules. Genset hours are sensitive to the charge limit - see the sensitivity runs."
+  "charge_c_rate": 0.5,
+  "_src": "6 x Huawei ESM-48100A6, 48 V / 100 Ah = 4,8 kWh each (ICC360-HA1-C1 installation guide, table 2-24; Huawei quotation for Sjednica). Efficiencies (95 % round trip) and the 5 % BMS floor are NOT in any vendor file on hand - assumptions typical for LFP telecom modules. Charge limit 0,5 C: the setting Prilog I §4.6 (Rev 9) asks for, i.e. the highest the BMS allows, so that the charge current never holds the genset below its 9,5 kW cap. The BMS maximum of the ESM-48100A6 is not on file; the bidder confirms it. Genset hours are sensitive to it - see the sensitivity runs."
  },
  "control": {
   "dod_start": 0.85,
-  "soc_stop": 0.9,
+  "soc_stop": 0.6,
   "min_run_h": 1.0,
-  "_src": "dod_start: SMU parameter 'DOD to Start', default 85 % (ICC360-HA1-C1 installation guide, table 10-6; range 5-90 %). soc_stop and min_run_h are not in the vendor documents on hand - assumptions. They are SMU settings the bidder must state."
+  "_src": "dod_start: SMU parameter 'DOD to Start', default 85 % (ICC360-HA1-C1 installation guide, table 10-6; range 5-90 %). soc_stop 60 % and min_run_h 1 h: the TD requirement from Rev 9 (Prilog I §4.6, decision of 11.09.2026), chosen from the sensitivity runs - about 20 % fewer genset hours than stopping at 90 %, for about 0,45 starts a day. The stop logic itself is not in the vendor documents on hand; it is modelled as a stop when the SoC reaches the setting."
  },
  "genset": {
   "rect_cap_ac_kw": 9.5,

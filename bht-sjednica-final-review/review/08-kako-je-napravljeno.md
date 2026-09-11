@@ -215,7 +215,17 @@ puno", Claude izračuna da je hladnjak 60 mm od zida pa kanal ne može biti već
 
 ---
 
-## 6. HAMZIĆI (Čapljina) — koliko bi trebalo
+## 6. HAMZIĆI (Čitluk) — koliko bi trebalo
+
+> **Stanje 11.09.2026.** Ova procjena je pisana prije nego što su stigli projekat i
+> fotografije lokacije. Od tada je odlučeno: **jedna zajednička TD za obje lokacije**;
+> Hamzići su u općini **Čitluk**, na **493 m n.v.** (PVGIS DEM; projekat 500 m);
+> **sistem je isti kao na Sjednici**, a **agregat ide U postojeći kontejner**, ne
+> vani — radijator izbacuje zrak kroz otvor klima-uređaja Stulz koji se demontira.
+> Nosači 3×4 pri 45° staju u zakup (3 525 mm južno od ploče). Odluke:
+> `review/09-odluka-nosaci-nagib.md`; energetski bilans:
+> `hamzici-hybrid-solar/review/pvsim/`. Pododjeljak „Agregat VANI" niže je time
+> odbačen i ostaje samo kao zapis.
 
 Kratak odgovor: **infrastruktura se prenosi gotovo besplatno, ali ulazni podaci i
 zaključci se moraju izvesti iznova.** Nije „isto sa malim izmjenama" — i to je dobra
@@ -235,7 +245,7 @@ Praktično: `design.json` i `site_geometry.json` se popune novim vrijednostima,
 | Ulaz | Zašto |
 |---|---|
 | **Ovjereni projekat lokacije Hamzići** (DWG) | bez njega nema S-01 — parcela, ograda, ploča, baza stuba, postojeći uzemljivač |
-| **Nadmorska visina i temperature** | Čapljina je nizinska i vrlo topla; **visinski derating praktično nestaje, a temperaturni raste** |
+| **Nadmorska visina i temperature** | Čitluk (493 m) je nizak i vrlo topao (juli/avgust prosjek 24,7 °C); **visinski derating se smanjuje, a temperaturni raste** |
 | **Zona vjetra i snijega** | Sjednica je izložen vrh sa qp ≥ 1,20 kN/m²; Hamzići gotovo sigurno nisu |
 | **Bilans potrošnje bazne stanice** | određuje sve ostalo |
 
@@ -246,13 +256,13 @@ Tri zaključka sa Sjednice vjerovatno **padaju** na Hamzićima, i to u našu kor
    kataloški nosač prolazi → **LOT 1 postaje kupovina, ne projektovanje.** To je
    najveća ušteda.
 2. **Klasa izloženosti betona XF3** je tražena zbog ciklusa smrzavanja na 1076 m.
-   U Čapljini vjerovatno nije mjerodavna.
+   U Čitluku vjerovatno nije mjerodavna.
 3. **Ograničenje ispravljača na 9,5 kW** postoji jer derating na 1076 m obara prime
    snagu na 11,6 kW. Bez visinskog deratinga granica se pomjera — ali **pažljivo**,
-   jer temperaturni derating u Čapljini radi u suprotnom smjeru i mora se preračunati,
+   jer temperaturni derating u Čitluku radi u suprotnom smjeru i mora se preračunati,
    ne pretpostaviti.
 
-### Agregat VANI — to nije mala izmjena
+### Agregat VANI — to nije mala izmjena (ODBAČENO 11.09.2026. — agregat ide u kontejner)
 
 Ovo je zapravo najveća stavka i vrijedi je iskreno prikazati, jer mijenja **skoro
 cijelu sekciju 4 predmjera**:

@@ -207,5 +207,55 @@
    "west": 60,
    "basis": "Rev 7b (2026-08-12). The skid was drawn in the SW corner with its load-spreading frame flush against the west and south walls, leaving no way to service two sides. The container is empty, so there was no reason for it. Interior depth 2180 less the 740 mm frame leaves 1440, split evenly north and south. WEST is deliberately tight: that face is the radiator, which discharges into the duct through the wall and is not serviced from there. The frame stops at ox+1790, just short of the kada at ox+1795, so the two never overlap in plan. Carried on M-01 as two in-plan labels and normative note 9, and in BOQ 4.1."
   }
+ },
+ "energy": {
+  "_source": "review/pvsim/kpis.json, written by `python -m pvsim report --site sjednica`; copied here by tools/sync_energy.py. Do not edit by hand.",
+  "kpis_sha256": "5f70c3792e2ac183ed7b406e6e7f0e3551daffe9c885a859835b4ae9d59c92c8",
+  "pvsim_commit": "4ae2366",
+  "generated_utc": "2026-09-11T12:52:56+00:00",
+  "tilt_deg": 45,
+  "years": [
+   2005,
+   2023
+  ],
+  "pv_bus_kwh": 10137.377,
+  "specific_yield_bus": 1444.071,
+  "pv_used_kwh": 8322.781,
+  "curtailed_kwh": 1814.596,
+  "load_kwh": 10574.625,
+  "solar_fraction": 0.755,
+  "dec_pv_kwh": 560.339,
+  "dec_load_kwh": 892.8,
+  "genset_h_mean": 283.994,
+  "genset_h_p90": 345.152,
+  "genset_h_max": 359.408,
+  "starts_mean": 165.368,
+  "fuel_l_mean": 938.042,
+  "fuel_l_p90": 1140.049,
+  "fuel_l_max": 1187.136,
+  "refills_mean": 2.368,
+  "tank_years_mean": 0.533,
+  "longest_genset_free_days": 66.833,
+  "cycles_mean": 226.65,
+  "unmet_kwh_total": 0.0,
+  "validation": {
+   "pvcalc_E_y": 9692.2,
+   "pvsim_E_y": 9621.1,
+   "worst_month_dev": 0.0203,
+   "hourly_r": 0.99998
+  },
+  "limits_odluka": {
+   "genset_h_max": 250,
+   "tank_years_min": 1.0,
+   "_status": "superseded in Rev 9 by the simulated values (review/09-odluka-nosaci-nagib.md)"
+  }
+ },
+ "control": {
+  "_source": "Prilog I §4.6 (Rev 9): SMU settings the bidder sets and proves with evidence item 12; the same values are the pvsim base case.",
+  "dod_start": 0.85,
+  "soc_stop": 0.6,
+  "min_run_h": 1.0,
+  "charge_c_rate": 0.5,
+  "rect_cap_ac_kw": 9.5
  }
 }

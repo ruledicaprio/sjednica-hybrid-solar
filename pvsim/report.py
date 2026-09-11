@@ -16,18 +16,18 @@ from pvsim import __version__, config, figures, model, pvgis, validate
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 # SMU settings and assumptions the result depends on. The first row is the
-# base case (SMU defaults where the vendor documents give one).
+# base case: the settings Prilog I §4.6 requires since Rev 9 (stop SoC 60 %,
+# charge at the BMS maximum, taken as 0,5 C). The second row is what an SMU
+# left at its usual settings would do.
 SENSITIVITY = [
-    ("Osnovni slučaj: start DOD 85 %, stop SoC 90 %, punjenje 0,25 C", {}),
+    ("Osnovni slučaj (TD Rev 9): start DOD 85 %, stop SoC 60 %, punjenje 0,5 C", {}),
+    ("SMU bez parametriranja: stop SoC 90 %, punjenje 0,25 C",
+     {"control.soc_stop": 0.9, "battery.charge_c_rate": 0.25}),
+    ("Stop SoC 90 %", {"control.soc_stop": 0.9}),
     ("Stop SoC 100 % (punjenje do vrha)", {"control.soc_stop": 1.0}),
-    ("Stop SoC 60 %", {"control.soc_stop": 0.6}),
     ("Stop SoC 40 %", {"control.soc_stop": 0.4}),
+    ("Punjenje 0,25 C", {"battery.charge_c_rate": 0.25}),
     ("Punjenje 0,15 C", {"battery.charge_c_rate": 0.15}),
-    ("Punjenje 0,5 C", {"battery.charge_c_rate": 0.5}),
-    ("Stop SoC 40 % + punjenje 0,5 C", {"control.soc_stop": 0.4,
-                                        "battery.charge_c_rate": 0.5}),
-    ("PREPORUKA TD: stop SoC 60 % + punjenje 0,5 C", {"control.soc_stop": 0.6,
-                                                     "battery.charge_c_rate": 0.5}),
     ("Start pri DOD 70 %", {"control.dod_start": 0.7}),
     ("Potrošnja 1180 W stalno (bez hlađenja i pomoćne)",
      {"load.aux_w": 0, "load.cooling_w_max": 0}),
@@ -54,7 +54,8 @@ def _n(v, nd=0):
 def _sens_row(label, k):
     return {"case": label, "genset_h_mean": k["genset_h_mean"],
             "genset_h_p90": k["genset_h_p90"], "genset_h_max": k["genset_h_max"],
-            "fuel_l_mean": k["fuel_l_mean"], "fuel_l_max": k["fuel_l_max"],
+            "fuel_l_mean": k["fuel_l_mean"], "fuel_l_p90": k["fuel_l_p90"],
+            "fuel_l_max": k["fuel_l_max"], "refills_mean": k["refills_mean"],
             "tank_years_mean": k["tank_years_mean"], "starts_mean": k["starts_mean"],
             "gen_dc_kwh": k["gen_dc_kwh"], "curtailed_kwh": k["curtailed_kwh"],
             "wet_stack_h_mean": k["wet_stack_h_mean"]}
@@ -211,7 +212,8 @@ def markdown(doc):
         w("")
 
     w("## Ključni pokazatelji\n")
-    w("| Pokazatelj | " + " | ".join(f"{t}°" for t in tilts) + " | Granica (Odluka) |")
+    w("| Pokazatelj | " + " | ".join(f"{t}°" for t in tilts) +
+      " | RFI / Odluka do Rev 9 |")
     w("|---|" + "---|" * len(tilts) + "---|")
     rows = [
         ("FN na DC sabirnici, kWh/god", lambda k: _n(k["pv_bus_kwh"]), ""),

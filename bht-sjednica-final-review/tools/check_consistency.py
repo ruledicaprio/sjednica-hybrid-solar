@@ -281,6 +281,12 @@ SINGLE_VALUE = {
     # supplied by none, and its size appeared nowhere.
     "drip tray under the fuel tank": r"1150\s*[x×]\s*640",
     "exhaust insulation area": r"3[,.]0\s*m²",
+    # Rev 9 (2026-09-11): the SMU settings the TD now requires, and the genset
+    # operation the pvsim simulation gives with them - both must be stated.
+    "SMU start at DOD 85 %": r"DOD\s*85\s*%",
+    "SMU stop at SoC 60 %": r"SoC\s*60\s*%",
+    "expected genset operation ≈280 h/god": r"≈\s*280\s*h",
+    "expected fuel ≈940 l/god": r"≈\s*940\s*l",
 }
 
 # text that must not survive from the 46-generator template
@@ -294,6 +300,17 @@ BANNED = {
     # Rev 2: the blanket placement that put intake, discharge and the 505 °C
     # exhaust on the same wall, next to the outdoor power cabinets (EL RED-03)
     "all openings on the north wall": r"sve\s+na\s+SJEVERNOJ\s+strani",
+    # Rev 9 (2026-09-11): energy figures come from the pvsim simulation only.
+    # The Odluka's 250 h and "a year per 500 l" were never reachable with this
+    # design (review/09-odluka-nosaci-nagib.md); the old PR 0,80 estimate and the
+    # "bifacial" label survived on the Prilog III pages the checker could not read.
+    "old yield estimate (PR 0,80)":
+        r"10[,.]1\s*[–-]\s*10[,.]9\s*MWh|560\s*[–-]\s*600\s*kWh",
+    "bifacial modules (they are monofacial iPV)": r"bifacijal",
+    "250 h limit as the design basis": r"250\s*h(\s*/\s*god)?\s*\(stand",
+    "500 l as a year of fuel": r"najmanje\s+godinu\s+između\s+dopuna",
+    "withdrawn genset P22-6": r"P22-6",
+    "two PV stands (there are three)": r"2\s*\(dva\)\s*nosača",
 }
 
 

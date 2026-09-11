@@ -67,14 +67,14 @@
   "soc_floor": 0.05,
   "eta_charge": 0.975,
   "eta_discharge": 0.975,
-  "charge_c_rate": 0.25,
-  "_src": "As sjednica.json (6 x ESM-48100A6; efficiencies and charge limit are assumptions)."
+  "charge_c_rate": 0.5,
+  "_src": "As sjednica.json (6 x ESM-48100A6; efficiencies are assumptions; 0,5 C is the Prilog I §4.6 setting, BMS maximum to be confirmed by the bidder)."
  },
  "control": {
   "dod_start": 0.85,
-  "soc_stop": 0.9,
+  "soc_stop": 0.6,
   "min_run_h": 1.0,
-  "_src": "As sjednica.json (SMU 'DOD to Start' 85 % default; stop SoC and minimum run are assumptions)."
+  "_src": "As sjednica.json: DOD to Start 85 % (SMU default); stop SoC 60 % and minimum run 1 h are the TD requirement (Prilog I §4.6, Rev 9)."
  },
  "genset": {
   "rect_cap_ac_kw": 9.5,
@@ -102,8 +102,8 @@
  },
  "array_position": {
   "east_m": 0.0,
-  "north_m": -4.4,
-  "_src": "Array centre relative to the tower centre (= slab centre): south of the 5,42 m slab, 2,71 m + ~0,3 m setback + half the field depth. Preliminary until site_geometry.json is measured from the DWGs (Phase 5)."
+  "north_m": -4.46,
+  "_src": "Array centre relative to the tower centre (= slab centre): the middle of the 3 525 mm strip between the slab (half-width 2,70 m) and the south lease line, per 01_Situacija 1_200.dwg."
  },
  "obstacles": [
   {
@@ -121,7 +121,7 @@
   "bottom_edge_m": 0.5,
   "strip_spacing_m": 1.6,
   "plot_max_width_m": 12.0,
-  "plot_max_depth_m": 3.3,
-  "_src": "qp is PROVISIONAL, taken as Sjednica's 1,20 kN/m². The 2017 Hamzići project used JUS U.C7 (vm,50,10 = 25 m/s); a BAS EN 1991-1-4 + NA value is derived in Phase 5. Plot: lease 12,00 x 12,50 m (k.č. 109/1 K.O. Hamzići) around the 5,42 m tower slab leaves ≈3,3 m to the lease line - preliminary until site_geometry.json is measured from the DWGs."
+  "plot_max_depth_m": 3.525,
+  "_src": "qp is PROVISIONAL, taken as Sjednica's 1,20 kN/m². The 2017 Hamzići project used JUS U.C7 (vm,50,10 = 25 m/s); a BAS EN 1991-1-4 + NA value is derived in Phase 5. Plot measured from the certified 01_Situacija 1_200.dwg (version A): lease 12 000 mm E-W x 12 500 mm N-S (k.č. 109/1 K.O. Hamzići), slab 5 400 mm centred in it, north arrow block at 0° (+Y = north). That leaves 3 525 mm south of the slab (3 300 east and west, 3 575 north): a 45° field (3,24 m projection, 3,30 m strips) fits with ≈0,22 m to spare."
  }
 }
