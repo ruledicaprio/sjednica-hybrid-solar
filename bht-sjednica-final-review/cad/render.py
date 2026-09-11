@@ -12,7 +12,8 @@ from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
 from ezdxf.addons.drawing.config import Configuration, BackgroundPolicy, ColorPolicy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DWG = os.path.join(os.path.dirname(HERE), "TD-OUTPUT", "DWG")
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), "tools"))
+from paths import GRAFIKA as DWG                                    # noqa: E402
 
 
 def render(dxf_path, out_path, dpi=150, dark_on_white=True):

@@ -77,7 +77,10 @@ def render_layout() -> None:
     sys.path.insert(0, str(ROOT / "cad"))
     import render as cad_render
 
-    dxf = ROOT / "TD-OUTPUT" / "DWG" / "M-01.dxf"
+    sys.path.insert(0, str(ROOT / "tools"))
+    from paths import GRAFIKA
+
+    dxf = Path(GRAFIKA) / "M-01.dxf"
     if not dxf.exists():
         print("skip layout figure: build the drawings first (cad/build_drawings.py)")
         return

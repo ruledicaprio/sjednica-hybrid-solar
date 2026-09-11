@@ -5,10 +5,25 @@ proposal documents for infrastructure rollouts. The Sjednica-Bileca 46-site
 rollout (see "Active initiative" below) is the first project run through it,
 not the whole of its scope.
 
-One subproject remains: `rural-star-sjednica/` (structured Python simulation
-pipeline). For the solar portion of the RFPs we now just use the existing
-solar irradiation figures under `rural-star-sjednica/output/report_results/`
-— the simulation pipeline is kept for reference but is not being re-run.
+Energy figures (PV yield, battery, genset hours and fuel) come only from
+`pvsim/` (pvlib + PVGIS SARAH3, hourly 2005–2023):
+`python -m pvsim run --site <id>`. Its `kpis.json` is copied into each site's
+`review/pvsim/` and is the one source the TD quotes.
+
+`rural-star-sjednica/` (the earlier simulation pipeline) is kept for reference
+only. Never quote `rural-star-sjednica/output/report_results/`: it reports
+115 582 kWh/yr from 6,5 kWp, about 12× what is physically possible
+(bht-sjednica-final-review/review/01-huawei-solar.md, F-10).
+
+## Running the tools
+
+- Set `PYTHONIOENCODING=utf-8` first: the Windows console is cp1252 and the
+  tools print Bosnian diacritics.
+- `pip install -r requirements-dev.txt`. External tools: pandoc (winget
+  `JohnMacFarlane.Pandoc`; found on PATH or in `%LOCALAPPDATA%\Pandoc`),
+  ODA File Converter (DXF ↔ DWG), LibreOffice (BOQ recalculation check).
+- `TD_OUT=<dir>` redirects a site's build outputs (`tools/paths.py`), so a
+  rebuild can be compared against the committed package without touching it.
 
 ## Data & tool sources
 
@@ -19,8 +34,8 @@ work:
 - **Radiance** — daylighting/irradiance simulation (`rural-star-sjednica/`,
   `src/radiance_engine.py`). Binaries live in the gitignored `bin/`/`lib/`
   (see repo history below) — install from radiance-online.org if missing.
-- **pvlib** — PV yield modeling.
-- **PVGIS** — solar irradiation data source.
+- **pvlib** — PV yield modeling (`pvsim/`).
+- **PVGIS** — solar irradiation data source (API v5.3, cached by `pvsim/`).
 - Wind load data sources — for structural/mounting calculations.
 - Snow load data sources — for structural/mounting calculations.
 - Floor/equipment weight capacity calculations — for construction-phase

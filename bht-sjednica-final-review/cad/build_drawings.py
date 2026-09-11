@@ -34,7 +34,8 @@ from bht_frame import (A3_H, A3_W, MARGIN, MARGIN_L, TB_W, draw_frame, new_doc,
                        north_arrow, scale_bar, _txt)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(os.path.dirname(HERE), "TD-OUTPUT", "DWG")
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), "tools"))
+from paths import GRAFIKA as OUT                                    # noqa: E402
 
 GEO = json.load(open(os.path.join(HERE, "site_geometry.json"), encoding="utf-8"))
 

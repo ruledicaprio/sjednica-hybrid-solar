@@ -34,10 +34,10 @@ import fitz
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(HERE)
-TD = os.path.join(BASE, "TD-OUTPUT")
-DWG = os.path.join(TD, "DWG")
+sys.path.insert(0, HERE)
+from paths import GRAFIKA as DWG, LOGO_SVG, PRILOG3 as OUT          # noqa: E402
+
 SITE = os.path.join(BASE, "SITE-PROJECT-SJEDNICA-Bileca-K2-S38-m")
-OUT = os.path.join(TD, "Prilog_III_situacija_sjednica_bileca.pdf")
 ODA = os.environ.get(
     "ODA_CONVERTER_PATH", r"C:\Program Files\ODA\ODAFileConverter\ODAFileConverter.exe"
 )
@@ -237,16 +237,14 @@ def plot_a3(dxf_path, out_pdf, crop=False):
 def cover_page(doc):
     """Cover in the style of the TD title page, adapted for Prilog III."""
     page = doc.new_page(width=595, height=842)  # A4 portrait
-    logo = None
-    try:
-        sys.path.insert(0, HERE)
-        from make_prilog1 import extract_logo
-
-        logo = extract_logo()
-    except Exception:  # noqa: BLE001
-        pass
-    if logo and os.path.exists(logo):
-        page.insert_image(fitz.Rect(60, 50, 60 + 200, 50 + 52), filename=logo)
+    # The mark comes from cad/bht-logo.svg, the file the drawing title blocks
+    # trace, and is placed as vector. It used to be lifted out of the TD .docx by
+    # make_prilog1, which Rev 8 deleted: the import failed inside a bare except
+    # and the Rev 8 cover shipped without a logo.
+    svg = fitz.open(LOGO_SVG)
+    logo = fitz.open("pdf", svg.convert_to_pdf())
+    w = 52 * logo[0].rect.width / logo[0].rect.height
+    page.show_pdf_page(fitz.Rect(60, 50, 60 + w, 50 + 52), logo, 0)
 
     # The base-14 PDF fonts have no š/ć/č/ž/đ, so Bosnian text comes out with
     # question marks. Embed the system Arial instead.

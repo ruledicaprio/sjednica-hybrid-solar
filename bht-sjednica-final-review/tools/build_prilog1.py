@@ -23,10 +23,11 @@ import sys
 import zipfile
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(BASE, "tools"))
+from paths import PRILOG1 as OUT                                    # noqa: E402
+
 MD = os.path.join(BASE, "review", "prilog1.md")
 REF = os.path.join(BASE, "tools", "ref-prilog1.docx")
-OUT = os.path.join(BASE, "TD-OUTPUT",
-                   "3. Prilog I TD - Specifikacija zahtjeva.docx")
 
 # Vrijednosti koje su bile pogrešne i ne smiju se vratiti (Rev 8, P1-P13).
 FORBIDDEN = [
@@ -62,10 +63,22 @@ A4 = (b'<w:pgSz w:w="11906" w:h="16838"/>'
       b'w:header="709" w:footer="709" w:gutter="0"/>')
 
 
+def pandoc():
+    """pandoc.exe: $PANDOC, pa PATH, pa winget instalacija po korisniku — ona
+    ne stigne na PATH dok se ne otvori nova ljuska."""
+    for exe in (os.environ.get("PANDOC"), shutil.which("pandoc"),
+                os.path.join(os.environ.get("LOCALAPPDATA", ""), "Pandoc",
+                             "pandoc.exe")):
+        if exe and os.path.exists(exe):
+            return exe
+    raise SystemExit("pandoc nije pronađen — winget install --id "
+                     "JohnMacFarlane.Pandoc -e --scope user")
+
+
 def ref_docx():
     """Napraviti reference dokument: A4, margine 20 mm, Calibri."""
     default = subprocess.run(
-        ["pandoc", "--print-default-data-file", "reference.docx"],
+        [pandoc(), "--print-default-data-file", "reference.docx"],
         capture_output=True, check=True).stdout
     tmp = REF + ".tmp"
     with open(tmp, "wb") as fh:
@@ -143,39 +156,43 @@ def widen_tables(path):
             out.writestr(name, data)
 
 
-def build():
-    if not os.path.exists(REF):
+def build(md=MD, out=OUT, forbidden=FORBIDDEN, required=REQUIRED, n_media=5,
+          ref=REF):
+    """Pandoc + provjera. Parametri su tu da isti build i iste provjere posluže
+    i zajedničkom paketu dvije lokacije, koji ima svoj md, izlaz i liste."""
+    if not os.path.exists(ref):
         ref_docx()
-    cmd = ["pandoc", MD, "-o", OUT,
-           "--reference-doc", REF,
-           "--resource-path", os.path.join(BASE, "review"),
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    cmd = [pandoc(), md, "-o", out,
+           "--reference-doc", ref,
+           "--resource-path", os.path.dirname(os.path.abspath(md)),
            "--from", "markdown+pipe_tables+raw_attribute",
            "--columns", "999"]
     subprocess.run(cmd, check=True)
-    widen_tables(OUT)
+    widen_tables(out)
 
-    z = zipfile.ZipFile(OUT)
+    z = zipfile.ZipFile(out)
     xml = z.read("word/document.xml").decode("utf-8")
     text = "".join(re.findall(r"<w:t[^>]*>(.*?)</w:t>", xml, re.S))
     text = text.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
     media = [n for n in z.namelist() if n.startswith("word/media/")]
 
     fail = []
-    for needle, why in FORBIDDEN:
+    for needle, why in forbidden:
         if needle in text:
             fail.append(f"vratila se zastarjela vrijednost {needle!r} ({why})")
-    for needle in REQUIRED:
+    for needle in required:
         if needle not in text:
             fail.append(f"nedostaje obavezna vrijednost {needle!r}")
-    if len(media) != 5:
-        fail.append(f"očekivano 5 slika, ugrađeno {len(media)}")
+    if len(media) != n_media:
+        fail.append(f"očekivano {n_media} slika, ugrađeno {len(media)}")
     if fail:
         raise SystemExit("PRILOG I — provjera pala:\n  " + "\n  ".join(fail))
 
-    print(f"snimljeno: {OUT}")
+    print(f"snimljeno: {out}")
     print(f"  slika: {len(media)} · znakova teksta: {len(text)}")
-    print(f"  {len(FORBIDDEN)} zabranjenih vrijednosti odsutno, "
-          f"{len(REQUIRED)} obaveznih prisutno")
+    print(f"  {len(forbidden)} zabranjenih vrijednosti odsutno, "
+          f"{len(required)} obaveznih prisutno")
 
 
 if __name__ == "__main__":

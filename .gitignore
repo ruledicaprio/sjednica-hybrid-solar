@@ -70,3 +70,20 @@ bht-sjednica-final-review/cad/_frame_test.dxf
 # their genset/container content (see KONTEJNER.oxps for the useful part instead)
 bht-sjednica-final-review/reference/P13_5_FG_Wilson_hybrid MLINISTE.dwg
 bht-sjednica-final-review/reference/P13_5_FG_Wilson_hybrid MLINISTE_2.dwg
+
+# --- pvsim: PVGIS responses are cached locally; only the small reference
+# responses under pvsim/sites/<id>/pvgis_ref/ (with their sha256 manifest) are
+# committed. Run outputs are copied into each site's review/pvsim/ by `report`.
+pvsim/cache/
+pvsim/out/
+
+# --- hamzici-hybrid-solar: ~850 MB of client inputs held locally, not committed
+# (same policy as the Sjednica site project above). The work product next to
+# them - cad/, review/, tools/ - is committed.
+# two versions of the certified 2017 site project (space- and underscore-named)
+hamzici-hybrid-solar/GP BS*/
+# vendor manuals and datasheets
+hamzici-hybrid-solar/EQUIPEMENT/
+# 08.09.2026 site photos, full resolution; this folder also holds two unrelated
+# items (mliniste-full.mp4, Icao9303/) that belong to other work
+hamzici-hybrid-solar/hamzici-photos/

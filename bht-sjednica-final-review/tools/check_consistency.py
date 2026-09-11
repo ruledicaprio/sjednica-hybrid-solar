@@ -24,8 +24,8 @@ import re
 import sys
 import zipfile
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TD = os.path.join(BASE, "TD-OUTPUT")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from paths import TD                                                # noqa: E402
 
 
 # --------------------------------------------------------------------------

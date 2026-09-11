@@ -21,7 +21,8 @@ import tempfile
 import ezdxf
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DWGDIR = os.path.join(os.path.dirname(HERE), "TD-OUTPUT", "DWG")
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), "tools"))
+from paths import GRAFIKA as DWGDIR                                 # noqa: E402
 ODA = os.environ.get(
     "ODA_CONVERTER_PATH",
     r"C:\Program Files\ODA\ODAFileConverter\ODAFileConverter.exe")
