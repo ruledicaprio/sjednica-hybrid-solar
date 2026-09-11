@@ -6,7 +6,7 @@ Reuses the Sjednica checker's readers and rules: both sites carry the same
 system, so every "exactly one value" rule (generator rating, container size,
 module power, stand forces, foundation volume, ...) still has one correct value
 across the joint package. Site-specific values that differ (fence 2,10 / 1,80 m,
-overhang 1,64 / 1,94 m, altitude 1076 / 493 m) are not variants of those rules,
+overhang 1,64 / 1,74 m, altitude 1076 / 493 m) are not variants of those rules,
 so they do not collide; they are added below as values that must be present.
 
 Three additions for the joint package:
@@ -36,8 +36,8 @@ SINGLE_VALUE.update({
     "Hamzići fence 1,80 m": r"1[,.]80\s*m",
     "Stulz WDE80 removal": r"Stulz\s*WDE80",
     "Stulz delivered to Alipašino Polje": r"Alipašino\s*Polje",
-    "Hamzići expected genset ≈210 h/god": r"≈\s*210\s*h",
-    "Hamzići expected fuel ≈710 l/god": r"≈\s*710\s*l",
+    "Hamzići expected genset ≈230 h/god": r"≈\s*230\s*h",
+    "Hamzići expected fuel ≈750 l/god": r"≈\s*750\s*l",
 })
 
 BANNED = dict(cc.BANNED)

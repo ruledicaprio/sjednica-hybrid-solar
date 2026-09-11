@@ -49,10 +49,12 @@ FORBIDDEN = bp1.FORBIDDEN + [
     ("Čapljin", "Hamzići su u općini Čitluk"),
     ("AS 36 m", "stub na Hamzićima je 32 m"),
     ("Hamzići?", "zaostali upitnik iz nacrta"),
+    ("1,94 m", "nadvišenje ograde na Hamzićima je 1,74 m: teren je 0,20 m ispod ploče"),
 ]
 REQUIRED = bp1.REQUIRED + [
-    "493 m", "1,94 m", "h = 1,80 m", "3575 mm", "k.č. 109/1", "Stulz WDE80",
-    "Alipašino Polje", "0,36 m²", "≈210 h/god", "≈710 l/god", "H-04", "12,3 kW",
+    "493 m", "1,74 m", "h = 1,80 m", "3575 mm", "k.č. 109/1", "Stulz WDE80",
+    "Alipašino Polje", "0,36 m²", "≈230 h/god", "≈750 l/god", "H-04", "12,3 kW",
+    "izvlačni", "≤0,50 m", "3.6.9 Plan uzemljivača",
 ]
 N_MEDIA = len(FIGURES)
 
@@ -62,7 +64,14 @@ def figures():
     for name, src in FIGURES.items():
         if not os.path.exists(src):
             raise SystemExit(f"missing figure source {src}")
-        shutil.copy(src, os.path.join(P1_DIR, name))
+        dst = os.path.join(P1_DIR, name)
+        if src.lower().endswith(".pdf"):
+            # A drawing sheet: the whole A3 page at 200 dpi, as m01-raspored.png is.
+            import pymupdf
+            with pymupdf.open(src) as doc:
+                doc[0].get_pixmap(dpi=200).save(dst)
+        else:
+            shutil.copy(src, dst)
     print(f"  figures: {len(FIGURES)} -> {os.path.relpath(P1_DIR, paths.JOINT)}")
 
 
@@ -144,11 +153,11 @@ def calc_pdf(md, outs, required):
 def calculations():
     calc_pdf(os.path.join(SJ, "review", "07-proracuni.md"),
              [os.path.join(paths.TD, "proracuni_BS_Sjednica_Bileca.pdf")],
-             ["A.6 Energetski bilans", "≈230 h/god", "42,6 kNm"])
+             ["A.6 Energetski bilans", "≈250 h/god", "42,6 kNm", "D.8 Trajni potrošači"])
     calc_pdf(os.path.join(HZ, "review", "07-proracuni.md"),
              [os.path.join(paths.TD, "proracuni_BS_Hamzici_Citluk.pdf"),
               os.path.join(HZ, "review", "07-proracuni_hamzici.pdf")],
-             ["A.6 Energetski bilans", "≈210 h/god", "42,6 kNm", "Stulz WDE80"])
+             ["A.6 Energetski bilans", "≈230 h/god", "42,6 kNm", "Stulz WDE80", "D.9 Trajni potrošači"])
 
 
 def drawings():

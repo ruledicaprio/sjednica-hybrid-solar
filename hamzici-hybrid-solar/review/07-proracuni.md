@@ -87,8 +87,8 @@ Visina Sunca u podne `= 90 − φ + δ`, φ = 43,288°:
 
 Pri 45° upadni ugao direktnog zračenja u podne 21. decembra je 21,7° (cos 0,929, 93 %).
 Kao i na Sjednici, strmiji nagib pomaže decembru, ali agregat godišnje radi više: pri
-60° 644 kWh u decembru prema 601 kWh pri 45°, ali **227 h/god rada agregata prema
-214 h** (A.6). **Usvojeni nagib: 45°** (odluka 11.09.2026.).
+60° 644 kWh u decembru prema 601 kWh pri 45°, ali **241 h/god rada agregata prema
+226 h** (A.6). **Usvojeni nagib: 45°** (odluka 11.09.2026.).
 
 **Horizont:** PVGIS DEM ≤2,7°, samo na sjeveru. **Stablo** JJI–JI od stuba (≈7–9 m,
 15–20 m, procjena iz fotografija, izvan zakupa) zaklanja zimsko jutarnje Sunce: sa sredine
@@ -103,7 +103,8 @@ Isti alat i ista metoda kao na Sjednici (tamo A.6): satni bilans na −48 V DC s
 Sjednici: zaprljanje 1–3 % mjesečno (suši i prašnjaviji ljetni period), snijeg zanemariv
 (≤1 % u januaru i februaru), više hlađenja ormara ljeti. Potrošnja **1180 W / 1330 W je
 privremena**, preuzeta sa Sjednice do dostavljanja izmjerene potrošnje ove bazne stanice.
-Baterija je ista kao na Sjednici: **6 × 150 Ah = 48,6 kWh** (Odluka, Aneks 2).
+Baterija je ista kao na Sjednici: **6 × 150 Ah = 48,6 kWh** (Odluka, Aneks 2). Pomoćna
+potrošnja je 45 W, sa trajnim potrošačima na −48 V (D.9).
 
 **Provjera prema PVGIS-u.** Isti model modula sa PVGIS-ovim gubitkom 14 % daje
 9 780 kWh/god prema 9 840 kWh/god iz PVGIS PVcalc (−0,6 %); nijedan mjesec ne odstupa
@@ -130,58 +131,60 @@ gubitak je veći nego na Sjednici (8,1 % prema 6,2 %) — lokacija je niža i to
 
 | Mjesec | FN na sabirnici, kWh | Potrošnja, kWh | Agregat (DC), kWh | Agregat, h | Gorivo, l |
 |---|---|---|---|---|---|
-| jan | 646 | 893 | 327 | 35,8 | 118 |
-| feb | 655 | 812 | 274 | 30,1 | 99 |
-| mar | 885 | 892 | 192 | 21,0 | 69 |
-| apr | 938 | 865 | 116 | 12,7 | 42 |
-| maj | 987 | 899 | 85 | 9,3 | 31 |
-| jun | 1 022 | 887 | 36 | 4,0 | 13 |
-| jul | 1 122 | 933 | 12 | 1,3 | 4 |
-| aug | 1 116 | 932 | 17 | 1,9 | 6 |
-| sep | 986 | 878 | 56 | 6,2 | 20 |
-| okt | 884 | 896 | 157 | 17,3 | 57 |
-| nov | 606 | 864 | 317 | 34,7 | 115 |
-| dec | 601 | 893 | 358 | 39,3 | 130 |
-| **godina** | **10 448** | **10 644** | **1 949** | **214** | **706** |
+| jan | 646 | 911 | 335 | 36,8 | 122 |
+| feb | 655 | 829 | 287 | 31,4 | 104 |
+| mar | 885 | 910 | 210 | 23,0 | 76 |
+| apr | 938 | 883 | 127 | 14,0 | 46 |
+| maj | 987 | 918 | 89 | 9,8 | 32 |
+| jun | 1 022 | 905 | 40 | 4,4 | 15 |
+| jul | 1 122 | 952 | 13 | 1,5 | 5 |
+| aug | 1 116 | 951 | 21 | 2,3 | 8 |
+| sep | 986 | 896 | 65 | 7,1 | 23 |
+| okt | 884 | 915 | 165 | 18,1 | 60 |
+| nov | 606 | 882 | 335 | 36,7 | 121 |
+| dec | 601 | 911 | 372 | 40,8 | 135 |
+| **godina** | **10 448** | **10 864** | **2 061** | **226** | **746** |
 
 **Ključni pokazatelji (nagib 45°, bez stabla).**
 
 | Pokazatelj | Vrijednost |
 |---|---|
-| Solarni udio u potrošnji | 81,7 % |
-| **Rad agregata** | **214 h/god** prosjek · P90 256 h · najgora godina 300 h (2010) |
-| Startova agregata | 76/god prosjek, najviše 106 |
-| **Gorivo** | **706 l/god** prosjek · P90 847 l · najviše 992 l |
-| Dopuna spremnika 500 l (pri 20 %) | 1,8 puta godišnje, najkraći razmak 84 dana |
+| Solarni udio u potrošnji | 81,0 % |
+| **Rad agregata** | **226 h/god** prosjek · P90 271 h · najgora godina 307 h (2010) |
+| Startova agregata | 80/god prosjek, najviše 108 |
+| **Gorivo** | **746 l/god** prosjek · P90 895 l · najviše 1 013 l |
+| Dopuna spremnika 500 l (pri 20 %) | 1,8 puta godišnje, najkraći razmak 71 dan |
 | Najduže razdoblje bez rada agregata | 134 dana |
-| Ekvivalentnih ciklusa baterije | 136/god |
+| Ekvivalentnih ciklusa baterije | 139/god |
 | Rad ispod 30 % opterećenja | 0 h |
 | Nepokrivena potrošnja | 0 kWh u 19 godina |
 
 **Stablo.** Zasjenjenje prema tri procjene položaja i visine (povoljna / srednja /
 nepovoljna), uz propuštanje pola direktnog zračenja kroz golu krošnju zimi:
-decembar −2,7 / −7,2 / −10,4 %, rad agregata 218 / 224 / 234 h/god, gorivo 721 / 741 /
-775 l/god (`review/pvsim/photo/zasjenjenje.json`).
+decembar −2,7 / −7,2 / −10,4 %, rad agregata 231 / 239 / 249 h/god, gorivo 764 / 788 /
+822 l/god (`review/pvsim/photo/zasjenjenje.json`).
 
 **Osjetljivost na postavke SMU i pretpostavke.**
 
 | Slučaj | DEA h/god prosjek | P90 | Najgora | Gorivo l/god | Startova/god |
 |---|---|---|---|---|---|
-| **Osnovni (Prilog I §4.6): stop SoC 60 %, punjenje 0,5 C** | **214** | **256** | **300** | **706** | **76** |
-| SMU bez parametriranja: stop SoC 90 %, 0,25 C | 242 | 290 | 319 | 798 | 53 |
-| Stop SoC 100 % | 254 | 301 | 330 | 836 | 50 |
-| Stop SoC 40 % | 201 | 248 | 282 | 664 | 125 |
-| Punjenje 0,15 C | 240 | 285 | 329 | 729 | 76 |
-| Start pri DOD 70 % | 225 | 268 | 303 | 743 | 117 |
-| Baterija 28,8 kWh (6 × 100 Ah, stara ponuda Huawei) | 264 | 307 | 347 | 871 | 153 |
+| **Osnovni (Prilog I §4.6): stop SoC 60 %, punjenje 0,5 C** | **226** | **271** | **307** | **746** | **80** |
+| SMU bez parametriranja: stop SoC 90 %, 0,25 C | 253 | 298 | 330 | 834 | 55 |
+| Stop SoC 100 % | 267 | 316 | 346 | 879 | 52 |
+| Stop SoC 40 % | 212 | 258 | 295 | 700 | 131 |
+| Punjenje 0,15 C | 252 | 299 | 344 | 769 | 80 |
+| Start pri DOD 70 % | 237 | 281 | 320 | 781 | 123 |
+| Baterija 28,8 kWh (6 × 100 Ah, stara ponuda Huawei) | 277 | 323 | 354 | 915 | 160 |
 | Potrošnja 1180 W stalno | 203 | 246 | 290 | 670 | 72 |
 | Potrošnja 1330 W stalno | 280 | 330 | 368 | 924 | 98 |
 
-**Zaključak.** Uz baterije od 48,6 kWh prosječan rad agregata (≈210 h/god) je ispod
-250 h/god iz RFI, a u 9 od 10 godina do ≈260 h (najviše ≈300 h); spremnik od 500 l ne
-traje godinu dana (≈710 l/god). TD navodi simulirane vrijednosti — **≈210 h/god i
-≈710 l/god**, dopuna dva puta godišnje — uz obavezno parametriranje SMU iz Priloga I
-§4.6.
+Trajni potrošači na −48 V (D.9, 25 W) dodaju ≈12 h rada agregata godišnje.
+
+**Zaključak.** Uz baterije od 48,6 kWh i trajne potrošače na −48 V prosječan rad agregata
+(≈230 h/god) je ispod 250 h/god iz RFI, ali ne i u lošijim godinama (u 9 od 10 godina
+do ≈270 h, najviše ≈310 h); spremnik od 500 l ne traje godinu dana (≈750 l/god). TD
+navodi simulirane vrijednosti — **≈230 h/god i ≈750 l/god**, dopuna dva puta godišnje —
+uz obavezno parametriranje SMU iz Priloga I §4.6.
 
 ---
 
@@ -222,9 +225,9 @@ horizontalna projekcija pri 45° **3236 mm**, ukupno 12 modula = 7,02 kWp.
 
 | | |
 |---|---|
-| Donja / gornja ivica | **+0,50 m / +3,74 m** |
-| Kota ograde | **+1,80 m** (ovjereni `04_Ograda.dwg`) |
-| **Nadvišenje ograde** | **1,94 m** |
+| Donja / gornja ivica | **+0,50 m / +3,74 m** od terena |
+| Kota ograde | **+1,80 m** od ploče (ovjereni `04_Ograda.dwg`); teren oko ploče je na **−0,20 m**, pa je ograda 2,00 m iznad terena |
+| **Nadvišenje ograde** | **1,74 m** (3,74 − 2,00) |
 | Raspoloživi pojas južno od ploče | **3575 mm** (zakup 12,00 × 12,50 m, ploča 5,40 m u sredini) |
 | Dubina polja / dužina trake | 3236 / 3300 mm → **rezerva ≈0,27 m** |
 | Širina polja (3 nosača, razmak 0,40 m) | 7,7 m od raspoloživih 12,0 m |
@@ -299,7 +302,11 @@ Kao Sjednica: **5,8 kW** zračene toplote, odnosi je struja zraka hladnjaka.
 
 ### C.3 Dopunska ventilacija
 
-Aksijalni ventilator **1200 m³/h, Ø315 mm**, na **ZAPADNOM** zidu gore, termostatski.
+Aksijalni **izvlačni** ventilator **1200 m³/h, Ø315 mm, 48 V DC (EC)**, napajan sa DC
+razvoda (D.9), na **ZAPADNOM** zidu gore,
+sjeverno od usisa. Radi po termostatu dok agregat ne radi (i za hlađenje nakon
+zaustavljanja); kontroler DEA ga isključuje dok agregat radi, jer tada prostor ventilira
+struja zraka hladnjaka. Kao izlazni otvor ne ulazi u uslov razmaka ≥3 m od izduva (C.4).
 
 ### C.4 Izduvni sistem
 
@@ -307,7 +314,7 @@ Aksijalni ventilator **1200 m³/h, Ø315 mm**, na **ZAPADNOM** zidu gore, termos
 |---|---|
 | Protok / temperatura | 192 m³/h pri 413 °C |
 | Prečnik | **NO 50**, brzina 27,2 m/s (< 30 m/s) |
-| Trasa | elastični umetak → prigušivač ≈1 m, zatim ≈3 m **horizontalno kroz ISTOČNI zid** na ≈+2,30 m |
+| Trasa | elastični umetak → prigušivač ≈1 m, zatim ≈3 m **horizontalno kroz ISTOČNI zid** na ≈+2,30 m; završetak ≥0,40 m od zida (H-04: 3,2 m do sredine usisne žaluzine) |
 | Protutlak | ≈1,6 kPa uz dozvoljenih 10,2 kPa |
 | Izolacija i opšav | 4 m × 0,52 m²/m + prigušivač ≈ **2,5 m²** |
 
@@ -324,8 +331,8 @@ Prime potrošnja P18-6 (2,6 / 3,4 / 4,4 l/h pri 50 / 75 / 100 %); pri ograničen
 
 | | |
 |---|---|
-| Očekivani godišnji rad (A.6) | **≈210 h/god**; u 9 od 10 godina do ≈260 h, najviše ≈300 h |
-| Očekivana godišnja potrošnja (A.6) | **≈710 l/god**; najviše ≈990 l |
+| Očekivani godišnji rad (A.6) | **≈230 h/god**; u 9 od 10 godina do ≈270 h, najviše ≈310 h |
+| Očekivana godišnja potrošnja (A.6) | **≈750 l/god**; najviše ≈1 010 l |
 | Spremnik 500 l, dopuna pri 20 % | ≈400 l, ≈120 h rada — **dva puta godišnje** |
 | **Prvo punjenje** | **250 l** |
 
@@ -335,16 +342,22 @@ Ukrsno strujanje **ZAPAD → ISTOK**:
 
 | Element | Zid | Napomena |
 |---|---|---|
-| Usis 500 × 700 | **ZAPAD** | donja ivica +0,30 m |
+| Usis 500 × 700 | **ZAPAD** | donja ivica +0,30 m, na osi agregata |
 | Plenum + izlaz ≥0,36 m² | **ISTOK**, južni kraj | kroz postojeće otvore Stulz; višak otvora zatvoriti panelom 60 mm |
-| Izduv NO 50 | **ISTOK** | horizontalno, ispod platforme stuba |
-| Ventilator Ø315 | **ZAPAD**, gore | |
-| Oduška spremnika | prema elaboratu zaštite od požara | ≥3 m od izduva i usisa |
-| GRO | **SJEVER**, zapadno od vrata | |
+| Izduv NO 50 | **ISTOK** | horizontalno na ≈+2,30 m, ispod platforme stuba; završetak ≥0,40 m od zida |
+| Ventilator Ø315, izvlačni | **ZAPAD**, gore | sjeverno od usisa; izlazni otvor (C.3) |
+| Agregat | uz **JUG** | duža osa istok–zapad, hladnjak na istoku; servis sa sjeverne strane (do ≈2,0 m), južna strana ≈0,23 m od zida |
+| Spremnik 500 l | **ISTOK**, sjeverno od agregata | ne u jugoistočnom uglu (plenum); izolovani izduv prolazi između spremnika i agregata, ≥0,30 m od spremnika |
+| Oduška spremnika | kroz **SJEVER** istočno od vrata, stojeća cijev uz sjevernu ogradu, završetak +2,80 m | H-04: 3,0 m od završetka izduva, 4,6 m od usisa, 1,5 m od ormara Huawei; principijelno — konačno prema elaboratu zaštite od požara |
+| GRO | **SJEVER**, zapadno od vrata | raspoloživi zid 0,595 m → širina GRO ≤0,50 m |
 | Ulazna vrata | **SJEVER** | 1,00 × 2,15 m |
+| Huawei ICC360-HA1-C1 | vani, **SJEVER** | vanjski ormar na ploči između sjeverozapadne noge stuba i krila vrata, kao na Sjednici; napaja se iz GRO kroz sjeverni zid |
 
-Hladnjak agregata je uz istočni zid, na mjestu otvora Stulz; raspored u kontejneru je na
-crtežu H-04 i principijelan je — Ponuđač ga potvrđuje na licu mjesta.
+Na crtežu H-04 razmak od završetka izduva do sredine usisne žaluzine je **3,2 m** (≥3 m);
+izvlačni ventilator je izlazni otvor i ne ulazi u taj uslov. Hladnjak agregata je uz
+istočni zid, na mjestu otvora Stulz. Položaj otvora Stulz je procjena sa fotografije, pa
+je raspored u kontejneru na crtežu H-04 principijelan — Ponuđač ga potvrđuje na licu
+mjesta.
 
 ### C.7 Demontaža klima-uređaja Stulz
 
@@ -373,7 +386,8 @@ Polje je neposredno južno od ploče; trasa do ormara ≈20 m u jednom smjeru:
 
 ### D.3 Potrošnja
 
-1180 W nazivno / 1330 W maksimalno — **privremeno**, do izmjerene potrošnje.
+1180 W nazivno / 1330 W maksimalno — **privremeno**, do izmjerene potrošnje; uz to 45 W
+pomoćne potrošnje na −48 V, sa trajnim potrošačima (D.9).
 
 ### D.4 Struja kvara agregata
 
@@ -393,6 +407,7 @@ Derativana prime snaga je 12,3 kW, neograničeni ispravljački sistem vuče ≈1
 | Postojeći uzemljivač | Fe/Zn 25 × 4 mm: prsten u temeljima stopa stuba i prsten na dubini 0,8 m (ovjereni `3.6.9 Plan uzemljivača`) |
 | Vodič do nosača | Cu 50 mm², bimetalni spojevi Cu/Fe-Zn |
 | Ciljani otpor | ≤10 Ω |
+| Ukrštanja sa temeljnim trakama | oba postojeća prstena (kvadrati 7,50 m i 10,00 m oko ploče, 1,05 m i 2,30 m od ivice ploče, dubina 0,8 m) presijecaju temeljne trake (dubina 0,9 m): lociranje, otkopavanje i premještanje ispod ili oko trake ili premoštavanje, bez trajnog prekida prstena; otpor se mjeri prije i poslije radova — posebna stavka LOT 1 |
 | FN polje i stub | rešetkasti stub h = 32 m; metoda kotrljajuće sfere, LPL I (r = 20 m): na visini gornje ivice (3,74 m) zaštićeni radijus je ≈8,4 m, a polje je ≈2–5 m od najbliže noge stuba → **unutar zone zaštite, dodatne hvataljke nisu potrebne** |
 
 ### D.7 Prenaponska zaštita
@@ -404,10 +419,31 @@ vodovi prema **EN 61643-21** (stub sa LPS).
 
 Kontejner je prazan — nema GRO ni postojećih krugova. Novi GRO (TN-S, jedini spoj N i PE
 u GRO): dovod agregata 18 kVA preko sklopke 1-0-2, glavni RCD 63 A/300 mA tip S, SPD
-tip 1 + 2, odvodi: AC ulaz Huawei ICC360-HA1-C1 (ispravljači, ograničenje 9,5 kW),
-rasvjeta i utičnice u kontejneru (RCBO 16 A/30 mA), svjetiljka za obilježavanje stuba,
-pomoćni potrošači agregata, ventilator prostora, blokada ventilacije pri gašenju.
-**Nema kruga za klima-uređaj** (demontira se).
+tip 1 + 2, odvodi — pod naponom samo dok agregat radi: AC ulaz Huawei ICC360-HA1-C1
+(ispravljači, ograničenje 9,5 kW), rasvjeta i utičnice u kontejneru (RCBO 16 A/30 mA),
+pomoćni potrošači agregata, blokada ventilacije pri gašenju.
+**Nema kruga za klima-uređaj** (demontira se). GRO je na sjevernom zidu, zapadno od
+vrata; raspoloživi zid je 0,595 m, pa je **širina GRO ≤0,50 m** (npr. 500 × 250 × 800 mm).
+
+### D.9 Trajni potrošači na −48 V DC
+
+Agregat je jedini izvor izmjeničnog napona i ≈97 % godine ne radi. Potrošači koji moraju
+raditi stalno napajaju se zato sa −48 V DC iz ormara ICC360, preko novog DC razvoda
+(odluka Naručioca 11.09.2026, obje lokacije):
+
+| Potrošač | Napajanje | Prosječno |
+|---|---|---|
+| Svjetiljka za obilježavanje stuba, LED | 48 V DC, foto-senzor (≈12 h noću) | ≈8 W |
+| Vatrodojavna centrala | DC/DC | ≈4 W |
+| Punjač akumulatora za start agregata | DC/DC | ≈3 W |
+| Ventilator prostora 48 V DC (EC) | termostat, ljeti | ≈2 W |
+| Gubici DC/DC | | ≈3 W |
+| **Ukupno** | | **≈20 W → usvojeno ≤25 W** |
+
+Jedna svjetiljka u kontejneru je za 48 V DC, pa je svjetlo dostupno i kad agregat ne
+radi; radi samo pri obilasku i ne ulazi u trajnu potrošnju. Energetski bilans (A.6)
+računa sa 45 W pomoćne potrošnje na −48 V: 20 W za SMU, BMS i ispravljače u mirovanju i
+25 W za trajne potrošače.
 
 ---
 
@@ -415,15 +451,16 @@ pomoćni potrošači agregata, ventilator prostora, blokada ventilacije pri gaš
 
 | Veličina | Određuje je | Vrijednost |
 |---|---|---|
-| Nagib 45° | godišnji rad agregata (A.5, A.6) | 214 h pri 45° prema 227 h pri 60° |
+| Nagib 45° | godišnji rad agregata (A.5, A.6) | 226 h pri 45° prema 241 h pri 60° |
 | Custom nosač | qp lokacije vs. kataloške deklaracije (B.1, B.2) | 0,69–0,96 > 0,52 kN/m² |
 | Usvojeni qp 1,20 kN/m² | jedna konstrukcija za obje lokacije (B.1) | moment 42,6 kNm |
 | Polje u južnom pojasu | zakup 12,00 × 12,50 m (B.4) | 3236 mm od raspoloživih 3575 |
 | Izlaz zraka kroz otvore Stulz | odluka Naručioca, protok 2206 m³/h (C.1) | ≥0,36 m² bruto, ≲50 Pa |
 | Horizontalni izduv | platforma stuba +3,0 m iznad krova (C.4) | NO 50, istočni zid |
 | Ograničenje ispravljača 9,5 kW | derating u prime režimu (D.5) | 77 % od 12,3 kW |
-| Baterije 6 × 150 Ah (48,6 kWh) | Odluka, Aneks 2 (A.6) | ≈210 h/god prema ≈260 h sa 28,8 kWh |
-| Parametriranje SMU | osjetljivost simulacije (A.6) | ≈210 h i ≈710 l/god |
+| Baterije 6 × 150 Ah (48,6 kWh) | Odluka, Aneks 2 (A.6) | ≈230 h/god prema ≈280 h sa 28,8 kWh |
+| Parametriranje SMU | osjetljivost simulacije (A.6) | ≈230 h i ≈750 l/god |
+| Trajni potrošači na −48 V DC | agregat je jedini AC izvor; odluka Naručioca (D.9) | ≤25 W, ≈+12 h/god rada DEA |
 
 ---
 

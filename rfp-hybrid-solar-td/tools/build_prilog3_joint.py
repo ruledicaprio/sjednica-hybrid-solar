@@ -256,7 +256,7 @@ def info_pv(doc, base, header, t):
             f"{k['years'][0]}–{k['years'][1]} (pvlib + PVGIS-SARAH3), uz parametriranje SMU iz "
             f"Priloga I, Tačka 4.6: start pri DOD {num(100 * c['dod_start'])} %, zaustavljanje "
             f"pri SoC {num(100 * c['soc_stop'])} %, ograničenje ispravljača 9,5 kW. Bez "
-            f"zasjenjenja stablom JJI–JI; sa stablom rad DEA raste za 4–20 h/god. Metoda, "
+            f"zasjenjenja stablom JJI–JI; sa stablom rad DEA raste za 5–23 h/god. Metoda, "
             f"gubici, osjetljivost i pretpostavke: proračuni lokacije, dio A.6. Vrijednosti su "
             f"informativne. Izvor: review/pvsim/kpis.json (sha256 "
             f"{hashlib.sha256(raw).hexdigest()[:12]}, pvsim commit {d['git_commit']}).")

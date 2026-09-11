@@ -222,7 +222,7 @@ Dimenzionisano prema tehničkom listu proizvođača. Mjerodavno ograničenje je
 | Usisna žaluzina | 500 × 700 mm (v ≈ 3,56 m/s, Δp ≈ 17 Pa) |
 | **Kanal hladnjaka** | prelazni komad od prirubnice hladnjaka do izlazne žaluzine, **razvijena površina ≈1,0 m²**, od pocinčanog lima d = 1 mm |
 | Izlazna žaluzina | 600 × 600 mm (v ≈ 3,46 m/s, Δp ≈ 16 Pa) |
-| Ventilator prostora | 1200 m³/h, Ø315, vođen termostatom i kontrolerom DEA, blokiran sa aktiviranjem gašenja požara |
+| Ventilator prostora | 1200 m³/h, Ø315, **48 V DC (EC)**, napajan sa DC razvoda −48 V (Tačka 4.5); vođen termostatom dok agregat ne radi (i za hlađenje nakon zaustavljanja); kontroler DEA ga isključuje dok agregat radi, jer tada prostor ventilira struja zraka hladnjaka; blokiran sa aktiviranjem gašenja požara |
 | Provjera | Izvođač dostavlja proračun pada pritiska ukupne putanje |
 
 **Raspored otvora** (prema crtežu M-01, Prilog III):
@@ -276,10 +276,25 @@ sredstvom zaštite od indirektnog dodira.
 | SPD, AC strana | **tip 1 + 2** (Iimp ≥12,5 kA) — objekat ima vanjski LPS |
 | SPD, DC strana | tip 2 po stringu (Iimp ≥5 kA, Ucpv ≥425 V), na PVDB i na polju |
 | SPD, signalni vodovi | prema EN 61643-21 (obavezno za stub h = 38 m) |
-| Postojeći strujni krugovi | snimiti stanje i prevezati svih 7 postojećih krugova u novi GRO; signalna rasvjeta antenskog stuba (K7) na zasebnom nadziranom krugu |
+| Postojeći strujni krugovi | snimiti stanje i prevezati postojeće krugove u novi GRO; signalna rasvjeta antenskog stuba (K7) prelazi na DC razvod −48 V |
 | AC kablovi | bezhalogeni, CPR ≥ Cca-s1b,d1,a1 |
 | DC kablovi | H1Z2Z2-K 6 mm²; priključak na iSSU presjekom 4 mm² |
 | Otpor uzemljenja | ≤10 Ω |
+
+**Trajni potrošači — napajanje sa −48 V DC.** Agregat je jedini izvor izmjeničnog napona:
+izvodi GRO (rasvjeta, utičnice, pomoćni potrošači agregata, napajanje ispravljača) su pod
+naponom samo dok agregat radi. Potrošači koji moraju raditi i kad agregat ne radi
+napajaju se sa −48 V DC iz ormara Huawei ICC360-HA1-C1 — sa slobodnog DC izvoda sa
+vlastitim zaštitnim prekidačem — preko novog **DC razvoda −48 V** u kontejneru:
+
+| Potrošač na DC razvodu | Zahtjev |
+|---|---|
+| Svjetiljka za obilježavanje antenskog stuba (K7) | LED za 48 V DC, niskog intenziteta, sa foto-senzorom i nadzorom ispada prema SMU, umjesto postojeće svjetiljke; ili postojeća svjetiljka preko DC/AC pretvarača ≤100 W |
+| Vatrodojavna centrala | preko DC/DC pretvarača na nazivni napon centrale; centrala zadržava vlastite akumulatore prema EN 54-4 |
+| Punjač akumulatora za start agregata | DC/DC 48 V → 12/24 V prema agregatu, sa strujnim ograničenjem i signalizacijom |
+| Ventilator prostora | 48 V DC (EC), Tačka 4.3 |
+| Rasvjeta kontejnera | najmanje jedna LED svjetiljka 48 V DC sa prekidačem uz vrata — svjetlo i kad agregat ne radi |
+| **Ukupna trajna potrošnja** | **≤25 W prosječno** (bez rasvjete kontejnera, koja radi samo pri obilasku); Ponuđač dostavlja proračun potrošnje. Energetski bilans (Tačka 8) računa sa 45 W pomoćne potrošnje na −48 V: 20 W za SMU, BMS i ispravljače u mirovanju i 25 W za trajne potrošače |
 
 ### 4.6 Parametriranje upravljanja i nadzora (DEA + PV + baterije)
 
@@ -293,7 +308,7 @@ sredstvom zaštite od indirektnog dodira.
   iz Tačke 5, stavka 12:
   - start agregata pri dubini pražnjenja baterija **DOD 85 %** (SoC 15 %)
   - zaustavljanje agregata pri **SoC 60 %** — ostatak punjenja preuzima fotonaponsko
-    polje; punjenje baterija agregatom do vrha povećava rad agregata za 12–17 %
+    polje; punjenje baterija agregatom do vrha povećava rad agregata za 11–17 %
   - struja punjenja baterija podešena tako da ne ograničava agregat ispod 9,5 kW: na
     najveću vrijednost koju dozvoljava BMS baterijskih modula (proračun pretpostavlja
     0,5 C), uz pisanu potvrdu proizvođača
@@ -365,24 +380,25 @@ dostavljaju komisiji **tokom primopredaje** nose oznaku **PRIMOPREDAJA**.
 
 Satna simulacija energetskog bilansa na −48 V DC sabirnici za 19 godina (2005–2023):
 ozračenje lokacije iz PVGIS-SARAH3, FN lanac sa gubicima po komponentama (uključujući
-krivulju efikasnosti iSSU S4875G2), baterije 48,6 kWh (6 × 150 Ah) i agregat preko ispravljača
-ograničenih na 9,5 kW, uz parametriranje SMU iz Tačke 4.6. Metoda, provjera prema
+krivulju efikasnosti iSSU S4875G2), baterije 48,6 kWh (6 × 150 Ah), pomoćnu potrošnju od
+45 W sa trajnim potrošačima iz Tačke 4.5 i agregat preko ispravljača ograničenih na
+9,5 kW, uz parametriranje SMU iz Tačke 4.6. Metoda, provjera prema
 PVGIS-u, gubici i osjetljivost na postavke su u Proračunima, dio A.6. **Vrijednosti su
 informativne i ne mijenjaju zahtjeve Tačaka 3 i 4.**
 
 | Pokazatelj | Vrijednost |
 |---|---|
 | FN proizvodnja na DC sabirnici | ≈10 140 kWh/god (1 444 kWh/kWp) |
-| Potrošnja | ≈10 570 kWh/god (1180 W TK + hlađenje ormara i pomoćna potrošnja) |
-| Decembar | FN ≈560 kWh prema potrošnji ≈890 kWh — razliku pokriva agregat |
-| Solarni udio u potrošnji | 79,8 % |
-| **Rad agregata** | **≈230 h/god** u prosjeku; u 9 od 10 godina do ≈290 h; najviše ≈310 h |
-| Startova agregata | ≈80 godišnje, najviše ≈110 |
-| **Potrošnja goriva** | **≈770 l/god**; spremnik od 500 l dopunjava se dva puta godišnje |
+| Potrošnja | ≈10 790 kWh/god (1180 W TK + hlađenje ormara, pomoćna potrošnja i trajni potrošači na −48 V) |
+| Decembar | FN ≈560 kWh prema potrošnji ≈910 kWh — razliku pokriva agregat |
+| Solarni udio u potrošnji | 79,2 % |
+| **Rad agregata** | **≈250 h/god** u prosjeku; u 9 od 10 godina do ≈310 h; najviše ≈330 h |
+| Startova agregata | ≈90 godišnje, najviše ≈120 |
+| **Potrošnja goriva** | **≈820 l/god**; spremnik od 500 l dopunjava se dva puta godišnje |
 | Nepokrivena potrošnja | 0 |
 
 Bez parametriranja iz Tačke 4.6 (zaustavljanje pri SoC 90 %, uobičajena struja
-punjenja) agregat bi radio ≈260 h i trošio ≈870 l goriva godišnje.
+punjenja) agregat bi radio ≈280 h i trošio ≈910 l goriva godišnje.
 
 ![Slika 6 — Mjesečni energetski bilans: FN proizvodnja, agregat i potrošnja (prosjek i raspon 2005–2023)](../TD-OUTPUT/grafika/prilog1/energetski-bilans.png){width=100%}
 

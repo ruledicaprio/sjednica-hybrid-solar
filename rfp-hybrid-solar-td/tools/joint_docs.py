@@ -46,17 +46,17 @@ LOT2_NEW = ("isporuka i instalacija dva agregatska postrojenja 18 kVA (po jedno 
 
 ODLUKA_LIMITS_REV9 = (
     "Satna simulacija energetskog bilansa za 19 godina (pvlib, PVGIS-SARAH3, "
-    "2005–2023) daje očekivani rad agregata od ≈230 h godišnje (u najlošijoj godini "
-    "do ≈310 h), uz potrošnju goriva od ≈770 l godišnje; spremnik od 500 l "
+    "2005–2023) daje očekivani rad agregata od ≈250 h godišnje (u najlošijoj godini "
+    "do ≈330 h), uz potrošnju goriva od ≈820 l godišnje; spremnik od 500 l "
     "dopunjava se u prosjeku dva puta godišnje. Vrijednosti važe uz "
     "parametriranje upravljačke jedinice za minimalan rad agregata, propisano "
     "Prilogom I TD. Agregat radi u režimu trajne (prime) snage prema ISO 8528-1, sa "
     "ulaznom snagom ispravljača ograničenom na 9,5 kW.")
 ODLUKA_LIMITS_JOINT = (
     "Satna simulacija energetskog bilansa za 19 godina (pvlib, PVGIS-SARAH3, "
-    "2005–2023) daje očekivani rad agregata od ≈230 h godišnje na lokaciji Sjednica "
-    "i ≈210 h na lokaciji Hamzići (u najlošijim godinama do ≈310 h), uz potrošnju "
-    "goriva od ≈770 l, odnosno ≈710 l godišnje; spremnik od 500 l dopunjava se u "
+    "2005–2023) daje očekivani rad agregata od ≈250 h godišnje na lokaciji Sjednica "
+    "i ≈230 h na lokaciji Hamzići (u najlošijim godinama do ≈330 h), uz potrošnju "
+    "goriva od ≈820 l, odnosno ≈750 l godišnje; spremnik od 500 l dopunjava se u "
     "prosjeku dva puta godišnje. Vrijednosti važe uz parametriranje "
     "upravljačke jedinice za minimalan rad agregata, propisano Prilogom I TD. "
     "Agregati rade u režimu trajne (prime) snage prema ISO 8528-1, sa ulaznom "

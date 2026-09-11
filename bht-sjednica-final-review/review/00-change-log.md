@@ -1122,10 +1122,10 @@ oznakom „NISU MJERODAVNE". Od Rev 9 izvor je `pvsim` (pvlib + PVGIS-SARAH3, sa
 ### Nalaz: granice iz Odluke nisu ostvarive
 
 Odluka (Aneks 2) je navodila najviše 250 h/god rada agregata i spremnik od 500 l koji
-traje najmanje godinu. Uz baterije od 48,6 kWh simulacija daje **≈230 h i ≈770 l
-godišnje** uz postavke SMU iz Priloga I, a bez njih ≈260 h i ≈870 l: prosjek je ispod
-250 h, ali lošije godine nisu (u 9 od 10 godina do ≈290 h, najviše ≈310 h), a 500 l traje
-oko pola godine. Naručilac je 11.09.2026. odlučio da se tvrdnje zamijene simuliranim
+traje najmanje godinu. Uz baterije od 48,6 kWh i trajne potrošače na −48 V simulacija
+daje **≈250 h i ≈820 l godišnje** uz postavke SMU iz Priloga I, a bez njih ≈280 h i
+≈910 l: prosjek je na granici od 250 h, a lošije godine iznad nje (u 9 od 10 godina do
+≈310 h, najviše ≈330 h), a 500 l traje oko pola godine. Naručilac je 11.09.2026. odlučio da se tvrdnje zamijene simuliranim
 vrijednostima, uz obavezno parametriranje SMU (`review/09-odluka-nosaci-nagib.md`).
 
 ### Baterije: 6 × 150 Ah (48,6 kWh)
@@ -1135,11 +1135,23 @@ Odluka navodi „6x150 Ah (48,6 kWh)", a Huawei ponuda na dosjeu 6 × ESM-48100A
 28,8 kWh (≈280 h i ≈940 l godišnje). Naručilac je 11.09.2026. potvrdio 6 × 150 Ah:
 svi dokumenti sada računaju sa 48,6 kWh, a 28,8 kWh ostaje u tabeli osjetljivosti.
 
+### Trajni potrošači na −48 V DC
+
+Lokacija nema mrežu, pa je agregat jedini izvor izmjeničnog napona, a ≈97 % godine ne
+radi. Izvodi GRO su zato pod naponom samo dok agregat radi — i signalna rasvjeta stuba
+(K7), koju je Rev 8 prevezivao u novi GRO, bila bi većinom bez napajanja. Naručilac je
+11.09.2026. odlučio da se trajni potrošači napajaju sa −48 V DC iz ormara ICC360, preko
+novog DC razvoda: LED svjetiljka stuba za 48 V DC, vatrodojavna centrala i punjač
+akumulatora za start agregata preko DC/DC pretvarača, ventilator prostora 48 V DC i jedna
+svjetiljka u kontejneru. Prilog I §4.5 ih ograničava na 25 W prosječno; simulacija računa
+sa 45 W pomoćne potrošnje umjesto 20 W, što dodaje ≈13 h rada agregata godišnje. Prilog II
+dobija nove stavke 5.16–5.18 (`tools/fix_boq_dc_aux.py`).
+
 ### Izmjene
 
 | Fajl | Izmjena |
 |---|---|
-| `2.1 Prijedlog Odluke …docx` | Aneks 2: odlomak o 250 h i „godinu između dopuna" zamijenjen odobrenim tekstom (≈230 h, ≈770 l, dvije dopune godišnje). LOT 2: „stand-by … P22-6" → prime režim, ograničenje 9,5 kW, P18-6. LOT 1: „2 (dva) nosača" → „3 (tri)". OOXML izmjena, `tools/fix_odluka_rev9.py` |
+| `2.1 Prijedlog Odluke …docx` | Aneks 2: odlomak o 250 h i „godinu između dopuna" zamijenjen odobrenim tekstom (≈250 h, ≈820 l, dvije dopune godišnje). LOT 2: „stand-by … P22-6" → prime režim, ograničenje 9,5 kW, P18-6. LOT 1: „2 (dva) nosača" → „3 (tri)". OOXML izmjena, `tools/fix_odluka_rev9.py` |
 | `3. Prilog I …docx` | §4.6: obavezno parametriranje SMU (start DOD 85 %, stop SoC 60 %, struja punjenja do granice BMS-a, najkraći rad 1 h); dokaz 12 proširen; novi §8 „Očekivani energetski bilans (informativno)" sa dvije slike — ukupno 7 slika |
 | `3.2 Prilog III …pdf` | naslovna strana dobila logo (od Rev 8 je izostajao); opšti podaci: „bifacijalni" → monofacijalni iPV sa optimizatorima, „Maks. rad DEA 250 h/god" → očekivani rad iz simulacije; INFO-02 nanovo sastavljena iz simulacije, sa tekstom koji provjera čita |
 | `proracuni_BS_Sjednica_Bileca.pdf / .md` | PDF sada ima tekstualni sloj (ranije slike iz jsPDF-a, nevidljive za provjeru); `.md` je bio izvor Priloga I pod pogrešnim imenom — zamijenjen izvorom proračuna. `tools/build_proracuni.py` |
@@ -1149,7 +1161,7 @@ svi dokumenti sada računaju sa 48,6 kWh, a 28,8 kWh ostaje u tabeli osjetljivos
 ### Nosači i nagib ostaju
 
 Sjednica ostaje 3 × 4 pri 45°. Nagib 60° daje više u decembru (617 prema 560 kWh), ali
-agregat radi više (248 prema 234 h/god), a moment prevrtanja raste za 44–72 %. Crteži,
+agregat radi više (263 prema 247 h/god), a moment prevrtanja raste za 44–72 %. Crteži,
 predmjer i Prilog I §3 se ne mijenjaju.
 
 ### Provjere
@@ -1162,7 +1174,7 @@ predmjer i Prilog I §3 se ne mijenjaju.
   postojećeg priloga, pa projekat lokacije (232 MB) nije potreban.
 - `build_proracuni.py`: 11 stranica sa tekstom.
 - `check_consistency.py`: čita 14 dokumenata, među njima prvi put i proračune; nova
-  pravila za DOD 85 % · SoC 60 % · ≈230 h · ≈770 l i zabrane za staru procjenu
+  pravila za DOD 85 % · SoC 60 % · ≈250 h · ≈820 l i zabrane za staru procjenu
   prinosa, „bifacijal", 250 h kao osnovu, „godinu između dopuna", P22-6 i „2 (dva)
   nosača". Rezultat: **2 greške, obje su procijenjene vrijednosti (LOT 2 i ukupno)
   koje Naručilac tek dostavlja.**

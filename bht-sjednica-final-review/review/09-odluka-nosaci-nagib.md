@@ -22,6 +22,7 @@ primjenjivo") po lokaciji.
 | Granice rada agregata (Odluka, Aneks 2) | tvrdnje „≤250 h/god" i „500 l najmanje godinu dana" **zamjenjuju se simuliranim vrijednostima**, uz zahtjev za parametriranje SMU za minimalan rad DEA; tačan tekst Naručilac odobrava prije izmjene |
 | Stablo JJI–JI kod Hamzića | **ostaje**; TD bilježi zasjenjenje i traži od Ponuđača da polje pozicionira tako da ga umanji |
 | Baterije | **6 × 150 Ah = 48,6 kWh** na obje lokacije, kako navodi Odluka (Aneks 2); Huawei ponuda na dosjeu (6 × ESM-48100A6, 28,8 kWh, uz module od 540 W) je zastarjela i ostaje samo kao slučaj osjetljivosti |
+| Trajni potrošači (obje lokacije) | na **−48 V DC** iz ormara ICC360, preko novog DC razvoda: svjetiljka za obilježavanje stuba, vatrodojava, punjač akumulatora za start agregata, ventilator prostora i jedna svjetiljka u kontejneru — agregat je jedini izvor izmjeničnog napona i ≈97 % godine ne radi. Prilog I ih ograničava na 25 W prosječno; simulacija računa sa 45 W pomoćne potrošnje umjesto 20 W (≈+13 h/god rada DEA na Sjednici, ≈+12 h na Hamzićima) |
 
 ## 2. Zašto 45°, a ne 60°
 
@@ -31,8 +32,8 @@ primjenjivo") po lokaciji.
 |---|---|---|---|---|
 | FN na DC sabirnici, kWh/god | 10 137 | 9 651 | 10 448 | 9 887 |
 | Decembar FN / potrošnja, kWh | 560 / 893 | 617 / 893 | 601 / 893 | 644 / 893 |
-| DEA h/god prosjek / P90 (48,6 kWh, postavke SMU iz Priloga I) | 234 / 293 | 248 / 309 | 214 / 256 | 227 / 274 |
-| Gorivo, l/god | 773 | 819 | 706 | 749 |
+| DEA h/god prosjek / P90 (48,6 kWh, trajni potrošači na −48 V, postavke SMU iz Priloga I) | 247 / 307 | 263 / 325 | 226 / 271 | 241 / 291 |
+| Gorivo, l/god | 815 | 868 | 746 | 797 |
 
 Baterija od 48,6 kWh pokriva ≈1,5 dan potrošnje: agregat pokriva nizove oblačnih dana u
 proljeće i jesen, ne samo decembar. Tu 60° gubi više nego što dobije u decembru.
@@ -51,23 +52,24 @@ Konstrukcija ide istim smjerom (qp 1,20 kN/m², `python -m pvsim stands`):
 
 Odluka, Aneks 2 (Obrazloženje) navodi: maksimalno dozvoljeno godišnje vrijeme rada DEA
 250 h (standby prema ISO 8528-3) i da spremnik od 500 l „treba obezbjediti autonomiju od
-najmanje godinu između dopuna goriva". Uz baterije od 48,6 kWh (odluka 11.09.2026.)
-**prosjek** rada agregata je ispod 250 h na obje lokacije, ali **lošije godine nisu**, a
-spremnik od 500 l **ne traje godinu dana** ni na jednoj lokaciji:
+najmanje godinu između dopuna goriva". Uz baterije od 48,6 kWh i trajne potrošače na
+−48 V (odluke 11.09.2026.) **prosjek** rada agregata je na Sjednici tik ispod 250 h, a na
+Hamzićima ispod, ali **lošije godine nisu**, a spremnik od 500 l **ne traje godinu dana**
+ni na jednoj lokaciji:
 
 | 45° | DEA h/god prosjek / P90 / najgora | Gorivo l/god | 500 l traje | Startova/god |
 |---|---|---|---|---|
-| Sjednica, 48,6 kWh, **SMU iz Priloga I (stop SoC 60 %)** | 234 / 293 / 313 | 773 | 0,65 god | 83 |
-| Sjednica, 48,6 kWh, SMU bez parametriranja (stop SoC 90 %) | 263 / 312 / 349 | 867 | 0,58 god | 57 |
-| Sjednica, 28,8 kWh (stara ponuda), SMU iz Priloga I | 284 / 345 / 359 | 938 | 0,53 god | 165 |
-| Hamzići, 48,6 kWh, **SMU iz Priloga I** | 214 / 256 / 300 | 706 | 0,71 god | 76 |
-| Hamzići, 48,6 kWh, SMU bez parametriranja | 242 / 290 / 319 | 798 | 0,63 god | 53 |
-| Hamzići, 28,8 kWh (stara ponuda), SMU iz Priloga I | 264 / 307 / 347 | 871 | 0,57 god | 153 |
+| Sjednica, 48,6 kWh, **SMU iz Priloga I (stop SoC 60 %)** | 247 / 307 / 327 | 815 | 0,61 god | 88 |
+| Sjednica, 48,6 kWh, SMU bez parametriranja (stop SoC 90 %) | 275 / 332 / 360 | 909 | 0,55 god | 60 |
+| Sjednica, 28,8 kWh (stara ponuda), SMU iz Priloga I | 297 / 361 / 376 | 981 | 0,51 god | 172 |
+| Hamzići, 48,6 kWh, **SMU iz Priloga I** | 226 / 271 / 307 | 746 | 0,67 god | 80 |
+| Hamzići, 48,6 kWh, SMU bez parametriranja | 253 / 298 / 330 | 834 | 0,60 god | 55 |
+| Hamzići, 28,8 kWh (stara ponuda), SMU iz Priloga I | 277 / 323 / 354 | 915 | 0,55 god | 160 |
 
 Već je i sam dosadašnji 07-proračuni C.5 davao ≈925 l/god pri 250 h — dakle 500 l nikad
-nije bilo godišnja zaliha. Zaustavljanje pri SoC 60 % daje ≈11 % manje sati i goriva od
-zaustavljanja pri 90 %, uz ≈0,2 starta dnevno; 40 % daje još ≈5 % manje, ali udvostručuje
-broj startova. Pri 48,6 kWh struja punjenja od 0,25 C više ne ograničava agregat;
+nije bilo godišnja zaliha. Zaustavljanje pri SoC 60 % daje ≈10 % manje sati i goriva od
+zaustavljanja pri 90 %, uz ≈0,25 starta dnevno; 40 % daje još ≈5 % manje, ali povećava
+broj startova za ≈60 %. Pri 48,6 kWh struja punjenja od 0,25 C više ne ograničava agregat;
 najveću struju punjenja potvrđuje Ponuđač uz potvrdu proizvođača baterija.
 
 ## 4. Stablo kod Hamzića
@@ -79,8 +81,8 @@ Procjena iz fotografija 08.09.2026 (bez geodetskog snimka): listopadno stablo 7�
 
 | 45° | Decembar FN | DEA h/god | Gorivo l/god |
 |---|---|---|---|
-| bez stabla | 601 kWh | 214 | 706 |
-| stablo, povoljna / srednja / nepovoljna procjena | −2,7 / −7,2 / −10,4 % | 218 / 224 / 234 | 721 / 741 / 775 |
+| bez stabla | 601 kWh | 226 | 746 |
+| stablo, povoljna / srednja / nepovoljna procjena | −2,7 / −7,2 / −10,4 % | 231 / 239 / 249 | 764 / 788 / 822 |
 
 Uticaj je mali prema nalazu iz tačke 3, pa stablo ostaje. Detalji:
 `hamzici-hybrid-solar/review/pvsim/photo/zasjenjenje.json`.

@@ -74,5 +74,7 @@ def test_fuel_curve_matches_datasheet_points():
 
 def test_cooling_ramp():
     s = config.load("sjednica")
-    kw = dispatch.load_kw(np.array([0.0, 27.5, 40.0]), s)
-    assert kw == pytest.approx([1.200, 1.275, 1.350])
+    L = s["load"]
+    base, ramp = (L["base_w"] + L["aux_w"]) / 1000, L["cooling_w_max"] / 1000
+    kw = dispatch.load_kw(np.array([0.0, 27.5, 40.0]), s)     # below, mid, above the ramp
+    assert kw == pytest.approx([base, base + ramp / 2, base + ramp])

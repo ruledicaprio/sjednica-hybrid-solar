@@ -167,13 +167,17 @@ po traci. Traka manje zapremine tu provjeru ne zatvara vlastitom težinom.
 - DC kablovi na razmaku ≥0,5 m od odvoda gromobranske instalacije
 - FN polja su na obje lokacije unutar zone zaštite antenskog stuba (metoda kotrljajuće
   sfere, LPL I) — dodatne hvataljke nisu potrebne
+- **Hamzići:** temeljne trake presijecaju dva postojeća prstena uzemljivača Fe/Zn 25 × 4 mm
+  na dubini 0,8 m (1,05 m i 2,30 m od ivice ploče, ovjereni `3.6.9 Plan uzemljivača`).
+  Ponuđač ih locira i otkopava, pa ih premješta ispod ili oko trake ili premošćuje istim
+  materijalom — prsten se ne prekida trajno; otpor uzemljenja mjeri prije i poslije radova
 
 ### 3.7 Posebno po lokaciji
 
 | Parametar | BS Sjednica | BS Hamzići |
 |---|---|---|
-| Kota ograde | h = 2,10 m (ovjereni `04 Ograda`) | h = 1,80 m (ovjereni `04_Ograda`) |
-| Nadvišenje ograde | 1,64 m | 1,94 m |
+| Kota ograde | h = 2,10 m (ovjereni `04 Ograda`) | h = 1,80 m od ploče (ovjereni `04_Ograda`); teren oko ploče je na −0,20 m, pa je ograda 2,00 m iznad terena |
+| Nadvišenje ograde | 1,64 m | 1,74 m |
 | Raspoloživi prostor | južno od ograde, unutar zakupljene parcele 16,00 × 9,40 m | pojas južno od ploče dubine 3575 mm i širine 12,00 m, unutar zakupa 12,00 × 12,50 m — dubina polja 3236 mm i trake 3300 mm staju uz ≈0,27 m rezerve |
 | Položaj nosača | Ponuđač utvrđuje odmak od ograde tako da ravan panela nigdje ne dodiruje ogradu, a konstrukcija ostane unutar parcele | nosači okrenuti na jug; ako ivica zakupa odstupa od pravca istok–zapad, nosači se postavljaju stepenasto ili paralelno sa ivicom uz odstupanje azimuta ≤15°; položaj potvrđuje Ponuđač geodetskim snimanjem |
 | Prepreke | nema | listopadno stablo JJI–JI od stuba (≈7–9 m, 15–20 m, izvan zakupa) zasjenjuje polje u zimskim jutrima (≈3–10 % decembarske proizvodnje); stablo se ne uklanja — polje postaviti tako da se zasjenjenje umanji |
@@ -246,7 +250,7 @@ Dimenzionisano prema tehničkom listu proizvođača. Mjerodavno ograničenje je
 | **Toplota u prostor** | **5,8 kW** (uz 15,2 kW odvedenih rashladnom tečnošću i uljem) |
 | Usisna žaluzina | 500 × 700 mm (v ≈ 3,6 m/s, Δp ≈ 18 Pa) |
 | Izlaz toplog zraka | slobodna površina ≥0,18 m² (bruto ≥0,36 m², npr. 600 × 600 mm; v ≈ 3,5 m/s) |
-| Ventilator prostora | 1200 m³/h, Ø315, vođen termostatom i kontrolerom DEA, blokiran sa aktiviranjem gašenja požara |
+| Ventilator prostora | 1200 m³/h, Ø315, **48 V DC (EC)**, napajan sa DC razvoda −48 V (Tačka 4.5); vođen termostatom dok agregat ne radi (i za hlađenje nakon zaustavljanja); kontroler DEA ga isključuje dok agregat radi, jer tada prostor ventilira struja zraka hladnjaka; blokiran sa aktiviranjem gašenja požara |
 | Provjera | Izvođač dostavlja proračun pada pritiska ukupne putanje za svaku lokaciju |
 
 Otvori se izvode kroz **ZIDNE PANELE** kontejnera. Raspored je ukrsni. Nije dozvoljeno
@@ -276,17 +280,21 @@ istočnom zidu (Tačka 4.8). Projekat klimatizacije iz 2017. predviđa dva otvor
 
 | Element | Zid i položaj |
 |---|---|
-| Usisna žaluzina 500 × 700 | **ZAPADNI zid**, novi otvor; donja ivica +0,30 m od poda |
+| Usisna žaluzina 500 × 700 | **ZAPADNI zid**, novi otvor na osi agregata; donja ivica +0,30 m od poda |
 | Plenum hladnjaka + izlaz | **ISTOČNI zid, južni kraj** — kroz postojeće otvore klima-uređaja Stulz, spojene/proširene na **≥0,36 m² bruto**, sa fiksnom žaluzinom; nekorišteni dio otvora zatvara se sendvič panelom 60 mm iste izvedbe kao zid; plenum od pocinčanog lima, razvijena površina ≈1,5 m² |
-| Izduv | **ISTOČNI zid**, horizontalno (Tačka 4.4) |
-| Odušna cijev spremnika | prema elaboratu zaštite od požara, ≥3 m od izduva i usisa |
-| Ventilator prostora Ø315 | **ZAPADNI zid**, gore |
-| GRO | **SJEVERNI zid**, zapadno od ulaznih vrata |
+| Izduv | **ISTOČNI zid**, horizontalno na ≈+2,30 m, ispod platforme stuba; završetak ≥0,40 m od zida (Tačka 4.4) |
+| Agregat | duža osa istok–zapad, uz južni zid, hladnjak na istoku; servisna strana je sjeverna (do ≈2,0 m slobodno), južna strana je ≈0,23 m od zida — Ponuđač potvrđuje da su servisne tačke agregata dostupne sa sjeverne strane i zapadnog kraja |
+| Spremnik 500 l | uz **ISTOČNI zid**, sjeverno od agregata — ne u jugoistočnom uglu, gdje je plenum; izolovani izduv prolazi između spremnika i agregata, ≥0,30 m od spremnika |
+| Odušna cijev spremnika | principijelno kroz **SJEVERNI zid** istočno od ulaznih vrata, pa stojećom cijevi na ploči uz sjevernu ogradu, završetak na +2,80 m; ≥3 m od završetka izduva i od usisne žaluzine, ≥1 m od ormara Huawei; konačno prema elaboratu zaštite od požara |
+| Ventilator prostora Ø315 | **ZAPADNI zid**, gore, sjeverno od usisne žaluzine; **izvlačni** (izbacuje zrak iz prostora) |
+| GRO | **SJEVERNI zid**, zapadno od ulaznih vrata; raspoloživi zid je 0,595 m, pa je **širina GRO ≤0,50 m** |
+| Huawei ICC360-HA1-C1 | vanjski ormar na ploči, sjeverno od kontejnera, između sjeverozapadne noge stuba i krila ulaznih vrata, vratima prema prolazu kapija–vrata; napaja se iz GRO kroz sjeverni zid |
+| Minimalna razdaljina | ≥3 m prostorno između usisne žaluzine, završetka izduva i odušne cijevi (H-04: završetak izduva–usis 3,2 m); izvlačni ventilator je izlazni otvor i ne ulazi u ovaj uslov |
 
 Ukrsno strujanje **usis ZAPAD → agregat → izlaz ISTOK**; hladnjak agregata je uz istočni
 zid, na mjestu otvora klima-uređaja. Topli zrak i izduv se ne usmjeravaju prema FN polju
-(jug) ni prema ulaznim vratima (sjever). Raspored na crtežu H-04 je principijelan —
-Ponuđač ga potvrđuje na licu mjesta.
+(jug) ni prema ulaznim vratima (sjever). Položaj otvora Stulz je procjena sa fotografije,
+pa je raspored na crtežu H-04 principijelan — Ponuđač ga potvrđuje na licu mjesta.
 
 ### 4.4 Izduvni sistem
 
@@ -294,7 +302,7 @@ Ponuđač ga potvrđuje na licu mjesta.
 |---|---|
 | Protok izduvnih gasova | 192 m³/h (3,2 m³/min) pri 413 °C |
 | Maks. dozvoljeni protutlak | 10,2 kPa |
-| **Dijametar** | **NO 50** — pri 192 m³/h i 413 °C brzina je 27,2 m/s (< 30 m/s), protutlak ≈1,9 kPa uz dozvoljenih 10,2 kPa. Prečnik određuje brzina, ne protutlak |
+| **Dijametar** | **NO 50** — pri 192 m³/h i 413 °C brzina je 27,2 m/s (< 30 m/s), protutlak ≈1,9 kPa (Sjednica) i ≈1,6 kPa (Hamzići) uz dozvoljenih 10,2 kPa. Prečnik određuje brzina, ne protutlak |
 | Prigušivač | industrijski; **hvatač iskri obavezan** |
 | Fleksibilni priključak | neposredno iza motora |
 | Izolacija | kamena vuna d = 50 mm + Al lim d = 1 mm; boja otporna na 600 °C |
@@ -303,7 +311,7 @@ Ponuđač ga potvrđuje na licu mjesta.
 | Trasa i završetak | BS Sjednica | BS Hamzići |
 |---|---|---|
 | Trasa | 1 m od elastičnog umetka do prigušivača sa jednim lukom 90°; do 4 m od prigušivača do izlaza, uspon uz **ZAPADNI zid** kontejnera | ≈1 m do prigušivača, zatim ≈3 m **horizontalno kroz ISTOČNI zid** na visini ≈+2,30 m, sa termoizolacionom čahurom u prolazu kroz zid |
-| Završetak | **iznad krova, usmjeren naviše**, sa kapom protiv upada padavina, ≥3 m od usisa zraka i odušne cijevi | **horizontalno, usmjeren na istok**, ispod platforme stuba (+3,0 m) koja je iznad krova kontejnera — završetak iznad krova nije moguć; kapa protiv padavina, ≥3 m od usisa zraka i odušne cijevi; ne usmjeravati na noge stuba ni kablove |
+| Završetak | **iznad krova, usmjeren naviše**, sa kapom protiv upada padavina, ≥3 m od usisa zraka i odušne cijevi | **horizontalno, usmjeren na istok**, ≥0,40 m od zida, ispod platforme stuba (+3,0 m) koja je iznad krova kontejnera — završetak iznad krova nije moguć; kapa protiv padavina, ≥3 m od usisa zraka i odušne cijevi; ne usmjeravati na noge stuba ni kablove |
 | Izolacija | ≈3,0 m² | ≈2,5 m² |
 
 ### 4.5 Elektroinstalacije i zaštite
@@ -330,9 +338,25 @@ sredstvom zaštite od indirektnog dodira.
 
 | Postojeće stanje i novi GRO | BS Sjednica | BS Hamzići |
 |---|---|---|
-| Postojeći strujni krugovi | snimiti stanje i prevezati svih 7 postojećih krugova u novi GRO; signalna rasvjeta antenskog stuba (K7) na zasebnom nadziranom krugu | kontejner je **prazan — nema GRO ni krugova**: nova rasvjeta (2 LED svjetiljke IP65 ≥1500 lm, protupanik 3 h), 2 utičnice 230 V/16 A IP44, kablovi u kanalicama; napojni i nadzorni krug postojeće svjetiljke za obilježavanje stuba sa novog GRO |
+| Postojeći strujni krugovi | snimiti stanje i prevezati postojeće krugove u novi GRO; signalna rasvjeta antenskog stuba (K7) prelazi na DC razvod −48 V | kontejner je **prazan — nema GRO ni krugova**: nova rasvjeta (2 LED svjetiljke IP65 ≥1500 lm; jedna je za 48 V DC na DC razvodu, pa je svjetlo dostupno i kad agregat ne radi), 2 utičnice 230 V/16 A IP44, kablovi u kanalicama; postojeća svjetiljka za obilježavanje stuba prelazi na DC razvod −48 V |
 | Klima-uređaj | — | **bez kruga za klima-uređaj** (demontira se, Tačka 4.8) |
+| Smještaj GRO | SJEVERNI zid, uz vanjski ormar koji napaja | SJEVERNI zid, zapadno od ulaznih vrata; **širina ≤0,50 m** (raspoloživi zid 0,595 m); ormar Huawei je vani, uz sjeverni zid (Tačka 4.3.B) |
 | Grafički prilog | E-01 | H-05 |
+
+**Trajni potrošači — napajanje sa −48 V DC (obje lokacije).** Agregat je jedini izvor
+izmjeničnog napona: izvodi GRO (rasvjeta, utičnice, pomoćni potrošači agregata, napajanje
+ispravljača) su pod naponom samo dok agregat radi. Potrošači koji moraju raditi i kad
+agregat ne radi napajaju se sa −48 V DC iz ormara Huawei ICC360-HA1-C1 — sa slobodnog DC
+izvoda sa vlastitim zaštitnim prekidačem — preko novog **DC razvoda −48 V** u kontejneru:
+
+| Potrošač na DC razvodu | Zahtjev |
+|---|---|
+| Svjetiljka za obilježavanje antenskog stuba | LED za 48 V DC, niskog intenziteta, sa foto-senzorom i nadzorom ispada prema SMU, umjesto postojeće svjetiljke; ili postojeća svjetiljka preko DC/AC pretvarača ≤100 W |
+| Vatrodojavna centrala | preko DC/DC pretvarača na nazivni napon centrale; centrala zadržava vlastite akumulatore prema EN 54-4 |
+| Punjač akumulatora za start agregata | DC/DC 48 V → 12/24 V prema agregatu, sa strujnim ograničenjem i signalizacijom |
+| Ventilator prostora | 48 V DC (EC), Tačka 4.3 |
+| Rasvjeta kontejnera | najmanje jedna LED svjetiljka 48 V DC sa prekidačem uz vrata — svjetlo i kad agregat ne radi |
+| **Ukupna trajna potrošnja** | **≤25 W prosječno** (bez rasvjete kontejnera, koja radi samo pri obilasku); Ponuđač dostavlja proračun potrošnje. Energetski bilans (Tačka 8) računa sa 45 W pomoćne potrošnje na −48 V: 20 W za SMU, BMS i ispravljače u mirovanju i 25 W za trajne potrošače |
 
 ### 4.6 Parametriranje upravljanja i nadzora (DEA + PV + baterije)
 
@@ -346,7 +370,7 @@ sredstvom zaštite od indirektnog dodira.
   iz Tačke 5, stavka 12:
   - start agregata pri dubini pražnjenja baterija **DOD 85 %** (SoC 15 %)
   - zaustavljanje agregata pri **SoC 60 %** — ostatak punjenja preuzima fotonaponsko
-    polje; punjenje baterija agregatom do vrha povećava rad agregata za 12–19 %
+    polje; punjenje baterija agregatom do vrha povećava rad agregata za 11–18 %
   - struja punjenja baterija podešena tako da ne ograničava agregat ispod 9,5 kW: na
     najveću vrijednost koju dozvoljava BMS baterijskih modula (proračun pretpostavlja
     0,5 C), uz pisanu potvrdu proizvođača
@@ -434,26 +458,27 @@ Ispitivanja se izvode **na svakoj lokaciji**.
 
 Satna simulacija energetskog bilansa na −48 V DC sabirnici za 19 godina (2005–2023) za
 svaku lokaciju: ozračenje iz PVGIS-SARAH3, FN lanac sa gubicima po komponentama
-(uključujući krivulju efikasnosti iSSU S4875G2), baterije 48,6 kWh (6 × 150 Ah) i agregat preko
-ispravljača ograničenih na 9,5 kW, uz parametriranje SMU iz Tačke 4.6. Metoda, provjera
+(uključujući krivulju efikasnosti iSSU S4875G2), baterije 48,6 kWh (6 × 150 Ah), pomoćnu
+potrošnju od 45 W sa trajnim potrošačima iz Tačke 4.5 i agregat preko ispravljača
+ograničenih na 9,5 kW, uz parametriranje SMU iz Tačke 4.6. Metoda, provjera
 prema PVGIS-u, gubici i osjetljivost na postavke su u proračunima lokacija, dio A.6.
 **Vrijednosti su informativne i ne mijenjaju zahtjeve Tačaka 3 i 4.**
 
 | Pokazatelj | BS Sjednica | BS Hamzići |
 |---|---|---|
 | FN proizvodnja na DC sabirnici | ≈10 140 kWh/god (1 444 kWh/kWp) | ≈10 450 kWh/god (1 488 kWh/kWp) |
-| Potrošnja | ≈10 570 kWh/god | ≈10 640 kWh/god |
-| Decembar: FN / potrošnja | ≈560 / ≈890 kWh | ≈600 / ≈890 kWh |
-| Solarni udio u potrošnji | 79,8 % | 81,7 % |
-| **Rad agregata** | **≈230 h/god**; u 9 od 10 godina do ≈290 h; najviše ≈310 h | **≈210 h/god**; u 9 od 10 godina do ≈260 h; najviše ≈300 h |
-| Startova agregata | ≈80 godišnje, najviše ≈110 | ≈80 godišnje, najviše ≈110 |
-| **Potrošnja goriva** | **≈770 l/god**; spremnik od 500 l dopunjava se dva puta godišnje | **≈710 l/god**; spremnik od 500 l dopunjava se dva puta godišnje |
+| Potrošnja | ≈10 790 kWh/god | ≈10 860 kWh/god |
+| Decembar: FN / potrošnja | ≈560 / ≈910 kWh | ≈600 / ≈910 kWh |
+| Solarni udio u potrošnji | 79,2 % | 81,0 % |
+| **Rad agregata** | **≈250 h/god**; u 9 od 10 godina do ≈310 h; najviše ≈330 h | **≈230 h/god**; u 9 od 10 godina do ≈270 h; najviše ≈310 h |
+| Startova agregata | ≈90 godišnje, najviše ≈120 | ≈80 godišnje, najviše ≈110 |
+| **Potrošnja goriva** | **≈820 l/god**; spremnik od 500 l dopunjava se dva puta godišnje | **≈750 l/god**; spremnik od 500 l dopunjava se dva puta godišnje |
 | Nepokrivena potrošnja | 0 | 0 |
 
 Bez parametriranja iz Tačke 4.6 (zaustavljanje pri SoC 90 %, uobičajena struja
-punjenja) agregat bi radio ≈260 h i trošio ≈870 l godišnje na Sjednici, odnosno ≈240 h
-i ≈800 l na Hamzićima. Na Hamzićima vrijednosti važe bez zasjenjenja stablom; sa
-stablom rad agregata raste za 4–20 h godišnje.
+punjenja) agregat bi radio ≈280 h i trošio ≈910 l godišnje na Sjednici, odnosno ≈250 h
+i ≈830 l na Hamzićima. Na Hamzićima vrijednosti važe bez zasjenjenja stablom; sa
+stablom rad agregata raste za 5–23 h godišnje.
 
 ![Slika 6 — BS Sjednica: mjesečni energetski bilans (prosjek i raspon 2005–2023)](../TD-OUTPUT/grafika/prilog1/energetski-bilans-sjednica.png){width=100%}
 

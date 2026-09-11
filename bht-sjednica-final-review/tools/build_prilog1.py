@@ -48,7 +48,8 @@ FORBIDDEN = [
     ("h = 1,90 m", "ograda je 2,10 m"),
     # Rev 9: energetske vrijednosti dolaze samo iz pvsim simulacije
     ("bifacijal", "moduli su monofacijalni iPV sa optimizatorima"),
-    ("250 h", "granica iz RFI; simulacija daje više — zamijenjena u Rev 9"),
+    ("≤250 h", "granica iz RFI; simulacija daje više — zamijenjena u Rev 9"),
+    ("do 250 h", "granica iz RFI; simulacija daje više — zamijenjena u Rev 9"),
     ("najmanje godinu", "500 l nije godišnja zaliha goriva (Rev 9)"),
     ("10,1–10,9 MWh", "stara procjena prinosa sa PR 0,80"),
     ("560–600 kWh", "stara procjena decembra"),
@@ -63,7 +64,7 @@ REQUIRED = [
     "PMG", "AREP", "1,20 kN/m²", "18,1 kN", "13,4 kN", "0,6 kN/m²",
     # Rev 9
     "DOD 85 %", "SoC 60 %", "PVGIS-SARAH3", "Očekivani energetski bilans",
-    "≈230 h/god", "≈770 l/god",
+    "≈250 h/god", "≈820 l/god", "DC razvod −48 V", "≤25 W prosječno",
 ]
 
 SECT = re.compile(rb"<w:sectPr\b.*?</w:sectPr>", re.S)
