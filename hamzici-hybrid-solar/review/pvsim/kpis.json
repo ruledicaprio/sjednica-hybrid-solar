@@ -2,9 +2,9 @@
  "site": "hamzici",
  "name": "BS Hamzići",
  "place": "Čitluk",
- "generated_utc": "2026-09-11T14:28:10+00:00",
+ "generated_utc": "2026-09-11T17:19:47+00:00",
  "pvsim_version": "0.1.0",
- "git_commit": "cd567a2",
+ "git_commit": "b6d6f60",
  "inputs": {
   "lat": 43.28801195406457,
   "lon": 17.624794323005304,
@@ -273,7 +273,7 @@
    "azimuth_deg": 180,
    "bottom_edge": 500,
    "top_edge": 3736,
-   "above_fence": 1936,
+   "above_fence": 1736,
    "fence_height": 1800,
    "plot_depth_south_mm": 3575
   },
@@ -288,7 +288,7 @@
    "skid_L": 1550,
    "skid_W": 620,
    "skid_H": 1020,
-   "radiator_end": "WEST",
+   "radiator_end": "SOUTH",
    "mass_dry_kg": 365,
    "mass_wet_kg": 372,
    "fuel_l_h_standby_100pct": 4.8,
@@ -324,7 +324,7 @@
     "rim_mm": 200,
     "volume_gross_l": 147,
     "volume_free_l": 21,
-    "basis": "Drip/spill tray under the tank - NOT a 110 % bund; secondary containment is the tank's own second skin. It catches fill and draw-off spillage and drains to a visible low point. Sized to the tank with 50/20 mm margins so the whole assembly stays inside the 640 mm strip SOUTH of the container door (door 900 wide, 700..1600 mm off the south wall), which is what keeps the doorway and the skid entry path clear."
+    "basis": "Drip/spill tray under the tank - NOT a 110 % bund; secondary containment is the tank's own second skin. It catches fill and draw-off spillage and drains to a visible low point. Sized to the tank with 50/20 mm margins. At Hamzići the tray stands in the SW corner against the south and west walls, 0,14 m from the genset; the east side stays the service side and the door path stays clear (H-04)."
    }
   }
  },

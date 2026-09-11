@@ -73,6 +73,12 @@ work:
   re-vendored into git) from a stale pre-rename clone that was otherwise
   retired — `src/radiance_engine.py`, `src/skies_engine.py` and
   `src/generate_false_color.py` are runnable again.
+- **2026-09-11: history rewritten, force-pushed.** AI attribution was
+  removed from every commit on `main` and the working branches: attribution
+  trailers dropped, and the commits authored by assistant or bot identities
+  reassigned to the owner. File trees are unchanged; only commit messages and
+  identities differ. Pre-rewrite backup bundle:
+  `C:\Users\Rusmir\solar-rfp-engine-BACKUP-20260911.bundle` (local only).
 
 ## Active initiative: RFP / proposal documents
 

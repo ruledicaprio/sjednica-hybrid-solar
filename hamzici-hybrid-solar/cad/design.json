@@ -263,9 +263,9 @@
  },
  "energy": {
   "_source": "review/pvsim/kpis.json, written by `python -m pvsim report --site hamzici`; copied here by tools/sync_energy.py. Do not edit by hand.",
-  "kpis_sha256": "7bff474a45479e3cbbb21c875fdd8b23347429ba1f6dfe96bf33a6af3bf0d333",
-  "pvsim_commit": "cd567a2",
-  "generated_utc": "2026-09-11T14:28:10+00:00",
+  "kpis_sha256": "971651b7737da713f1938c57d8cbb6fd36b607da3da11cc2c6224d798607c630",
+  "pvsim_commit": "b6d6f60",
+  "generated_utc": "2026-09-11T17:19:47+00:00",
   "tilt_deg": 45,
   "years": [
    2005,
