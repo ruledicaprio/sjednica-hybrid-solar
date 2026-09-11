@@ -1,0 +1,1914 @@
+{
+ "site": "hamzici",
+ "name": "BS Hamzići",
+ "place": "Čitluk",
+ "generated_utc": "2026-09-11T12:24:51+00:00",
+ "pvsim_version": "0.1.0",
+ "git_commit": "4d4cbcb",
+ "inputs": {
+  "lat": 43.28801195406457,
+  "lon": 17.624794323005304,
+  "altitude_m": 493,
+  "pvgis": {
+   "db": "PVGIS-SARAH3",
+   "start": 2005,
+   "end": 2023,
+   "userhorizon": null,
+   "_src": "PVGIS API v5.3, SARAH3 with ERA5 temperature and wind, 2005-2023. Horizon from the PVGIS DEM (at most 2,7°, to the north). The lone tree 15-20 m SSE-SE of the tower (photo survey 08.09.2026) is NOT in the DEM; it is added as a user horizon by `python -m pvsim photo` (Phase 2)."
+  },
+  "array": {
+   "kWp": 7.02,
+   "modules": 12,
+   "tilt_deg": 45,
+   "azimuth_deg": 180,
+   "tilts": [
+    45,
+    60
+   ],
+   "strings": 2,
+   "modules_per_string": 6,
+   "_src": "Same array as Sjednica: 12 x iPV585-M2A, 2 strings x 6 (design cannot change). Tilt 45 or 60 is under decision (plan Phase 3)."
+  },
+  "pv": {
+   "iam_a_r": 0.16,
+   "faiman_u0": 26.9,
+   "faiman_u1": 6.2,
+   "huld_k_version": "pvgis5",
+   "soiling_monthly": [
+    0.01,
+    0.01,
+    0.015,
+    0.02,
+    0.02,
+    0.025,
+    0.03,
+    0.03,
+    0.025,
+    0.015,
+    0.01,
+    0.01
+   ],
+   "snow_monthly": {
+    "45": [
+     0.01,
+     0.01,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0.005
+    ],
+    "60": [
+     0.005,
+     0.005,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0.0025
+    ]
+   },
+   "mismatch": 0.003,
+   "lid": 0.005,
+   "dc_wiring_stc": 0.0078,
+   "optimizer_eff": 0.99,
+   "issu": {
+    "units": 2,
+    "v_out": 53.5,
+    "p_out_max_w": 4000,
+    "derate_c_w": [
+     [
+      55,
+      4000
+     ],
+     [
+      65,
+      3200
+     ],
+     [
+      75,
+      2400
+     ],
+     [
+      80,
+      1000
+     ]
+    ],
+    "cabinet_rise_c": 10,
+    "curve_vin_v": 330,
+    "curve_a_pct": [
+     [
+      10.5,
+      92.7
+     ],
+     [
+      12.1,
+      93.99
+     ],
+     [
+      14.0,
+      94.89
+     ],
+     [
+      15.4,
+      95.49
+     ],
+     [
+      16.5,
+      95.92
+     ],
+     [
+      18.5,
+      96.17
+     ],
+     [
+      20.1,
+      96.41
+     ],
+     [
+      22.9,
+      96.55
+     ],
+     [
+      25.3,
+      96.75
+     ],
+     [
+      28.2,
+      96.99
+     ],
+     [
+      30.4,
+      97.18
+     ],
+     [
+      34.2,
+      97.24
+     ],
+     [
+      39.2,
+      97.3
+     ],
+     [
+      44.0,
+      97.28
+     ],
+     [
+      49.2,
+      97.3
+     ],
+     [
+      55.5,
+      97.23
+     ],
+     [
+      60.2,
+      97.12
+     ],
+     [
+      65.5,
+      97.0
+     ],
+     [
+      70.5,
+      96.91
+     ],
+     [
+      75.2,
+      96.81
+     ]
+    ],
+    "_src": "As sjednica.json: iSSU S4875G2 datasheet Figure 2, Vin = 330 V, digitised."
+   },
+   "_src": {
+    "model": "As sjednica.json (PVGIS c-Si module model; see there).",
+    "soiling_monthly": "Assumption: a drier, dustier Herzegovina summer than Sjednica (karst, terra rossa, dry grass).",
+    "snow_monthly": "Assumption: 493 m in the Mediterranean belt, snow is rare and short-lived.",
+    "other": "mismatch, LID, wiring and optimizer as sjednica.json."
+   }
+  },
+  "load": {
+   "base_w": 1180,
+   "aux_w": 20,
+   "cooling_w_max": 150,
+   "cooling_t0_c": 20,
+   "cooling_t1_c": 35,
+   "_src": "Preliminary: the same 1180 W / 1330 W as Sjednica, until the measured Hamzići DC load arrives (user decision 2026-09-11). Cooling ramp and aux as sjednica.json. The ramp matters more here: July/August mean 24,7 °C."
+  },
+  "battery": {
+   "modules": 6,
+   "kwh_per_module": 4.8,
+   "soc_initial": 0.8,
+   "soc_floor": 0.05,
+   "eta_charge": 0.975,
+   "eta_discharge": 0.975,
+   "charge_c_rate": 0.25,
+   "_src": "As sjednica.json (6 x ESM-48100A6; efficiencies and charge limit are assumptions)."
+  },
+  "control": {
+   "dod_start": 0.85,
+   "soc_stop": 0.9,
+   "min_run_h": 1.0,
+   "_src": "As sjednica.json (SMU 'DOD to Start' 85 % default; stop SoC and minimum run are assumptions)."
+  },
+  "genset": {
+   "rect_cap_ac_kw": 9.5,
+   "eta_rect": 0.96,
+   "prime_kw": 13.2,
+   "fuel_l_h": [
+    [
+     6.6,
+     2.6
+    ],
+    [
+     9.9,
+     3.4
+    ],
+    [
+     13.2,
+     4.4
+    ]
+   ],
+   "wet_stack_frac": 0.3,
+   "_src": "As sjednica.json. At 493 m and 40 °C the derated prime is ≈12,3 kW, so the 9,5 kW cap leaves more margin than at Sjednica (to be confirmed in Hamzići 07-proracuni A.2)."
+  },
+  "tank": {
+   "first_fill_l": 250,
+   "refill_at_frac": 0.2,
+   "_src": "As sjednica.json."
+  },
+  "limits": {
+   "genset_h_max": 250,
+   "tank_years_min": 1.0,
+   "_src": "Prijedlog Odluke, Aneks 2 (the joint tender applies the same limits to both sites)."
+  }
+ },
+ "design": {
+  "module": {
+   "model": "Huawei iPV585-M2A / 585 W",
+   "L": 2278,
+   "W": 1134,
+   "T": 30,
+   "kg": 32.0,
+   "Voc": 51.55,
+   "Imp": 13.67,
+   "source": "PVM p.43 Table 3-5"
+  },
+  "array": {
+   "count": 3,
+   "modules_total": 12,
+   "kWp": 7.02,
+   "tilt_deg": 45,
+   "azimuth_deg": 180,
+   "bottom_edge": 500,
+   "top_edge": 3736,
+   "above_fence": 1636
+  },
+  "genset": {
+   "model": "FG Wilson P18-6 (Skid) ili ekvivalent",
+   "kVA": 18,
+   "kW": 14.4,
+   "kVA_prime": 16.5,
+   "kW_prime": 13.2,
+   "engine": "Perkins 404D-22G1, 4-cyl, in-line, naturally aspirated, 2.2 l, 1500 rpm",
+   "alternator": "FG Wilson FGL10040, SHUNT excitation, AVR R120, IP23, class H",
+   "skid_L": 1550,
+   "skid_W": 620,
+   "skid_H": 1020,
+   "radiator_end": "WEST",
+   "mass_dry_kg": 365,
+   "mass_wet_kg": 372,
+   "fuel_l_h_standby_100pct": 4.8,
+   "fuel_l_h_standby_75pct": 3.7,
+   "fuel_l_h_standby_50pct": 2.7,
+   "motor_starting_kVA_400V": 26,
+   "In_A_400V": 26.0,
+   "site_derate": {
+    "basis": "ISO 3046 / ISO 8528-1: -1 %/100 m above 100 m at 1076 m a.s.l. = -9.8 %, and -3 % for 40 C ambient against the 25 C reference. Factor 0.875.",
+    "standby_kW": 12.6,
+    "standby_kVA": 15.8,
+    "prime_kW": 11.6,
+    "prime_kVA": 14.4,
+    "rectifier_draw_kW": 12.5,
+    "verdict": "STANDBY is adequate (12.6 kW against a 12.5 kW draw) but has NO margin, and the site's real duty is PRIME (review/03-electrical Y-02: there is no utility, the set cycles on battery SoC), where the derated 11.6 kW is EXCEEDED. The rectifier AC input limit already required by BOQ 3.1 must therefore be stated as a NUMBER: cap at 9.5 kW = 82 % of the derated prime output. That also fixes the wet-stacking exposure of Y-03, since 9.5 kW is well above the 30 % minimum, and still leaves ~8.2 kW of charging after the 1.33 kW TK load. This is what the 13.5 kVA P13.5-6 could not do at all: its derated prime was 9.7 kW, below the draw."
+   },
+   "_source": "FG Wilson P18-6 (Skid) technical data sheet 2019-08-14 — EQUIPEMENT/GENSET/P18-6.pdf. The Investor adopted 18 kVA on 2026-08-12, returning to the original first choice. NOTE the skid envelope 1550x620x1020 is IDENTICAL to both superseded sets, so no drawing geometry moved - only mass, thermal and electrical figures. The alternator is still SHUNT and the data sheet states short-circuit capacity 0 % without the optional PMG/AUX winding, so the tender's PMG/AREP requirement stands and is now backed by the sheet itself.",
+   "_superseded": "P13.5-6 (Rev 7, 2026-08-11): 13.5 kVA/10.8 kW, Perkins 403D-15G 1.5 l, FGL10020, 302/308 kg, 4.0 l/h — WITHDRAWN because the site derate takes it to 9.7 kW prime, below the 12.5 kW rectifier draw. P22-6 (Rev 1-6): 22 kVA/17.6 kW, Perkins 404D-22G, FGL10060, 378/385 kg, 5.9 l/h."
+  },
+  "tank": {
+   "litres": 500,
+   "type": "dvoplasni",
+   "L": 1050,
+   "W": 600,
+   "H": 1310,
+   "mass_empty_kg": 170,
+   "mass_full_kg": 590,
+   "_source": "FG Wilson 500 l indoor tank data supplied by the Investor 2026-08-11: 1050L x 600W x 1310H, 170 kg. Supersedes the earlier unverified 1200x700x800 estimate; full mass = 170 kg + 500 l diesel @ ~0.84 = ~590 kg over 0.63 m2 = 9.2 kN/m2.",
+   "secondary_containment": "The tank is DOUBLE-SKINNED (dvoplasni) with interstitial leak monitoring, so the interstitial space IS the secondary containment and no 110 % bund is required. Investor's decision 2026-08-11. NOTE the arithmetic that decided it: a bund does not gain capacity from height, because the tank standing in it displaces the retention volume - only FREE area x upstand counts. The 2885x800x330 bund gave (2.308 - 0.63) x 0.33 = 554 l, clearing 550 l by 0.7 %; the earlier 1600x1060x330 gave only (1.696 - 0.63) x 0.33 = 352 l and never met 110 % at all. Any compact bund is arithmetically impossible: 1500x640 has 0.33 m2 free, so it would have to stand 1.67 m tall.",
+   "kada": {
+    "L": 1150,
+    "W": 640,
+    "rim_mm": 200,
+    "volume_gross_l": 147,
+    "volume_free_l": 21,
+    "basis": "Drip/spill tray under the tank - NOT a 110 % bund; secondary containment is the tank's own second skin. It catches fill and draw-off spillage and drains to a visible low point. Sized to the tank with 50/20 mm margins so the whole assembly stays inside the 640 mm strip SOUTH of the container door (door 900 wide, 700..1600 mm off the south wall), which is what keeps the doorway and the skid entry path clear."
+   }
+  }
+ },
+ "pvgis_manifest": {
+  "horizon.json": {
+   "endpoint": "printhorizon",
+   "params": {
+    "lat": 43.28801195406457,
+    "lon": 17.624794323005304
+   },
+   "sha256": "02673b5a66d39e3b11f75ffd507400390a0d5acefa4cfe8e8cc2d97efdfd47e0"
+  },
+  "pvcalc_t45.json": {
+   "endpoint": "PVcalc",
+   "params": {
+    "lat": 43.28801195406457,
+    "lon": 17.624794323005304,
+    "raddatabase": "PVGIS-SARAH3",
+    "usehorizon": 1,
+    "angle": 45,
+    "aspect": 0,
+    "peakpower": 7.02,
+    "loss": 14.0,
+    "pvtechchoice": "crystSi",
+    "mountingplace": "free"
+   },
+   "sha256": "c2872c84046ccda5f876a0405c606a8ad1933746c78f5896774b6c16629f6e1b"
+  },
+  "shscalc_t45.json": {
+   "endpoint": "SHScalc",
+   "params": {
+    "lat": 43.28801195406457,
+    "lon": 17.624794323005304,
+    "raddatabase": "PVGIS-SARAH3",
+    "usehorizon": 1,
+    "angle": 45,
+    "aspect": 0,
+    "peakpower": 7020.0,
+    "batterysize": 28799.999999999996,
+    "cutoff": 15,
+    "consumptionday": 28800
+   },
+   "sha256": "6491d29d44ad12c8b6d87b4c78f121a0399457df578fa663f8b672442bb8e94d"
+  },
+  "seriescalc_t45 (cache only)": {
+   "endpoint": "seriescalc",
+   "params": {
+    "lat": 43.28801195406457,
+    "lon": 17.624794323005304,
+    "raddatabase": "PVGIS-SARAH3",
+    "usehorizon": 1,
+    "angle": 45,
+    "aspect": 0,
+    "startyear": 2005,
+    "endyear": 2023,
+    "pvcalculation": 1,
+    "peakpower": 7.02,
+    "loss": 14.0,
+    "components": 1,
+    "pvtechchoice": "crystSi",
+    "mountingplace": "free"
+   },
+   "sha256": "51d612e7b1c4aa7bc1b2dc919f781db22bd68aecb4914a1f989910d6a0b730ba",
+   "fetched_utc": "2026-09-11T11:46:25+00:00"
+  },
+  "pvcalc_t60.json": {
+   "endpoint": "PVcalc",
+   "params": {
+    "lat": 43.28801195406457,
+    "lon": 17.624794323005304,
+    "raddatabase": "PVGIS-SARAH3",
+    "usehorizon": 1,
+    "angle": 60,
+    "aspect": 0,
+    "peakpower": 7.02,
+    "loss": 14.0,
+    "pvtechchoice": "crystSi",
+    "mountingplace": "free"
+   },
+   "sha256": "2690b4c848943ef1391550f919be101529b90f723a63287ffa61fd1200d0b135"
+  },
+  "shscalc_t60.json": {
+   "endpoint": "SHScalc",
+   "params": {
+    "lat": 43.28801195406457,
+    "lon": 17.624794323005304,
+    "raddatabase": "PVGIS-SARAH3",
+    "usehorizon": 1,
+    "angle": 60,
+    "aspect": 0,
+    "peakpower": 7020.0,
+    "batterysize": 28799.999999999996,
+    "cutoff": 15,
+    "consumptionday": 28800
+   },
+   "sha256": "cea4bad2dc87653bf818d33289a7515d9803570b60c028e9b181453119331b62"
+  },
+  "seriescalc_t60 (cache only)": {
+   "endpoint": "seriescalc",
+   "params": {
+    "lat": 43.28801195406457,
+    "lon": 17.624794323005304,
+    "raddatabase": "PVGIS-SARAH3",
+    "usehorizon": 1,
+    "angle": 60,
+    "aspect": 0,
+    "startyear": 2005,
+    "endyear": 2023,
+    "pvcalculation": 1,
+    "peakpower": 7.02,
+    "loss": 14.0,
+    "components": 1,
+    "pvtechchoice": "crystSi",
+    "mountingplace": "free"
+   },
+   "sha256": "cf151e0853a349641567eae71a73b4decc7c428787aaa7139b32b4d11ba22207",
+   "fetched_utc": "2026-09-11T11:46:48+00:00"
+  }
+ },
+ "validation": {
+  "45": {
+   "n_years": 19,
+   "pvcalc_E_y": 9839.51,
+   "pvcalc_E_m": [
+    616.34,
+    621.84,
+    832.79,
+    877.67,
+    927.27,
+    958.62,
+    1054.16,
+    1049.43,
+    928.08,
+    829.28,
+    574.94,
+    569.09
+   ],
+   "seriescalc_E_y": 9745.768934736841,
+   "seriescalc_E_m": [
+    602.4971515789474,
+    611.8227442105263,
+    820.6000052631579,
+    874.2088994736841,
+    922.0785594736842,
+    957.5034721052631,
+    1054.299412631579,
+    1046.3704300000002,
+    920.7306684210525,
+    817.135192631579,
+    561.0490378947369,
+    557.4733610526315
+   ],
+   "pvsim_E_y": 9780.31751513565,
+   "pvsim_E_m": [
+    604.713883163412,
+    614.210462320681,
+    824.1032559462743,
+    877.2243852411045,
+    924.6773430838288,
+    960.0299221838926,
+    1058.1604993182123,
+    1050.637263073145,
+    924.554788722703,
+    820.0912669964588,
+    562.5551207581457,
+    559.3593243277915
+   ],
+   "hourly_r": 0.9999850928796349,
+   "worst_month_dev": 0.021541168194688765
+  },
+  "60": {
+   "n_years": 19,
+   "pvcalc_E_y": 9322.35,
+   "pvcalc_E_m": [
+    651.53,
+    633.56,
+    809.45,
+    809.0,
+    814.17,
+    819.15,
+    907.75,
+    947.53,
+    887.13,
+    835.89,
+    599.89,
+    607.32
+   ],
+   "seriescalc_E_y": 9228.165714210525,
+   "seriescalc_E_m": [
+    636.89836,
+    623.3473826315789,
+    797.6095510526317,
+    805.8088026315789,
+    809.6103094736842,
+    818.1894647368421,
+    907.8631557894738,
+    944.7657405263159,
+    880.1059436842106,
+    823.6499878947368,
+    585.3924989473685,
+    594.9245168421053
+   ],
+   "pvsim_E_y": 9255.55502543783,
+   "pvsim_E_m": [
+    639.7506263403753,
+    626.0353249568618,
+    800.7794508198346,
+    807.82109943351,
+    810.6085819558724,
+    818.7282781398856,
+    909.4546545607174,
+    947.4607179484286,
+    883.3390366172338,
+    826.7811038739924,
+    587.3348264626906,
+    597.4613243284275
+   ],
+   "hourly_r": 0.9999855706076409,
+   "worst_month_dev": 0.0209291262353255
+  }
+ },
+ "tilts": {
+  "45": {
+   "kpis": {
+    "years": [
+     2005,
+     2023
+    ],
+    "n_years": 19,
+    "pv_bus_kwh": 10448.321251911077,
+    "pv_used_kwh": 8306.172528283007,
+    "curtailed_kwh": 2142.148723628072,
+    "load_kwh": 10644.426063157895,
+    "solar_fraction": 0.7488622709661993,
+    "gen_dc_kwh": 2673.2169883696724,
+    "genset_h_mean": 333.07795405033335,
+    "genset_h_p90": 382.1020215387078,
+    "genset_h_max": 420.5616947948863,
+    "genset_h_max_year": 2010,
+    "starts_mean": 105.42105263157895,
+    "starts_max": 133,
+    "fuel_l_mean": 1008.1327490931799,
+    "fuel_l_p90": 1157.6047636208564,
+    "fuel_l_max": 1273.7068171357055,
+    "tank_years_mean": 0.4959664294704763,
+    "tank_years_worst": 0.3925550160156897,
+    "refills_mean": 2.526315789473684,
+    "refills_max": 3,
+    "refill_interval_min_days": 63.625,
+    "wet_stack_h_mean": 3.5546530951640647,
+    "cycles_mean": 224.1007841950496,
+    "unmet_kwh_total": 0.0,
+    "soc_min": 0.10657672455951565,
+    "longest_genset_free_days": 52.375,
+    "dec_pv_kwh": 600.6397599068481,
+    "dec_load_kwh": 892.8000000000001,
+    "dec_gen_dc_kwh": 413.2018957185977,
+    "worst_month_genset_h": 75.67910173419243,
+    "worst_month": [
+     2009,
+     12
+    ],
+    "pass_genset_h": false,
+    "pass_genset_h_worst": false,
+    "pass_tank_year": false,
+    "pass_tank_year_worst": false,
+    "site": "hamzici",
+    "tilt": 45,
+    "issu_fit": {
+     "curve_vin_v": 330,
+     "curve_points": 20,
+     "fixed_loss_w": 44.237055016181216
+    },
+    "specific_yield_bus": 1488.3648506995837
+   },
+   "waterfall": [
+    {
+     "stage": "stc",
+     "label": "Ozračenje u ravni × kWp (STC)",
+     "kwh": 12726.562843799999,
+     "loss_kwh": null,
+     "loss_pct": null
+    },
+    {
+     "stage": "iam",
+     "label": "Refleksija (IAM)",
+     "kwh": 12368.296558938018,
+     "loss_kwh": 358.26628486198024,
+     "loss_pct": 2.8151063980053097
+    },
+    {
+     "stage": "temp",
+     "label": "Temperatura i slabo svjetlo (Huld)",
+     "kwh": 11372.462226901916,
+     "loss_kwh": 995.8343320361018,
+     "loss_pct": 8.051507556361564
+    },
+    {
+     "stage": "soiling",
+     "label": "Zaprljanje",
+     "kwh": 11146.313516482445,
+     "loss_kwh": 226.14871041947117,
+     "loss_pct": 1.988564181681864
+    },
+    {
+     "stage": "snow",
+     "label": "Snijeg",
+     "kwh": 11129.062144766498,
+     "loss_kwh": 17.251371715947244,
+     "loss_pct": 0.15477199426013843
+    },
+    {
+     "stage": "mm_lid",
+     "label": "Neusklađenost + LID",
+     "kwh": 11040.196583540537,
+     "loss_kwh": 88.86556122596085,
+     "loss_pct": 0.7985000000000032
+    },
+    {
+     "stage": "wiring",
+     "label": "DC kablovi",
+     "kwh": 10987.48525451841,
+     "loss_kwh": 52.71132902212776,
+     "loss_pct": 0.47744918872833597
+    },
+    {
+     "stage": "optimizer",
+     "label": "Optimizatori",
+     "kwh": 10877.610401973221,
+     "loss_kwh": 109.87485254518833,
+     "loss_pct": 1.0000000000000386
+    },
+    {
+     "stage": "issu",
+     "label": "iSSU S4875G2 (krivulja)",
+     "kwh": 10448.321251911078,
+     "loss_kwh": 429.28915006214265,
+     "loss_pct": 3.946539122087593
+    },
+    {
+     "stage": "clip",
+     "label": "iSSU ograničenje 4 kW",
+     "kwh": 10448.321251911078,
+     "loss_kwh": 0.0,
+     "loss_pct": 0.0
+    }
+   ],
+   "monthly_mean": {
+    "pv_kwh": [
+     645.8192665560374,
+     655.415104016645,
+     885.1517270189855,
+     938.2497076406634,
+     987.0701811386218,
+     1021.5230893441336,
+     1121.923961665722,
+     1116.016704815914,
+     986.4551389382192,
+     884.1520617630043,
+     605.9045491062835,
+     600.6397599068481
+    ],
+    "pv_used_kwh": [
+     522.4888111484593,
+     508.1210399302023,
+     658.38624116948,
+     701.107625212362,
+     779.0324462670208,
+     832.7177444751052,
+     910.6364831296767,
+     901.908072840869,
+     776.727387616289,
+     695.2373253430611,
+     507.37162766474006,
+     512.4377234857412
+    ],
+    "load_kwh": [
+     892.7368421052631,
+     812.4634631578947,
+     891.6380894736842,
+     865.0124999999999,
+     899.4706894736843,
+     886.9499368421053,
+     933.4459421052632,
+     932.0917157894737,
+     877.6730842105263,
+     896.0677999999999,
+     864.076,
+     892.8000000000001
+    ],
+    "gen_dc_kwh": [
+     402.13421920975384,
+     332.06202283805493,
+     262.86346221011826,
+     191.66946558198273,
+     146.77356701602702,
+     79.20923286878347,
+     49.457737411980276,
+     57.13150225081297,
+     126.77490644079265,
+     227.07612476358975,
+     384.86285205917886,
+     413.2018957185977
+    ],
+    "genset_h": [
+     50.070460574388754,
+     41.67018983290049,
+     32.57594789283536,
+     23.547748763817225,
+     18.184859711791784,
+     10.103385656143827,
+     6.475893604718376,
+     7.519921765177687,
+     16.14036041535455,
+     27.93551626666269,
+     47.73596236954295,
+     51.11770719699964
+    ],
+    "fuel_l": [
+     151.6195058293771,
+     125.52423600412648,
+     98.95561006710766,
+     71.94912896128761,
+     55.248891786546075,
+     30.1057171886649,
+     18.965221234006325,
+     21.947068798211266,
+     48.15422567818097,
+     85.27797201504394,
+     144.923551273376,
+     155.46162025725158
+    ]
+   },
+   "years": [
+    {
+     "year": 2005,
+     "pv_kwh": 10374.519482325659,
+     "pv_used_kwh": 8200.746796623895,
+     "curtailed_kwh": 2173.7726857017637,
+     "load_kwh": 10605.3779,
+     "gen_dc_kwh": 2736.5252586971415,
+     "genset_h": 344.8169833296099,
+     "starts": 109,
+     "fuel_l": 1035.8587153238375,
+     "wet_stack_h": 3.7111801351390095,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6522.368363897607,
+     "soc_min": 0.10836985419637844,
+     "cycles": 226.4711237464447,
+     "refills": 3
+    },
+    {
+     "year": 2006,
+     "pv_kwh": 10453.984348225385,
+     "pv_used_kwh": 8475.308582974621,
+     "curtailed_kwh": 1978.675765250763,
+     "load_kwh": 10620.4785,
+     "gen_dc_kwh": 2479.975159460667,
+     "genset_h": 303.6520801078451,
+     "starts": 96,
+     "fuel_l": 929.9084335070033,
+     "wet_stack_h": 0.6110150681292432,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6422.955100406865,
+     "soc_min": 0.10825451553398092,
+     "cycles": 223.01927431968284,
+     "refills": 2
+    },
+    {
+     "year": 2007,
+     "pv_kwh": 10653.13665869212,
+     "pv_used_kwh": 8378.840550981522,
+     "curtailed_kwh": 2274.296107710597,
+     "load_kwh": 10643.5798,
+     "gen_dc_kwh": 2600.9524428212458,
+     "genset_h": 325.4067781004233,
+     "starts": 103,
+     "fuel_l": 982.2129505300308,
+     "wet_stack_h": 2.945537959675205,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6444.606304827083,
+     "soc_min": 0.10742627426582523,
+     "cycles": 223.7710522509404,
+     "refills": 2
+    },
+    {
+     "year": 2008,
+     "pv_kwh": 10358.223971448117,
+     "pv_used_kwh": 8264.878884429965,
+     "curtailed_kwh": 2093.3450870181514,
+     "load_kwh": 10661.975199999999,
+     "gen_dc_kwh": 2732.4398037503743,
+     "genset_h": 337.28074325987524,
+     "starts": 107,
+     "fuel_l": 1027.29079471199,
+     "wet_stack_h": 2.473721521201888,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6456.423361041794,
+     "soc_min": 0.10838776188328435,
+     "cycles": 224.1813667028401,
+     "refills": 3
+    },
+    {
+     "year": 2009,
+     "pv_kwh": 9831.492577299638,
+     "pv_used_kwh": 7949.6831488865455,
+     "curtailed_kwh": 1881.809428413093,
+     "load_kwh": 10629.0751,
+     "gen_dc_kwh": 3022.381437286236,
+     "genset_h": 376.6043267993012,
+     "starts": 119,
+     "fuel_l": 1139.8319624776436,
+     "wet_stack_h": 6.068403430897456,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6556.639097389599,
+     "soc_min": 0.10749435409394993,
+     "cycles": 227.66107977047218,
+     "refills": 3
+    },
+    {
+     "year": 2010,
+     "pv_kwh": 9604.582690922432,
+     "pv_used_kwh": 7578.825835986916,
+     "curtailed_kwh": 2025.756854935516,
+     "load_kwh": 10620.707699999999,
+     "gen_dc_kwh": 3378.4546844696442,
+     "genset_h": 420.5616947948863,
+     "starts": 133,
+     "fuel_l": 1273.7068171357055,
+     "wet_stack_h": 4.181247814913983,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6527.085818853921,
+     "soc_min": 0.10752314175675065,
+     "cycles": 226.63492426576119,
+     "refills": 3
+    },
+    {
+     "year": 2011,
+     "pv_kwh": 11153.042352374983,
+     "pv_used_kwh": 8764.205585575823,
+     "curtailed_kwh": 2388.8367667991606,
+     "load_kwh": 10646.333,
+     "gen_dc_kwh": 2214.681280134403,
+     "genset_h": 274.21386452518334,
+     "starts": 87,
+     "fuel_l": 833.4768140540729,
+     "wet_stack_h": 3.4349494053662903,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6402.714300572868,
+     "soc_min": 0.108924203417557,
+     "cycles": 222.31646876989126,
+     "refills": 2
+    },
+    {
+     "year": 2012,
+     "pv_kwh": 10805.285028703445,
+     "pv_used_kwh": 8584.8244442043,
+     "curtailed_kwh": 2220.4605844991456,
+     "load_kwh": 10705.023,
+     "gen_dc_kwh": 2451.5866823829633,
+     "genset_h": 303.6182833021774,
+     "starts": 96,
+     "fuel_l": 922.7058293584813,
+     "wet_stack_h": 4.727725818202009,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6380.270133407978,
+     "soc_min": 0.10748082669897858,
+     "cycles": 221.53715740999928,
+     "refills": 2
+    },
+    {
+     "year": 2013,
+     "pv_kwh": 10221.377911729393,
+     "pv_used_kwh": 8032.637579606227,
+     "curtailed_kwh": 2188.740332123167,
+     "load_kwh": 10626.2914,
+     "gen_dc_kwh": 2924.3644466948767,
+     "genset_h": 363.0488301626199,
+     "starts": 115,
+     "fuel_l": 1101.524700540114,
+     "wet_stack_h": 3.782366948422547,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6452.675526486791,
+     "soc_min": 0.10812817257933227,
+     "cycles": 224.05123355856915,
+     "refills": 3
+    },
+    {
+     "year": 2014,
+     "pv_kwh": 9576.711276806138,
+     "pv_used_kwh": 7652.044112886822,
+     "curtailed_kwh": 1924.6671639193166,
+     "load_kwh": 10585.2412,
+     "gen_dc_kwh": 3265.4285440816,
+     "genset_h": 404.09280049633423,
+     "starts": 128,
+     "fuel_l": 1228.695968193708,
+     "wet_stack_h": 2.6853957287471504,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6432.359827471124,
+     "soc_min": 0.10777274250952368,
+     "cycles": 223.34582734274738,
+     "refills": 3
+    },
+    {
+     "year": 2015,
+     "pv_kwh": 11098.574477477774,
+     "pv_used_kwh": 8868.42238467303,
+     "curtailed_kwh": 2230.152092804744,
+     "load_kwh": 10664.1876,
+     "gen_dc_kwh": 2134.4599986868366,
+     "genset_h": 261.4432058141403,
+     "starts": 83,
+     "fuel_l": 800.4482559875839,
+     "wet_stack_h": 0.35116061182895364,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6399.644065577756,
+     "soc_min": 0.10737844889577854,
+     "cycles": 222.20986338811656,
+     "refills": 2
+    },
+    {
+     "year": 2016,
+     "pv_kwh": 10103.712937186334,
+     "pv_used_kwh": 8136.796500492693,
+     "curtailed_kwh": 1966.9164366936398,
+     "load_kwh": 10649.2058,
+     "gen_dc_kwh": 2837.073399594687,
+     "genset_h": 351.9353338920393,
+     "starts": 111,
+     "fuel_l": 1068.3680105573644,
+     "wet_stack_h": 1.9099511714727493,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6483.792771047189,
+     "soc_min": 0.10731757214624939,
+     "cycles": 225.1316934391385,
+     "refills": 3
+    },
+    {
+     "year": 2017,
+     "pv_kwh": 11033.521803531077,
+     "pv_used_kwh": 8685.181289974897,
+     "curtailed_kwh": 2348.340513556181,
+     "load_kwh": 10661.1909,
+     "gen_dc_kwh": 2322.6214797869225,
+     "genset_h": 290.78948080439466,
+     "starts": 92,
+     "fuel_l": 877.3100565081629,
+     "wet_stack_h": 3.6180012049720993,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6442.418457707017,
+     "soc_min": 0.10763639569109677,
+     "cycles": 223.69508533704922,
+     "refills": 2
+    },
+    {
+     "year": 2018,
+     "pv_kwh": 10135.110926293064,
+     "pv_used_kwh": 8146.432584703477,
+     "curtailed_kwh": 1988.6783415895866,
+     "load_kwh": 10655.143,
+     "gen_dc_kwh": 2846.4848527307972,
+     "genset_h": 366.3191676576112,
+     "starts": 116,
+     "fuel_l": 1085.128473902762,
+     "wet_stack_h": 7.790765158575134,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6501.202308944235,
+     "soc_min": 0.10757026826509941,
+     "cycles": 225.73619128278594,
+     "refills": 3
+    },
+    {
+     "year": 2019,
+     "pv_kwh": 10390.585031604835,
+     "pv_used_kwh": 8177.196270248681,
+     "curtailed_kwh": 2213.3887613561533,
+     "load_kwh": 10643.0563,
+     "gen_dc_kwh": 2799.374490710868,
+     "genset_h": 344.6905482737429,
+     "starts": 109,
+     "fuel_l": 1051.6032984532549,
+     "wet_stack_h": 2.254006101457602,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6421.2087989807405,
+     "soc_min": 0.10730775197508499,
+     "cycles": 222.95863885349794,
+     "refills": 2
+    },
+    {
+     "year": 2020,
+     "pv_kwh": 10904.979512808584,
+     "pv_used_kwh": 8684.695002592129,
+     "curtailed_kwh": 2220.284510216456,
+     "load_kwh": 10652.7747,
+     "gen_dc_kwh": 2290.7508271614806,
+     "genset_h": 289.6988689434744,
+     "starts": 92,
+     "fuel_l": 868.1713000448584,
+     "wet_stack_h": 4.5796527639562745,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6442.096831960816,
+     "soc_min": 0.10657672455951565,
+     "cycles": 223.68391777641725,
+     "refills": 3
+    },
+    {
+     "year": 2021,
+     "pv_kwh": 10379.525706565559,
+     "pv_used_kwh": 8168.984944456518,
+     "curtailed_kwh": 2210.5407621090417,
+     "load_kwh": 10660.6096,
+     "gen_dc_kwh": 2838.664270931852,
+     "genset_h": 351.39125832887436,
+     "starts": 111,
+     "fuel_l": 1068.2256701803522,
+     "wet_stack_h": 2.5026004793275476,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6451.954349823463,
+     "soc_min": 0.10863396993106296,
+     "cycles": 224.02619270220362,
+     "refills": 2
+    },
+    {
+     "year": 2022,
+     "pv_kwh": 11014.813478496299,
+     "pv_used_kwh": 8673.429335007038,
+     "curtailed_kwh": 2341.3841434892597,
+     "load_kwh": 10665.1594,
+     "gen_dc_kwh": 2313.3445804138223,
+     "genset_h": 290.3186968323847,
+     "starts": 92,
+     "fuel_l": 874.4966211793095,
+     "wet_stack_h": 4.948077753097188,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6404.9613263145275,
+     "soc_min": 0.10821500286207054,
+     "cycles": 222.39449049703222,
+     "refills": 2
+    },
+    {
+     "year": 2023,
+     "pv_kwh": 10424.92361381965,
+     "pv_used_kwh": 8394.14420307202,
+     "curtailed_kwh": 2030.7794107476298,
+     "load_kwh": 10648.6851,
+     "gen_dc_kwh": 2601.5591392273595,
+     "genset_h": 328.5981815314155,
+     "starts": 104,
+     "fuel_l": 985.557560124183,
+     "wet_stack_h": 4.962649732734897,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6482.572366819754,
+     "soc_min": 0.10726675839721893,
+     "cycles": 225.0893182923526,
+     "refills": 3
+    }
+   ]
+  },
+  "60": {
+   "kpis": {
+    "years": [
+     2005,
+     2023
+    ],
+    "n_years": 19,
+    "pv_bus_kwh": 9886.82800885684,
+    "pv_used_kwh": 8144.147610044277,
+    "curtailed_kwh": 1742.6803988125641,
+    "load_kwh": 10644.426063157895,
+    "solar_fraction": 0.7332401943584914,
+    "gen_dc_kwh": 2839.505027773409,
+    "genset_h_mean": 353.492730944663,
+    "genset_h_p90": 421.0055860774197,
+    "genset_h_max": 429.91586269143033,
+    "genset_h_max_year": 2010,
+    "starts_mean": 111.94736842105263,
+    "starts_max": 136,
+    "fuel_l_mean": 1070.5394551298673,
+    "fuel_l_p90": 1276.368471276698,
+    "fuel_l_max": 1309.1321201690346,
+    "tank_years_mean": 0.4670542478411923,
+    "tank_years_worst": 0.38193242095033175,
+    "refills_mean": 2.6842105263157894,
+    "refills_max": 3,
+    "refill_interval_min_days": 64.54166666666667,
+    "wet_stack_h_mean": 3.307434891913748,
+    "cycles_mean": 226.94900670121555,
+    "unmet_kwh_total": 0.0,
+    "soc_min": 0.10729588918634823,
+    "longest_genset_free_days": 47.5,
+    "dec_pv_kwh": 643.627821687954,
+    "dec_load_kwh": 892.8000000000001,
+    "dec_gen_dc_kwh": 404.27482634765636,
+    "worst_month_genset_h": 75.8648127559317,
+    "worst_month": [
+     2009,
+     12
+    ],
+    "pass_genset_h": false,
+    "pass_genset_h_worst": false,
+    "pass_tank_year": false,
+    "pass_tank_year_worst": false,
+    "site": "hamzici",
+    "tilt": 60,
+    "issu_fit": {
+     "curve_vin_v": 330,
+     "curve_points": 20,
+     "fixed_loss_w": 44.237055016181216
+    },
+    "specific_yield_bus": 1408.3800582417152
+   },
+   "waterfall": [
+    {
+     "stage": "stc",
+     "label": "Ozračenje u ravni × kWp (STC)",
+     "kwh": 12023.523503242104,
+     "loss_kwh": null,
+     "loss_pct": null
+    },
+    {
+     "stage": "iam",
+     "label": "Refleksija (IAM)",
+     "kwh": 11661.38787773719,
+     "loss_kwh": 362.13562550491406,
+     "loss_pct": 3.011892690252282
+    },
+    {
+     "stage": "temp",
+     "label": "Temperatura i slabo svjetlo (Huld)",
+     "kwh": 10762.273285392825,
+     "loss_kwh": 899.1145923443655,
+     "loss_pct": 7.710185114937042
+    },
+    {
+     "stage": "soiling",
+     "label": "Zaprljanje",
+     "kwh": 10553.497742354128,
+     "loss_kwh": 208.77554303869692,
+     "loss_pct": 1.9398833081302542
+    },
+    {
+     "stage": "snow",
+     "label": "Snijeg",
+     "kwh": 10544.4926757999,
+     "loss_kwh": 9.005066554227596,
+     "loss_pct": 0.08532779154429299
+    },
+    {
+     "stage": "mm_lid",
+     "label": "Neusklađenost + LID",
+     "kwh": 10460.294901783638,
+     "loss_kwh": 84.19777401626197,
+     "loss_pct": 0.7984999999999979
+    },
+    {
+     "stage": "wiring",
+     "label": "DC kablovi",
+     "kwh": 10411.560695782357,
+     "loss_kwh": 48.734206001281564,
+     "loss_pct": 0.46589705604735526
+    },
+    {
+     "stage": "optimizer",
+     "label": "Optimizatori",
+     "kwh": 10307.445088824534,
+     "loss_kwh": 104.11560695782282,
+     "loss_pct": 0.9999999999999928
+    },
+    {
+     "stage": "issu",
+     "label": "iSSU S4875G2 (krivulja)",
+     "kwh": 9886.82800885684,
+     "loss_kwh": 420.6170799676929,
+     "loss_pct": 4.080711333827346
+    },
+    {
+     "stage": "clip",
+     "label": "iSSU ograničenje 4 kW",
+     "kwh": 9886.82800885684,
+     "loss_kwh": 0.0,
+     "loss_pct": 0.0
+    }
+   ],
+   "monthly_mean": {
+    "pv_kwh": [
+     687.1003580205336,
+     671.4582087338596,
+     859.6165858136179,
+     862.747614378751,
+     862.535857000407,
+     867.6907273141281,
+     961.1957628213378,
+     1004.6738322560508,
+     941.7580299330002,
+     891.4252523464135,
+     632.9979585507876,
+     643.627821687954
+    ],
+    "pv_used_kwh": [
+     529.4696238969324,
+     507.05300814291627,
+     647.1083297218961,
+     682.9193400336841,
+     739.9655273230788,
+     784.3039730811241,
+     884.2303705184531,
+     881.96423315482,
+     764.2813149287313,
+     691.0907997254709,
+     511.1196882171269,
+     520.6414013000426
+    ],
+    "load_kwh": [
+     892.7368421052631,
+     812.4634631578947,
+     891.6380894736842,
+     865.0124999999999,
+     899.4706894736843,
+     886.9499368421053,
+     933.4459421052632,
+     932.0917157894737,
+     877.6730842105263,
+     896.0677999999999,
+     864.076,
+     892.8000000000001
+    ],
+    "gen_dc_kwh": [
+     394.79432915918244,
+     334.0798897398744,
+     274.04876884158284,
+     208.34387528587385,
+     187.91689513061854,
+     127.2703919198844,
+     77.20229565570787,
+     77.3734905152418,
+     140.63001554688077,
+     231.50972441920155,
+     382.0605252117043,
+     404.27482634765636
+    ],
+    "genset_h": [
+     49.02598066640563,
+     42.17677940430505,
+     33.96483488308726,
+     25.8554092809578,
+     23.626271353154696,
+     16.262514981529634,
+     10.108443872721354,
+     9.809023040389173,
+     17.63175204492066,
+     28.505108853303742,
+     46.8501527406558,
+     49.67645982323216
+    ],
+    "fuel_l": [
+     148.72151833286586,
+     126.54038792447535,
+     103.1690694390425,
+     78.46749899961281,
+     71.08003274977554,
+     48.4015028400863,
+     29.60397307870819,
+     29.34778327151084,
+     53.14438223352691,
+     86.96716047431424,
+     143.33008334967204,
+     151.76606243627668
+    ]
+   },
+   "years": [
+    {
+     "year": 2005,
+     "pv_kwh": 9823.34060238061,
+     "pv_used_kwh": 8111.552716768955,
+     "curtailed_kwh": 1711.7878856116547,
+     "load_kwh": 10605.3779,
+     "gen_dc_kwh": 2830.704082678602,
+     "genset_h": 353.63613437466455,
+     "starts": 112,
+     "fuel_l": 1068.4603976773417,
+     "wet_stack_h": 5.7975008070136145,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6617.970955954505,
+     "soc_min": 0.10776424626110664,
+     "cycles": 229.79065819286478,
+     "refills": 3
+    },
+    {
+     "year": 2006,
+     "pv_kwh": 9959.110830809668,
+     "pv_used_kwh": 8223.726486101159,
+     "curtailed_kwh": 1735.3843447085096,
+     "load_kwh": 10620.4785,
+     "gen_dc_kwh": 2736.3294169319156,
+     "genset_h": 342.80858432228825,
+     "starts": 109,
+     "fuel_l": 1033.8008613252973,
+     "wet_stack_h": 3.6355767159341785,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6514.404242065533,
+     "soc_min": 0.10792644669055361,
+     "cycles": 226.1945917383866,
+     "refills": 2
+    },
+    {
+     "year": 2007,
+     "pv_kwh": 10065.50716890589,
+     "pv_used_kwh": 8243.177158033373,
+     "curtailed_kwh": 1822.3300108725155,
+     "load_kwh": 10643.5798,
+     "gen_dc_kwh": 2740.4428360322863,
+     "genset_h": 340.54980632447945,
+     "starts": 108,
+     "fuel_l": 1032.5808255245518,
+     "wet_stack_h": 4.495061793318666,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6519.087729156191,
+     "soc_min": 0.10919336298166475,
+     "cycles": 226.3572128179233,
+     "refills": 3
+    },
+    {
+     "year": 2008,
+     "pv_kwh": 9809.426991952658,
+     "pv_used_kwh": 8119.451801797717,
+     "curtailed_kwh": 1689.9751901549403,
+     "load_kwh": 10661.975199999999,
+     "gen_dc_kwh": 2882.323722761516,
+     "genset_h": 356.03232275106234,
+     "starts": 113,
+     "fuel_l": 1083.89184870094,
+     "wet_stack_h": 1.6562380751842887,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6542.231565248081,
+     "soc_min": 0.10738113420575483,
+     "cycles": 227.1608182377806,
+     "refills": 3
+    },
+    {
+     "year": 2009,
+     "pv_kwh": 9253.503994402625,
+     "pv_used_kwh": 7604.691407888657,
+     "curtailed_kwh": 1648.8125865139684,
+     "load_kwh": 10629.0751,
+     "gen_dc_kwh": 3370.3929566120896,
+     "genset_h": 419.59782584897863,
+     "starts": 133,
+     "fuel_l": 1270.7071583267789,
+     "wet_stack_h": 3.8087701729558874,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6616.725904137886,
+     "soc_min": 0.10764735575125538,
+     "cycles": 229.74742722700995,
+     "refills": 3
+    },
+    {
+     "year": 2010,
+     "pv_kwh": 9013.062034603145,
+     "pv_used_kwh": 7480.175273735251,
+     "curtailed_kwh": 1532.8867608678934,
+     "load_kwh": 10620.707699999999,
+     "gen_dc_kwh": 3481.6963796113128,
+     "genset_h": 429.91586269143033,
+     "starts": 136,
+     "fuel_l": 1309.1321201690346,
+     "wet_stack_h": 4.744813689015814,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6613.533138213597,
+     "soc_min": 0.1073222042781266,
+     "cycles": 229.63656729908325,
+     "refills": 3
+    },
+    {
+     "year": 2011,
+     "pv_kwh": 10592.024080253394,
+     "pv_used_kwh": 8616.044054460808,
+     "curtailed_kwh": 1975.9800257925851,
+     "load_kwh": 10646.333,
+     "gen_dc_kwh": 2366.9331022116817,
+     "genset_h": 293.2169721741334,
+     "starts": 93,
+     "fuel_l": 890.9273515205176,
+     "wet_stack_h": 2.4032687733060674,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6481.465345555205,
+     "soc_min": 0.10794102027030228,
+     "cycles": 225.0508800540002,
+     "refills": 2
+    },
+    {
+     "year": 2012,
+     "pv_kwh": 10196.821559168155,
+     "pv_used_kwh": 8466.919409408767,
+     "curtailed_kwh": 1729.9021497593867,
+     "load_kwh": 10705.023,
+     "gen_dc_kwh": 2574.9980994433627,
+     "genset_h": 319.88673197457746,
+     "starts": 101,
+     "fuel_l": 970.1387772885579,
+     "wet_stack_h": 1.599206274763444,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6486.285417267017,
+     "soc_min": 0.10770498219877443,
+     "cycles": 225.21824365510477,
+     "refills": 3
+    },
+    {
+     "year": 2013,
+     "pv_kwh": 9645.84640519353,
+     "pv_used_kwh": 7847.777482951991,
+     "curtailed_kwh": 1798.068922241538,
+     "load_kwh": 10626.2914,
+     "gen_dc_kwh": 3115.783569099786,
+     "genset_h": 389.14848937287366,
+     "starts": 123,
+     "fuel_l": 1175.9625219738296,
+     "wet_stack_h": 4.808779370629645,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6542.738646405049,
+     "soc_min": 0.10731708782187421,
+     "cycles": 227.17842522239755,
+     "refills": 3
+    },
+    {
+     "year": 2014,
+     "pv_kwh": 9043.623219996347,
+     "pv_used_kwh": 7466.240224276091,
+     "curtailed_kwh": 1577.3829957202558,
+     "load_kwh": 10585.2412,
+     "gen_dc_kwh": 3454.6133004973553,
+     "genset_h": 426.63662699118413,
+     "starts": 135,
+     "fuel_l": 1299.0137230763748,
+     "wet_stack_h": 4.117818787245323,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6503.590203017509,
+     "soc_min": 0.10799984652317048,
+     "cycles": 225.81910427144132,
+     "refills": 3
+    },
+    {
+     "year": 2015,
+     "pv_kwh": 10567.903611761776,
+     "pv_used_kwh": 8700.857916295632,
+     "curtailed_kwh": 1867.0456954661427,
+     "load_kwh": 10664.1876,
+     "gen_dc_kwh": 2304.700305212396,
+     "genset_h": 287.6120489293324,
+     "starts": 91,
+     "fuel_l": 869.6070754981192,
+     "wet_stack_h": 2.8239036131069226,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6481.243328614026,
+     "soc_min": 0.10756540121070339,
+     "cycles": 225.04317113243147,
+     "refills": 2
+    },
+    {
+     "year": 2016,
+     "pv_kwh": 9570.179260817808,
+     "pv_used_kwh": 7972.795758139351,
+     "curtailed_kwh": 1597.3835026784573,
+     "load_kwh": 10649.2058,
+     "gen_dc_kwh": 3006.8704058873086,
+     "genset_h": 373.59394078383616,
+     "starts": 118,
+     "fuel_l": 1132.9046493412372,
+     "wet_stack_h": 2.0886933604674103,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6574.507122605045,
+     "soc_min": 0.10729588918634823,
+     "cycles": 228.28149731267519,
+     "refills": 3
+    },
+    {
+     "year": 2017,
+     "pv_kwh": 10442.129897995681,
+     "pv_used_kwh": 8527.213516628823,
+     "curtailed_kwh": 1914.916381366859,
+     "load_kwh": 10661.1909,
+     "gen_dc_kwh": 2483.3690205623775,
+     "genset_h": 309.49617735791594,
+     "starts": 98,
+     "fuel_l": 936.6095663888194,
+     "wet_stack_h": 2.737378059057929,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6514.795331222456,
+     "soc_min": 0.10755868606159293,
+     "cycles": 226.20817122300198,
+     "refills": 2
+    },
+    {
+     "year": 2018,
+     "pv_kwh": 9558.985861584053,
+     "pv_used_kwh": 7937.387949751335,
+     "curtailed_kwh": 1621.5979118327175,
+     "load_kwh": 10655.143,
+     "gen_dc_kwh": 3057.7231574212215,
+     "genset_h": 382.02012861879746,
+     "starts": 121,
+     "fuel_l": 1154.1724410989038,
+     "wet_stack_h": 3.941578213370056,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6545.461911512194,
+     "soc_min": 0.10785090972749072,
+     "cycles": 227.27298303861787,
+     "refills": 3
+    },
+    {
+     "year": 2019,
+     "pv_kwh": 9850.277000266027,
+     "pv_used_kwh": 8071.8177493633675,
+     "curtailed_kwh": 1778.4592509026595,
+     "load_kwh": 10643.0563,
+     "gen_dc_kwh": 2909.8460500303595,
+     "genset_h": 359.2764313258931,
+     "starts": 114,
+     "fuel_l": 1094.0860399194182,
+     "wet_stack_h": 0.8140332953540814,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6519.265906048904,
+     "soc_min": 0.10774547494175515,
+     "cycles": 226.36339951558696,
+     "refills": 3
+    },
+    {
+     "year": 2020,
+     "pv_kwh": 10384.310513695076,
+     "pv_used_kwh": 8525.855901113022,
+     "curtailed_kwh": 1858.4546125820532,
+     "load_kwh": 10652.7747,
+     "gen_dc_kwh": 2456.5954751796007,
+     "genset_h": 305.67639985725776,
+     "starts": 97,
+     "fuel_l": 926.0287925793792,
+     "wet_stack_h": 2.10292428596485,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6503.501006828967,
+     "soc_min": 0.10947468410101513,
+     "cycles": 225.81600718156136,
+     "refills": 2
+    },
+    {
+     "year": 2021,
+     "pv_kwh": 9764.932208172884,
+     "pv_used_kwh": 7945.827140097477,
+     "curtailed_kwh": 1819.1050680754079,
+     "load_kwh": 10660.6096,
+     "gen_dc_kwh": 3062.498777669696,
+     "genset_h": 382.5866758828241,
+     "starts": 121,
+     "fuel_l": 1155.9449530721413,
+     "wet_stack_h": 4.987468804453254,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6538.457777537609,
+     "soc_min": 0.10741805844481997,
+     "cycles": 227.02978394227813,
+     "refills": 3
+    },
+    {
+     "year": 2022,
+     "pv_kwh": 10428.67690734908,
+     "pv_used_kwh": 8515.682068560678,
+     "curtailed_kwh": 1912.9948387884012,
+     "load_kwh": 10665.1594,
+     "gen_dc_kwh": 2476.1274501920484,
+     "genset_h": 309.9882990806501,
+     "starts": 98,
+     "fuel_l": 935.2730087251067,
+     "wet_stack_h": 3.3392469279341226,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6488.891458928928,
+     "soc_min": 0.10811892118181446,
+     "cycles": 225.30873121281002,
+     "refills": 2
+    },
+    {
+     "year": 2023,
+     "pv_kwh": 9880.070018971575,
+     "pv_used_kwh": 8361.610575468798,
+     "curtailed_kwh": 1518.4594435027789,
+     "load_kwh": 10648.6851,
+     "gen_dc_kwh": 2638.647419659858,
+     "genset_h": 334.6824292864171,
+     "starts": 106,
+     "fuel_l": 1001.0075352611287,
+     "wet_stack_h": 2.93900192728565,
+     "unmet_kwh": 0.0,
+     "discharge_kwh": 6582.339476586439,
+     "soc_min": 0.10759933768489593,
+     "cycles": 228.55345404814025,
+     "refills": 3
+    }
+   ]
+  }
+ },
+ "sensitivity": {
+  "45": [
+   {
+    "case": "Osnovni slučaj: start DOD 85 %, stop SoC 90 %, punjenje 0,25 C",
+    "genset_h_mean": 333.07795405033335,
+    "genset_h_p90": 382.1020215387078,
+    "genset_h_max": 420.5616947948863,
+    "fuel_l_mean": 1008.1327490931799,
+    "fuel_l_max": 1273.7068171357055,
+    "tank_years_mean": 0.4959664294704763,
+    "starts_mean": 105.42105263157895,
+    "gen_dc_kwh": 2673.2169883696724,
+    "curtailed_kwh": 2142.148723628072,
+    "wet_stack_h_mean": 3.5546530951640647
+   },
+   {
+    "case": "Stop SoC 100 % (punjenje do vrha)",
+    "genset_h_mean": 346.2108616992268,
+    "genset_h_p90": 392.250788012295,
+    "genset_h_max": 439.68112467878717,
+    "fuel_l_mean": 1046.421160527702,
+    "fuel_l_max": 1330.9379491628197,
+    "tank_years_mean": 0.47781908361625053,
+    "starts_mean": 96.94736842105263,
+    "gen_dc_kwh": 2772.832783360763,
+    "curtailed_kwh": 2241.0409296696735,
+    "wet_stack_h_mean": 6.493438871173535
+   },
+   {
+    "case": "Stop SoC 60 %",
+    "genset_h_mean": 294.9779662124205,
+    "genset_h_p90": 344.94982104493914,
+    "genset_h_max": 385.5957432934887,
+    "fuel_l_mean": 903.8930407218179,
+    "fuel_l_max": 1185.4556305007438,
+    "tank_years_mean": 0.5531627941296209,
+    "starts_mean": 152.8421052631579,
+    "gen_dc_kwh": 2411.3036950572136,
+    "curtailed_kwh": 1876.138552063646,
+    "wet_stack_h_mean": 0.5436021494964849
+   },
+   {
+    "case": "Stop SoC 40 %",
+    "genset_h_mean": 273.7843018827985,
+    "genset_h_p90": 323.62806089401704,
+    "genset_h_max": 362.07524839540184,
+    "fuel_l_mean": 842.7350913385746,
+    "fuel_l_max": 1116.71888981783,
+    "tank_years_mean": 0.5933062538143692,
+    "starts_mean": 247.0,
+    "gen_dc_kwh": 2253.0451262448737,
+    "curtailed_kwh": 1723.8869126575364,
+    "wet_stack_h_mean": 0.30450174730154617
+   },
+   {
+    "case": "Punjenje 0,15 C",
+    "genset_h_mean": 524.0538732228882,
+    "genset_h_p90": 593.5392748221512,
+    "genset_h_max": 658.6286264218754,
+    "fuel_l_mean": 1186.8284961935208,
+    "fuel_l_max": 1501.9879499120207,
+    "tank_years_mean": 0.42129086182513725,
+    "starts_mean": 99.52631578947368,
+    "gen_dc_kwh": 2624.587506963704,
+    "curtailed_kwh": 2101.6893768311456,
+    "wet_stack_h_mean": 57.53916085115841
+   },
+   {
+    "case": "Punjenje 0,5 C",
+    "genset_h_mean": 295.2010732931911,
+    "genset_h_p90": 338.655511021846,
+    "genset_h_max": 375.8571996031284,
+    "fuel_l_mean": 974.9207624741371,
+    "fuel_l_max": 1241.3788340137098,
+    "tank_years_mean": 0.5128621927500124,
+    "starts_mean": 106.21052631578948,
+    "gen_dc_kwh": 2691.689969156546,
+    "curtailed_kwh": 2156.2354977908735,
+    "wet_stack_h_mean": 0.05003439158066111
+   },
+   {
+    "case": "Stop SoC 40 % + punjenje 0,5 C",
+    "genset_h_mean": 249.24889178258098,
+    "genset_h_p90": 293.5790701956823,
+    "genset_h_max": 327.21428197738106,
+    "fuel_l_mean": 823.2766425545857,
+    "fuel_l_max": 1080.7986889555918,
+    "tank_years_mean": 0.607329267168962,
+    "starts_mean": 244.47368421052633,
+    "gen_dc_kwh": 2273.149893057139,
+    "curtailed_kwh": 1737.2801489611638,
+    "wet_stack_h_mean": 0.0
+   },
+   {
+    "case": "PREPORUKA TD: stop SoC 60 % + punjenje 0,5 C",
+    "genset_h_mean": 263.6227795222326,
+    "genset_h_p90": 307.2702651821613,
+    "genset_h_max": 346.6224677606844,
+    "fuel_l_mean": 870.7540293310108,
+    "fuel_l_max": 1144.9045147246848,
+    "tank_years_mean": 0.5742149713440242,
+    "starts_mean": 153.10526315789474,
+    "gen_dc_kwh": 2404.2397492427613,
+    "curtailed_kwh": 1869.0517176593976,
+    "wet_stack_h_mean": 0.0
+   },
+   {
+    "case": "Start pri DOD 70 %",
+    "genset_h_mean": 368.02254978685056,
+    "genset_h_p90": 427.23412745187966,
+    "genset_h_max": 433.77746773978936,
+    "fuel_l_mean": 1105.0281958922346,
+    "fuel_l_max": 1318.4710276969583,
+    "tank_years_mean": 0.45247714208440104,
+    "starts_mean": 144.8421052631579,
+    "gen_dc_kwh": 2918.542358577322,
+    "curtailed_kwh": 2387.1530864926112,
+    "wet_stack_h_mean": 4.619668336060477
+   },
+   {
+    "case": "Potrošnja 1180 W stalno (bez hlađenja i pomoćne)",
+    "genset_h_mean": 316.9758673851686,
+    "genset_h_p90": 366.6596935515395,
+    "genset_h_max": 398.546802222606,
+    "fuel_l_mean": 960.2438845756293,
+    "fuel_l_max": 1208.283530757946,
+    "tank_years_mean": 0.5207010510886724,
+    "starts_mean": 100.36842105263158,
+    "gen_dc_kwh": 2547.3413480742233,
+    "curtailed_kwh": 2325.6847539521186,
+    "wet_stack_h_mean": 2.9513440360880256
+   },
+   {
+    "case": "Potrošnja 1330 W stalno",
+    "genset_h_mean": 419.6419018069163,
+    "genset_h_p90": 491.49163807664803,
+    "genset_h_max": 499.3764330130375,
+    "fuel_l_mean": 1270.7245516159874,
+    "fuel_l_max": 1521.144337489571,
+    "tank_years_mean": 0.3934763040221008,
+    "starts_mean": 132.47368421052633,
+    "gen_dc_kwh": 3370.287293243922,
+    "curtailed_kwh": 1793.0797372059387,
+    "wet_stack_h_mean": 5.510252323047806
+   }
+  ],
+  "60": [
+   {
+    "case": "Osnovni slučaj: start DOD 85 %, stop SoC 90 %, punjenje 0,25 C",
+    "genset_h_mean": 353.492730944663,
+    "genset_h_p90": 421.0055860774197,
+    "genset_h_max": 429.91586269143033,
+    "fuel_l_mean": 1070.5394551298673,
+    "fuel_l_max": 1309.1321201690346,
+    "tank_years_mean": 0.4670542478411923,
+    "starts_mean": 111.94736842105263,
+    "gen_dc_kwh": 2839.505027773409,
+    "curtailed_kwh": 1742.6803988125641,
+    "wet_stack_h_mean": 3.307434891913748
+   },
+   {
+    "case": "Stop SoC 100 % (punjenje do vrha)",
+    "genset_h_mean": 367.8926496833189,
+    "genset_h_p90": 435.29588816784724,
+    "genset_h_max": 453.467236581765,
+    "fuel_l_mean": 1110.724150329924,
+    "fuel_l_max": 1375.857818533237,
+    "tank_years_mean": 0.45015677371513213,
+    "starts_mean": 103.05263157894737,
+    "gen_dc_kwh": 2941.6127425605564,
+    "curtailed_kwh": 1843.9116355366343,
+    "wet_stack_h_mean": 7.3187684743546875
+   },
+   {
+    "case": "Stop SoC 60 %",
+    "genset_h_mean": 312.94008454612253,
+    "genset_h_p90": 368.62426643822994,
+    "genset_h_max": 393.87974378944966,
+    "fuel_l_mean": 957.7395421006709,
+    "fuel_l_max": 1212.7097627910716,
+    "tank_years_mean": 0.5220626047279183,
+    "starts_mean": 162.1578947368421,
+    "gen_dc_kwh": 2553.4058519160108,
+    "curtailed_kwh": 1452.1085732034494,
+    "wet_stack_h_mean": 1.0368798698702373
+   },
+   {
+    "case": "Stop SoC 40 %",
+    "genset_h_mean": 289.761138903204,
+    "genset_h_p90": 344.43137927980274,
+    "genset_h_max": 376.09565778375026,
+    "fuel_l_mean": 891.7857657075687,
+    "fuel_l_max": 1158.2056423067534,
+    "tank_years_mean": 0.5606727750395136,
+    "starts_mean": 261.2631578947368,
+    "gen_dc_kwh": 2384.0175221452846,
+    "curtailed_kwh": 1289.1299976462233,
+    "wet_stack_h_mean": 0.4825787099089391
+   },
+   {
+    "case": "Punjenje 0,15 C",
+    "genset_h_mean": 556.9386412056974,
+    "genset_h_p90": 650.9295265966156,
+    "genset_h_max": 680.386989223199,
+    "fuel_l_mean": 1259.3908563111959,
+    "fuel_l_max": 1554.8654486062746,
+    "tank_years_mean": 0.39701733381209325,
+    "starts_mean": 105.73684210526316,
+    "gen_dc_kwh": 2781.710771817773,
+    "curtailed_kwh": 1693.341498237162,
+    "wet_stack_h_mean": 63.033442868459026
+   },
+   {
+    "case": "Punjenje 0,5 C",
+    "genset_h_mean": 313.3671959816161,
+    "genset_h_p90": 372.7074015649585,
+    "genset_h_max": 384.27220941940016,
+    "fuel_l_mean": 1035.0092137863048,
+    "fuel_l_max": 1269.159297418577,
+    "tank_years_mean": 0.4830874868938447,
+    "starts_mean": 112.6842105263158,
+    "gen_dc_kwh": 2857.702390506568,
+    "curtailed_kwh": 1756.2979030366398,
+    "wet_stack_h_mean": 0.021977980804252003
+   },
+   {
+    "case": "Stop SoC 40 % + punjenje 0,5 C",
+    "genset_h_mean": 263.3336981459789,
+    "genset_h_p90": 312.0801661117266,
+    "genset_h_max": 341.591302067857,
+    "fuel_l_mean": 869.7991847852029,
+    "fuel_l_max": 1128.2864219817093,
+    "tank_years_mean": 0.5748453306764999,
+    "starts_mean": 258.2105263157895,
+    "gen_dc_kwh": 2401.6033270913263,
+    "curtailed_kwh": 1299.6796869959414,
+    "wet_stack_h_mean": 0.0
+   },
+   {
+    "case": "PREPORUKA TD: stop SoC 60 % + punjenje 0,5 C",
+    "genset_h_mean": 280.10409920052086,
+    "genset_h_p90": 331.3748254808113,
+    "genset_h_max": 356.69147812058225,
+    "fuel_l_mean": 925.1923276623265,
+    "fuel_l_max": 1178.1627610649534,
+    "tank_years_mean": 0.5404281737434471,
+    "starts_mean": 163.10526315789474,
+    "gen_dc_kwh": 2554.5493847087505,
+    "curtailed_kwh": 1453.2831655343675,
+    "wet_stack_h_mean": 0.0
+   },
+   {
+    "case": "Start pri DOD 70 %",
+    "genset_h_mean": 393.0326425180708,
+    "genset_h_p90": 445.80981001897635,
+    "genset_h_max": 476.77190457323394,
+    "fuel_l_mean": 1180.1748993616152,
+    "fuel_l_max": 1443.6489912288496,
+    "tank_years_mean": 0.4236660178677431,
+    "starts_mean": 154.73684210526315,
+    "gen_dc_kwh": 3117.083337100435,
+    "curtailed_kwh": 2020.2021064102546,
+    "wet_stack_h_mean": 5.720912364416366
+   },
+   {
+    "case": "Potrošnja 1180 W stalno (bez hlađenja i pomoćne)",
+    "genset_h_mean": 332.59788587055556,
+    "genset_h_p90": 382.8323721114679,
+    "genset_h_max": 410.9525227129766,
+    "fuel_l_mean": 1006.3228372782781,
+    "fuel_l_max": 1253.9090445493175,
+    "tank_years_mean": 0.4968584449025429,
+    "starts_mean": 105.3157894736842,
+    "gen_dc_kwh": 2667.950807574581,
+    "curtailed_kwh": 1880.3424638120437,
+    "wet_stack_h_mean": 3.434406760868436
+   },
+   {
+    "case": "Potrošnja 1330 W stalno",
+    "genset_h_mean": 447.9256021017202,
+    "genset_h_p90": 518.7697619364975,
+    "genset_h_max": 542.0544485349237,
+    "fuel_l_mean": 1355.2136340492332,
+    "fuel_l_max": 1645.4360537297655,
+    "tank_years_mean": 0.3689455207929495,
+    "starts_mean": 141.42105263157896,
+    "gen_dc_kwh": 3592.86060651215,
+    "curtailed_kwh": 1449.730715944667,
+    "wet_stack_h_mean": 5.739316319863101
+   }
+  ]
+ }
+}

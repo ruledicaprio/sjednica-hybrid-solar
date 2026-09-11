@@ -1,0 +1,116 @@
+{
+ "horizon.json": {
+  "endpoint": "printhorizon",
+  "params": {
+   "lat": 43.28801195406457,
+   "lon": 17.624794323005304
+  },
+  "sha256": "02673b5a66d39e3b11f75ffd507400390a0d5acefa4cfe8e8cc2d97efdfd47e0"
+ },
+ "pvcalc_t45.json": {
+  "endpoint": "PVcalc",
+  "params": {
+   "lat": 43.28801195406457,
+   "lon": 17.624794323005304,
+   "raddatabase": "PVGIS-SARAH3",
+   "usehorizon": 1,
+   "angle": 45,
+   "aspect": 0,
+   "peakpower": 7.02,
+   "loss": 14.0,
+   "pvtechchoice": "crystSi",
+   "mountingplace": "free"
+  },
+  "sha256": "c2872c84046ccda5f876a0405c606a8ad1933746c78f5896774b6c16629f6e1b"
+ },
+ "shscalc_t45.json": {
+  "endpoint": "SHScalc",
+  "params": {
+   "lat": 43.28801195406457,
+   "lon": 17.624794323005304,
+   "raddatabase": "PVGIS-SARAH3",
+   "usehorizon": 1,
+   "angle": 45,
+   "aspect": 0,
+   "peakpower": 7020.0,
+   "batterysize": 28799.999999999996,
+   "cutoff": 15,
+   "consumptionday": 28800
+  },
+  "sha256": "6491d29d44ad12c8b6d87b4c78f121a0399457df578fa663f8b672442bb8e94d"
+ },
+ "seriescalc_t45 (cache only)": {
+  "endpoint": "seriescalc",
+  "params": {
+   "lat": 43.28801195406457,
+   "lon": 17.624794323005304,
+   "raddatabase": "PVGIS-SARAH3",
+   "usehorizon": 1,
+   "angle": 45,
+   "aspect": 0,
+   "startyear": 2005,
+   "endyear": 2023,
+   "pvcalculation": 1,
+   "peakpower": 7.02,
+   "loss": 14.0,
+   "components": 1,
+   "pvtechchoice": "crystSi",
+   "mountingplace": "free"
+  },
+  "sha256": "51d612e7b1c4aa7bc1b2dc919f781db22bd68aecb4914a1f989910d6a0b730ba",
+  "fetched_utc": "2026-09-11T11:46:25+00:00"
+ },
+ "pvcalc_t60.json": {
+  "endpoint": "PVcalc",
+  "params": {
+   "lat": 43.28801195406457,
+   "lon": 17.624794323005304,
+   "raddatabase": "PVGIS-SARAH3",
+   "usehorizon": 1,
+   "angle": 60,
+   "aspect": 0,
+   "peakpower": 7.02,
+   "loss": 14.0,
+   "pvtechchoice": "crystSi",
+   "mountingplace": "free"
+  },
+  "sha256": "2690b4c848943ef1391550f919be101529b90f723a63287ffa61fd1200d0b135"
+ },
+ "shscalc_t60.json": {
+  "endpoint": "SHScalc",
+  "params": {
+   "lat": 43.28801195406457,
+   "lon": 17.624794323005304,
+   "raddatabase": "PVGIS-SARAH3",
+   "usehorizon": 1,
+   "angle": 60,
+   "aspect": 0,
+   "peakpower": 7020.0,
+   "batterysize": 28799.999999999996,
+   "cutoff": 15,
+   "consumptionday": 28800
+  },
+  "sha256": "cea4bad2dc87653bf818d33289a7515d9803570b60c028e9b181453119331b62"
+ },
+ "seriescalc_t60 (cache only)": {
+  "endpoint": "seriescalc",
+  "params": {
+   "lat": 43.28801195406457,
+   "lon": 17.624794323005304,
+   "raddatabase": "PVGIS-SARAH3",
+   "usehorizon": 1,
+   "angle": 60,
+   "aspect": 0,
+   "startyear": 2005,
+   "endyear": 2023,
+   "pvcalculation": 1,
+   "peakpower": 7.02,
+   "loss": 14.0,
+   "components": 1,
+   "pvtechchoice": "crystSi",
+   "mountingplace": "free"
+  },
+  "sha256": "cf151e0853a349641567eae71a73b4decc7c428787aaa7139b32b4d11ba22207",
+  "fetched_utc": "2026-09-11T11:46:48+00:00"
+ }
+}

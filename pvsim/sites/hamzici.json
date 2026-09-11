@@ -1,0 +1,127 @@
+{
+ "id": "hamzici",
+ "name": "BS Hamzići",
+ "place": "Čitluk",
+ "lat": 43.28801195406457,
+ "lon": 17.624794323005304,
+ "altitude_m": 493,
+ "design_json": "bht-sjednica-final-review/cad/design.json",
+ "_design_json": "Same system as Sjednica (plan: design cannot change). Point this at hamzici-hybrid-solar/cad/design.json once that file exists (Phase 5).",
+ "review_dir": "hamzici-hybrid-solar/review/pvsim",
+ "pvgis": {
+  "db": "PVGIS-SARAH3",
+  "start": 2005,
+  "end": 2023,
+  "userhorizon": null,
+  "_src": "PVGIS API v5.3, SARAH3 with ERA5 temperature and wind, 2005-2023. Horizon from the PVGIS DEM (at most 2,7°, to the north). The lone tree 15-20 m SSE-SE of the tower (photo survey 08.09.2026) is NOT in the DEM; it is added as a user horizon by `python -m pvsim photo` (Phase 2)."
+ },
+ "array": {
+  "tilts": [45, 60],
+  "strings": 2,
+  "modules_per_string": 6,
+  "_src": "Same array as Sjednica: 12 x iPV585-M2A, 2 strings x 6 (design cannot change). Tilt 45 or 60 is under decision (plan Phase 3)."
+ },
+ "pv": {
+  "iam_a_r": 0.16,
+  "faiman_u0": 26.9,
+  "faiman_u1": 6.2,
+  "huld_k_version": "pvgis5",
+  "soiling_monthly": [0.01, 0.01, 0.015, 0.02, 0.02, 0.025, 0.03, 0.03, 0.025, 0.015, 0.01, 0.01],
+  "snow_monthly": {
+   "45": [0.01, 0.01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.005],
+   "60": [0.005, 0.005, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0025]
+  },
+  "mismatch": 0.003,
+  "lid": 0.005,
+  "dc_wiring_stc": 0.0078,
+  "optimizer_eff": 0.99,
+  "issu": {
+   "units": 2,
+   "v_out": 53.5,
+   "p_out_max_w": 4000,
+   "derate_c_w": [[55, 4000], [65, 3200], [75, 2400], [80, 1000]],
+   "cabinet_rise_c": 10,
+   "curve_vin_v": 330,
+   "curve_a_pct": [[10.5, 92.70], [12.1, 93.99], [14.0, 94.89], [15.4, 95.49], [16.5, 95.92], [18.5, 96.17], [20.1, 96.41], [22.9, 96.55], [25.3, 96.75], [28.2, 96.99], [30.4, 97.18], [34.2, 97.24], [39.2, 97.30], [44.0, 97.28], [49.2, 97.30], [55.5, 97.23], [60.2, 97.12], [65.5, 97.00], [70.5, 96.91], [75.2, 96.81]],
+   "_src": "As sjednica.json: iSSU S4875G2 datasheet Figure 2, Vin = 330 V, digitised."
+  },
+  "_src": {
+   "model": "As sjednica.json (PVGIS c-Si module model; see there).",
+   "soiling_monthly": "Assumption: a drier, dustier Herzegovina summer than Sjednica (karst, terra rossa, dry grass).",
+   "snow_monthly": "Assumption: 493 m in the Mediterranean belt, snow is rare and short-lived.",
+   "other": "mismatch, LID, wiring and optimizer as sjednica.json."
+  }
+ },
+ "load": {
+  "base_w": 1180,
+  "aux_w": 20,
+  "cooling_w_max": 150,
+  "cooling_t0_c": 20,
+  "cooling_t1_c": 35,
+  "_src": "Preliminary: the same 1180 W / 1330 W as Sjednica, until the measured Hamzići DC load arrives (user decision 2026-09-11). Cooling ramp and aux as sjednica.json. The ramp matters more here: July/August mean 24,7 °C."
+ },
+ "battery": {
+  "modules": 6,
+  "kwh_per_module": 4.8,
+  "soc_initial": 0.8,
+  "soc_floor": 0.05,
+  "eta_charge": 0.975,
+  "eta_discharge": 0.975,
+  "charge_c_rate": 0.25,
+  "_src": "As sjednica.json (6 x ESM-48100A6; efficiencies and charge limit are assumptions)."
+ },
+ "control": {
+  "dod_start": 0.85,
+  "soc_stop": 0.9,
+  "min_run_h": 1.0,
+  "_src": "As sjednica.json (SMU 'DOD to Start' 85 % default; stop SoC and minimum run are assumptions)."
+ },
+ "genset": {
+  "rect_cap_ac_kw": 9.5,
+  "eta_rect": 0.96,
+  "prime_kw": 13.2,
+  "fuel_l_h": [[6.6, 2.6], [9.9, 3.4], [13.2, 4.4]],
+  "wet_stack_frac": 0.3,
+  "_src": "As sjednica.json. At 493 m and 40 °C the derated prime is ≈12,3 kW, so the 9,5 kW cap leaves more margin than at Sjednica (to be confirmed in Hamzići 07-proracuni A.2)."
+ },
+ "tank": {
+  "first_fill_l": 250,
+  "refill_at_frac": 0.2,
+  "_src": "As sjednica.json."
+ },
+ "limits": {
+  "genset_h_max": 250,
+  "tank_years_min": 1.0,
+  "_src": "Prijedlog Odluke, Aneks 2 (the joint tender applies the same limits to both sites)."
+ },
+ "photos": {
+  "folder": "hamzici-hybrid-solar/hamzici-photos",
+  "key": ["20260908_121209(1).jpg", "20260908_121243(1).jpg", "20260908_121313(1).jpg",
+          "20260908_121141(1).jpg", "20260908_121540.jpg"],
+  "_src": "Site visit 08.09.2026 12:11-12:17 CEST, Samsung Galaxy A55. EXIF carries the time and UTC offset but no GPS position and no compass heading, so orientation is checked by eye against the computed sun position, not read from the files."
+ },
+ "array_position": {
+  "east_m": 0.0,
+  "north_m": -4.4,
+  "_src": "Array centre relative to the tower centre (= slab centre): south of the 5,42 m slab, 2,71 m + ~0,3 m setback + half the field depth. Preliminary until site_geometry.json is measured from the DWGs (Phase 5)."
+ },
+ "obstacles": [
+  {
+   "name": "stablo JJI-JI",
+   "bearing_deg": [135.0, 157.5],
+   "dist_m": [15.0, 20.0],
+   "height_m": [7.0, 9.0],
+   "crown_w_m": 6.0,
+   "opacity_monthly": [0.5, 0.5, 0.5, 0.75, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9, 0.6, 0.5],
+   "_src": "Photo survey 08.09.2026 (20260908_121243(1) and others): lone deciduous tree 7-9 m, 15-20 m SSE-SE of the tower. Bearing, distance, height and crown width are ESTIMATES from the photos, not a survey, so they are carried as ranges and bracketed. Opacity: leafless crown lets about half the beam through (Nov-Mar), full leaf blocks it (May-Sep) - an assumption."
+  }
+ ],
+ "stands": {
+  "qp_kNm2": 1.2,
+  "bottom_edge_m": 0.5,
+  "strip_spacing_m": 1.6,
+  "plot_max_width_m": 12.0,
+  "plot_max_depth_m": 3.3,
+  "_src": "qp is PROVISIONAL, taken as Sjednica's 1,20 kN/m². The 2017 Hamzići project used JUS U.C7 (vm,50,10 = 25 m/s); a BAS EN 1991-1-4 + NA value is derived in Phase 5. Plot: lease 12,00 x 12,50 m (k.č. 109/1 K.O. Hamzići) around the 5,42 m tower slab leaves ≈3,3 m to the lease line - preliminary until site_geometry.json is measured from the DWGs."
+ }
+}

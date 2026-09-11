@@ -1,0 +1,107 @@
+{
+ "id": "sjednica",
+ "name": "BS Sjednica",
+ "place": "Bileća",
+ "lat": 42.9448,
+ "lon": 18.3236,
+ "altitude_m": 1076,
+ "design_json": "bht-sjednica-final-review/cad/design.json",
+ "review_dir": "bht-sjednica-final-review/review/pvsim",
+ "pvgis": {
+  "db": "PVGIS-SARAH3",
+  "start": 2005,
+  "end": 2023,
+  "userhorizon": null,
+  "_src": "PVGIS API v5.3, SARAH3 irradiance with ERA5 temperature and wind, the full available period. Horizon from the PVGIS DEM: at most 5,7°, all of it to the north, so it does not shade a south-facing array."
+ },
+ "array": {
+  "tilts": [45, 60],
+  "strings": 2,
+  "modules_per_string": 6,
+  "_src": "kWp, module count, tilt and azimuth come from design.json. 'tilts' are the two options under decision (plan Phase 3). 2 strings x 6 modules: 07-proracuni D.1."
+ },
+ "pv": {
+  "iam_a_r": 0.16,
+  "faiman_u0": 26.9,
+  "faiman_u1": 6.2,
+  "huld_k_version": "pvgis5",
+  "soiling_monthly": [0.01, 0.01, 0.015, 0.015, 0.02, 0.02, 0.025, 0.025, 0.02, 0.015, 0.01, 0.01],
+  "snow_monthly": {
+   "45": [0.08, 0.06, 0.03, 0.01, 0, 0, 0, 0, 0, 0, 0.02, 0.06],
+   "60": [0.04, 0.03, 0.015, 0.005, 0, 0, 0, 0, 0, 0, 0.01, 0.03]
+  },
+  "mismatch": 0.003,
+  "lid": 0.005,
+  "dc_wiring_stc": 0.0078,
+  "optimizer_eff": 0.99,
+  "issu": {
+   "units": 2,
+   "v_out": 53.5,
+   "p_out_max_w": 4000,
+   "derate_c_w": [[55, 4000], [65, 3200], [75, 2400], [80, 1000]],
+   "cabinet_rise_c": 10,
+   "curve_vin_v": 330,
+   "curve_a_pct": [[10.5, 92.70], [12.1, 93.99], [14.0, 94.89], [15.4, 95.49], [16.5, 95.92], [18.5, 96.17], [20.1, 96.41], [22.9, 96.55], [25.3, 96.75], [28.2, 96.99], [30.4, 97.18], [34.2, 97.24], [39.2, 97.30], [44.0, 97.28], [49.2, 97.30], [55.5, 97.23], [60.2, 97.12], [65.5, 97.00], [70.5, 96.91], [75.2, 96.81]],
+   "_src": "Huawei iSSU S4875G2 datasheet (issue 2026-01-15, hamzici-hybrid-solar/EQUIPEMENT), Figure 2, digitised from the vector curve. The Vin = 330 V curve is used because the string (Vmp 257 V at STC) is nearer 330 V than 400 V. Losses below the first curve point (10,5 A) are extrapolated with a fitted loss model p0 + p1*P + p2*P^2. Output limit 4000 W with the Figure 3 temperature derating, applied to cabinet air = ambient + cabinet_rise_c (the rise is an assumption)."
+  },
+  "_src": {
+   "iam_a_r, faiman_u0/u1, huld_k_version": "The PVGIS model for free-standing c-Si (Martin-Ruiz IAM a_r 0,16; Faiman 26,9 / 6,2; Huld coefficients). Keeping PVGIS's module model lets pvsim validate against PVGIS hour by hour; iPV585-M2A temperature and low-light coefficients are not in any vendor file on hand.",
+   "soiling_monthly": "Assumption: 1-2,5 %/month, higher in the dry summer; a 45-60° array sheds dust with rain.",
+   "snow_monthly": "Assumption: at 1076 m in the bura belt, snow cover of the bottom row on snow days (bottom edge +0,50 m, ground snow up to ~0,5 m). At 60° snow slides off faster, so the losses are halved. Not modelled from snowfall data - PVGIS provides none.",
+   "mismatch": "Assumption: 0,3 %, because a per-module optimizer removes most string mismatch.",
+   "lid": "Assumption: 0,5 % first-year light-induced degradation.",
+   "dc_wiring_stc": "07-proracuni D.2: 0,78 % at Imp (6 mm², 25 m), scaled with current squared (i.e. with power).",
+   "optimizer_eff": "Huawei SUN2000-600W-P, weighted efficiency 99,0 % (vendor class figure)."
+  }
+ },
+ "load": {
+  "base_w": 1180,
+  "aux_w": 20,
+  "cooling_w_max": 150,
+  "cooling_t0_c": 20,
+  "cooling_t1_c": 35,
+  "_src": "base_w: TK load of 1180 W nominal (RFI 27.04.2026; Prilog III site data). cooling_w_max: the same source gives 1330 W maximum 'with cooling', i.e. up to 150 W for cabinet cooling (ICC360 HXC300L heat exchanger plus the PC1500D-1 DC air conditioner of the battery compartment, rated ≤500 W). It is ramped linearly with ambient temperature from 20 to 35 °C; the ramp is an assumption. aux_w: SMU, BMS, rectifier/iSSU standby and fans, which are not in the TK figure - an assumption."
+ },
+ "battery": {
+  "modules": 6,
+  "kwh_per_module": 4.8,
+  "soc_initial": 0.8,
+  "soc_floor": 0.05,
+  "eta_charge": 0.975,
+  "eta_discharge": 0.975,
+  "charge_c_rate": 0.25,
+  "_src": "6 x Huawei ESM-48100A6, 48 V / 100 Ah = 4,8 kWh each (ICC360-HA1-C1 installation guide, table 2-24; Huawei quotation for Sjednica). Efficiencies (95 % round trip), the 0,25 C charge limit and the 5 % BMS floor are NOT in any vendor file on hand. They are assumptions typical for LFP telecom modules. Genset hours are sensitive to the charge limit - see the sensitivity runs."
+ },
+ "control": {
+  "dod_start": 0.85,
+  "soc_stop": 0.9,
+  "min_run_h": 1.0,
+  "_src": "dod_start: SMU parameter 'DOD to Start', default 85 % (ICC360-HA1-C1 installation guide, table 10-6; range 5-90 %). soc_stop and min_run_h are not in the vendor documents on hand - assumptions. They are SMU settings the bidder must state."
+ },
+ "genset": {
+  "rect_cap_ac_kw": 9.5,
+  "eta_rect": 0.96,
+  "prime_kw": 13.2,
+  "fuel_l_h": [[6.6, 2.6], [9.9, 3.4], [13.2, 4.4]],
+  "wet_stack_frac": 0.3,
+  "_src": "rect_cap_ac_kw: the TD requirement (07-proracuni D.5, 82 % of the derated prime). eta_rect: R4875G5 rectifiers, 96 % - an assumption at the datasheet class. Fuel: FG Wilson P18-6 data sheet 2019-08-14, PRIME rating 13,2 kWe at 50/75/100 % = 2,6/3,4/4,4 l/h; interpolated in output power and extrapolated linearly below 50 %. wet_stack_frac: the 30 % minimum load from 07-proracuni D.5."
+ },
+ "tank": {
+  "first_fill_l": 250,
+  "refill_at_frac": 0.2,
+  "_src": "Tank volume (500 l) comes from design.json. First fill 250 l: TD (BOQ 4.16). Refill threshold: SMU 'Refuel THR' default 20 % (ICC360-HA1-C1 installation guide, table 10-8)."
+ },
+ "limits": {
+  "genset_h_max": 250,
+  "tank_years_min": 1.0,
+  "_src": "Prijedlog Odluke, Aneks 2: genset operation ≤250 h/god; one 500 l tank to last ≥1 godina."
+ },
+ "stands": {
+  "qp_kNm2": 1.2,
+  "bottom_edge_m": 0.5,
+  "strip_spacing_m": 1.6,
+  "plot_max_width_m": 16.0,
+  "plot_max_depth_m": 3.8,
+  "_src": "qp: 07-proracuni B.1 (qp ≥1,20 kN/m²). Bottom edge +0,50 m: Rev 7c. Strip spacing: design.json support.strip_spacing. Plot: lease 16,00 x 9,40 m, 3,80 m free south of the fence (plan Phase 3)."
+ }
+}
